@@ -45,20 +45,38 @@ def upgrade() -> None:
     # transfers.clinical_decision_id references this table; 20260819_0001
     # deliberately created transfers without that FK since clinical_decisions
     # didn't exist yet. Add it now that the referenced table is in place.
-    op.create_foreign_key(
-        "fk_transfers_clinical_decision_id_clinical_decisions",
-        "transfers",
-        "clinical_decisions",
-        ["clinical_decision_id"],
-        ["id"],
-        ondelete="RESTRICT",
-    )
+    bind = op.get_bind()
+    if bind.dialect.name != "sqlite":
+        op.create_foreign_key(
+            "fk_transfers_clinical_decision_id_clinical_decisions",
+            "transfers",
+            "clinical_decisions",
+            ["clinical_decision_id"],
+            ["id"],
+            ondelete="RESTRICT",
+        )
+    else:
+        with op.batch_alter_table("transfers") as batch_op:
+            batch_op.create_foreign_key(
+                "fk_transfers_clinical_decision_id_clinical_decisions",
+                "clinical_decisions",
+                ["clinical_decision_id"],
+                ["id"],
+                ondelete="RESTRICT",
+            )
 
 
 def downgrade() -> None:
-    op.drop_constraint(
-        "fk_transfers_clinical_decision_id_clinical_decisions", "transfers", type_="foreignkey"
-    )
+    bind = op.get_bind()
+    if bind.dialect.name != "sqlite":
+        op.drop_constraint(
+            "fk_transfers_clinical_decision_id_clinical_decisions", "transfers", type_="foreignkey"
+        )
+    else:
+        with op.batch_alter_table("transfers") as batch_op:
+            batch_op.drop_constraint(
+                "fk_transfers_clinical_decision_id_clinical_decisions", type_="foreignkey"
+            )
     op.drop_index("uq_clinical_decisions_active_admission", table_name="clinical_decisions")
     for column in ("status", "admission_id", "patient_id", "id"):
         op.drop_index(f"ix_clinical_decisions_{column}", table_name="clinical_decisions")
