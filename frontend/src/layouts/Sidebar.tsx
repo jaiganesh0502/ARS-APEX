@@ -10,6 +10,7 @@ import {
   Ambulance,
   Cpu,
   FileHeart,
+  CreditCard,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,7 +29,7 @@ export const Sidebar: React.FC = () => {
       return [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Patients & Registration', href: '/patients', icon: Users },
-        { name: 'Billing & Invoices', href: '/billing/reception', icon: ActivitySquare },
+        { name: 'Billing & Invoices', href: '/billing/reception', icon: CreditCard },
       ];
     }
 

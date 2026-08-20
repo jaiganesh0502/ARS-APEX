@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
+  CreditCard,
   ShieldCheck,
   Stethoscope,
   Building2,
@@ -213,7 +214,7 @@ export const LoginPage: React.FC = () => {
               >
                 <div className="flex items-center gap-2.5">
                   <div className="p-1.5 bg-amber-600/20 text-amber-400 rounded-md group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                    <ActivitySquare className="w-4 h-4" />
+                    <CreditCard className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="text-xs font-semibold text-slate-200">Hospital Receptionist (Priya)</div>
