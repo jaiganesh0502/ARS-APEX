@@ -1,3 +1,4 @@
+import time
 import httpx
 
 base = "https://altaa.duckdns.org/api"
@@ -7,8 +8,8 @@ r_rec = httpx.post(f"{base}/auth/login", json={"email": "receptionist@demo.local
 token_rec = r_rec.json()["access_token"]
 h_rec = {"Authorization": f"Bearer {token_rec}"}
 
-# 2. Receptionist registers a new patient
-pat_code = f"PT-LIVE-{int(httpx._utils.get_environment_proxies and 1000 or 8822)}"
+# 2. Receptionist registers a new unique patient
+pat_code = f"PT-NEW-{int(time.time())}"
 r_pat = httpx.post(
     f"{base}/patients",
     headers=h_rec,
@@ -23,7 +24,7 @@ r_doc = httpx.post(f"{base}/auth/login", json={"email": "doctor@demo.local", "pa
 token_doc = r_doc.json()["access_token"]
 h_doc = {"Authorization": f"Bearer {token_doc}"}
 
-# 4. Doctor creates clinical decision for admission 1 or patient
+# 4. Doctor uploads clinical document for Admission 1
 r_doc_upload = httpx.post(
     f"{base}/admissions/1/documents",
     headers=h_doc,
