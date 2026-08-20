@@ -1,4 +1,5 @@
 {
+  "id": "wf_discharge_01",
   "name": "01 - Discharge Orchestration (Parallel Bed Release & Billing)",
   "nodes": [
     {
