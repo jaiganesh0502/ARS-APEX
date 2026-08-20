@@ -473,6 +473,31 @@ class BillingService:
 
         if clinical_cleared and payment_cleared:
             admission.discharge_ready = True
+
+            # Parallel Bed Release: Ensure bed transitions to VACATING
+            if admission.bed_id:
+                from app.models.bed import Bed, BedStatus
+                bed = self.db.query(Bed).filter(Bed.id == admission.bed_id).first()
+                if bed and bed.status == BedStatus.OCCUPIED:
+                    bed.status = BedStatus.VACATING
+
+            # Auto-compile DischargePackage and PDF if not already created
+            from app.models.discharge_package import DischargePackage
+            from app.services.discharge_package_service import DischargePackageService
+            from app.models.user import User, UserRole
+            existing_pkg = self.db.query(DischargePackage).filter(DischargePackage.admission_id == admission.id).first()
+            if not existing_pkg:
+                system_user = self.db.query(User).filter(User.role == UserRole.MEDICAL_SUPERINTENDENT).first()
+                try:
+                    pkg_svc = DischargePackageService(self.db)
+                    pkg_svc.finalize_discharge_package(
+                        admission_id=admission.id,
+                        authorizing_user=system_user,
+                        notes="Automated discharge authorization on dual clearance confirmation.",
+                    )
+                except Exception as e:
+                    logger.warning("Auto discharge package creation encountered: %s", e)
+
             self.db.commit()
 
             logger.info("Admission %s is now DISCHARGE READY (Clinical: cleared, Payment: cleared)", admission_id)

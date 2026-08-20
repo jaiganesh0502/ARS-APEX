@@ -269,7 +269,29 @@ class DischargeService(BaseService):
         billing_svc = BillingService(self.db)
         billing_svc.generate_or_get_invoice(report.admission_id, auto_commit=False)
 
-        # 2. In-App Notification for Medical Superintendent
+        # 2. Parallel Bed Release Branch: Transition Bed from OCCUPIED to VACATING
+        if admission.bed_id:
+            from app.models.bed import Bed, BedStatus
+            bed = self.db.query(Bed).filter(Bed.id == admission.bed_id).first()
+            if bed and bed.status == BedStatus.OCCUPIED:
+                bed.status = BedStatus.VACATING
+                self.db.add(WorkflowEvent(
+                    event_type="bed_release_started",
+                    entity_type="bed",
+                    entity_id=bed.id,
+                    status="pending",
+                    delivery_status="pending",
+                    trusted_provenance=True,
+                    payload={
+                        "bed_id": bed.id,
+                        "patient_id": report.patient_id,
+                        "admission_id": report.admission_id,
+                        "previous_status": "occupied",
+                        "new_status": "vacating",
+                    },
+                ))
+
+        # 3. In-App Notification for Medical Superintendent
         from app.models.notification import Notification, NotificationChannel, NotificationType, NotificationStatus
         patient = admission.patient
         patient_name = f"{patient.first_name} {patient.last_name}" if patient else f"Patient #{report.patient_id}"
