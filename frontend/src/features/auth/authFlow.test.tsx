@@ -41,7 +41,7 @@ describe('Authentication & Role Presentation', () => {
     expect(markup).toContain('Central Medical Ward &amp; ICU Network');
   });
 
-  it('renders Sidebar with hospital navigation links', () => {
+  it('renders Sidebar with strict doctor clinical navigation links', () => {
     const markup = renderToStaticMarkup(
       <AuthProvider>
         <StaticRouter location="/dashboard">
@@ -54,7 +54,8 @@ describe('Authentication & Role Presentation', () => {
     expect(markup).toContain('Dashboard');
     expect(markup).toContain('Patients');
     expect(markup).toContain('Transfers');
-    expect(markup).toContain('Hospitals');
-    expect(markup).toContain('Ambulances');
+    expect(markup).not.toContain('Hospitals');
+    expect(markup).not.toContain('Ambulances');
+    expect(markup).not.toContain('Beds');
   });
 });

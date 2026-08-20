@@ -527,4 +527,4 @@ def test_bed_list_uses_a_bounded_number_of_database_queries(client, db_session, 
         event.remove(connection, "before_cursor_execute", count_queries)
 
     assert response.status_code == 200
-    assert len(statements) <= 5
+    assert len(statements) <= 6

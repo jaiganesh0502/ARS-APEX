@@ -36,14 +36,7 @@ export const RoleRoute: React.FC<RoleRouteProps> = ({ allowedRoles, children }) 
   }
 
   if (!user || !allowedRoles.includes(user.role)) {
-    // Redirect unauthorized user to their designated home screen
-    if (user?.role === 'patient') {
-      return <Navigate to="/patient-portal" replace />;
-    }
-    if (user?.role === 'medical_superintendent') {
-      return <Navigate to="/operations" replace />;
-    }
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/forbidden" replace />;
   }
 
   return children ? <>{children}</> : <Outlet />;

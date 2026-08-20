@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_db, require_superintendent
+from app.api.dependencies import get_db, require_staff, require_superintendent
 from app.models.admission import Admission
 from app.models.bed import Bed
 from app.models.billing_clearance import BillingClearance, BillingStatus
@@ -63,6 +63,7 @@ def _to_detail_read(b: BillingClearance, db: Session) -> BillingClearanceDetailR
 def get_admission_billing_clearance(
     admission_id: int,
     db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
 ):
     """
     Retrieve current billing clearance state for an admission.
@@ -81,6 +82,7 @@ def list_billing_clearances(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
 ):
     """
     List billing clearances for finance/bed manager review.

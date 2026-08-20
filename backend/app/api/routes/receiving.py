@@ -3,8 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user_stub
-from app.api.dependencies.database import get_db
+from app.api.dependencies import get_db, require_superintendent
 from app.models.user import User
 from app.schemas.transfer import TransferDetailRead, TransferSummary
 from app.services.receiving_transfer_service import ReceivingTransferService
@@ -22,10 +21,11 @@ def get_incoming_transfers(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    _current_user: User = Depends(require_superintendent),
 ):
     """
     Retrieve incoming transfer queue for receiving hospital review.
+    Restricted to Medical Superintendent / Receiving Admins.
     """
     return ReceivingTransferService(db).list_incoming_transfers(
         hospital_id=hospital_id,
@@ -41,10 +41,11 @@ def get_incoming_transfers(
 def get_incoming_transfer_detail(
     transfer_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    _current_user: User = Depends(require_superintendent),
 ):
     """
     Retrieve incoming transfer detail, marking the clinical packet as viewed.
+    Restricted to Medical Superintendent / Receiving Admins.
     """
     return ReceivingTransferService(db).get_incoming_transfer_detail(
         transfer_id=transfer_id,

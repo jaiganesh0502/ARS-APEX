@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, RoleRoute } from './components/auth/ProtectedRoute';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { LoginPage } from './pages/LoginPage';
+import { ForbiddenPage } from './pages/ForbiddenPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { PatientsPage } from './pages/PatientsPage';
 import { PatientDetailPage } from './pages/PatientDetailPage';
@@ -31,6 +32,17 @@ const STAFF_ROLES = [
   'receiving_admin',
 ];
 
+const CLINICAL_ROLES = [
+  'doctor',
+  'receiving_doctor',
+];
+
+const SUPERINTENDENT_ROLES = [
+  'medical_superintendent',
+  'ward_admin',
+  'receiving_admin',
+];
+
 export const App: React.FC = () => {
   return (
     <AuthProvider>
@@ -38,6 +50,9 @@ export const App: React.FC = () => {
         <Routes>
           {/* Public login route */}
           <Route path="/login" element={<LoginPage />} />
+
+          {/* 403 Forbidden Page */}
+          <Route path="/forbidden" element={<ForbiddenPage />} />
 
           {/* Public Patient Care Portal View (Shared by Token / ID) */}
           <Route path="/patient-view/:patientId" element={<PatientPortalPage />} />
@@ -67,32 +82,111 @@ export const App: React.FC = () => {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
 
-            {/* Patient and discharge routes */}
+            {/* Shared Patient Directory and Details */}
             <Route path="/patients" element={<PatientsPage />} />
             <Route path="/patients/:patientId" element={<PatientDetailPage />} />
-            <Route path="/patients/:patientId/decision" element={<ClinicalDecisionPage />} />
-            <Route path="/patients/:patientId/discharge" element={<DischargePage />} />
 
-            {/* Bed management (Superintendent / Doctor) */}
-            <Route path="/beds" element={<BedsPage />} />
-            <Route path="/beds/:bedId" element={<BedDetailPage />} />
+            {/* Doctor Only: Clinical Decision & Discharge Review */}
+            <Route
+              path="/patients/:patientId/decision"
+              element={
+                <RoleRoute allowedRoles={CLINICAL_ROLES}>
+                  <ClinicalDecisionPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/patients/:patientId/discharge"
+              element={
+                <RoleRoute allowedRoles={CLINICAL_ROLES}>
+                  <DischargePage />
+                </RoleRoute>
+              }
+            />
 
-            {/* Inter-hospital transfers (Sending Side) */}
+            {/* Transfers: Shared Roster & Detail, Doctor Creation */}
             <Route path="/transfers" element={<TransfersPage />} />
-            <Route path="/transfers/new" element={<TransferEntryPage />} />
+            <Route
+              path="/transfers/new"
+              element={
+                <RoleRoute allowedRoles={CLINICAL_ROLES}>
+                  <TransferEntryPage />
+                </RoleRoute>
+              }
+            />
             <Route path="/transfers/:transferId" element={<TransferDetailPage />} />
 
-            {/* Receiving Hospital Operations */}
-            <Route path="/receiving/transfers" element={<IncomingTransfersPage />} />
-            <Route path="/receiving/transfers/:transferId" element={<ReceivingTransferDetailPage />} />
+            {/* Medical Superintendent Only: Bed Management */}
+            <Route
+              path="/beds"
+              element={
+                <RoleRoute allowedRoles={SUPERINTENDENT_ROLES}>
+                  <BedsPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/beds/:bedId"
+              element={
+                <RoleRoute allowedRoles={SUPERINTENDENT_ROLES}>
+                  <BedDetailPage />
+                </RoleRoute>
+              }
+            />
 
-            {/* Hospital capacity & ambulance tracking */}
-            <Route path="/hospitals" element={<HospitalsPage />} />
-            <Route path="/ambulances" element={<AmbulancesPage />} />
-            <Route path="/ambulances/:dispatchId" element={<AmbulanceDetailPage />} />
+            {/* Medical Superintendent Only: Incoming Transfer Queue */}
+            <Route
+              path="/receiving/transfers"
+              element={
+                <RoleRoute allowedRoles={SUPERINTENDENT_ROLES}>
+                  <IncomingTransfersPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/receiving/transfers/:transferId"
+              element={
+                <RoleRoute allowedRoles={SUPERINTENDENT_ROLES}>
+                  <ReceivingTransferDetailPage />
+                </RoleRoute>
+              }
+            />
 
-            {/* n8n Orchestration Telemetry & Event Audit */}
-            <Route path="/operations" element={<OperationsPage />} />
+            {/* Medical Superintendent Only: Hospital Capacity & Ambulance Tracking */}
+            <Route
+              path="/hospitals"
+              element={
+                <RoleRoute allowedRoles={SUPERINTENDENT_ROLES}>
+                  <HospitalsPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/ambulances"
+              element={
+                <RoleRoute allowedRoles={SUPERINTENDENT_ROLES}>
+                  <AmbulancesPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/ambulances/:dispatchId"
+              element={
+                <RoleRoute allowedRoles={SUPERINTENDENT_ROLES}>
+                  <AmbulanceDetailPage />
+                </RoleRoute>
+              }
+            />
+
+            {/* Medical Superintendent Only: n8n Orchestration Telemetry & Event Audit */}
+            <Route
+              path="/operations"
+              element={
+                <RoleRoute allowedRoles={SUPERINTENDENT_ROLES}>
+                  <OperationsPage />
+                </RoleRoute>
+              }
+            />
           </Route>
 
           {/* Fallback route */}

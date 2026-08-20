@@ -38,14 +38,11 @@ export const Sidebar: React.FC = () => {
       ];
     }
 
-    // Default Doctor navigation
+    // Doctor navigation (Clinical only)
     return [
       { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
       { name: 'Patients', href: '/patients', icon: Users },
       { name: 'Transfers', href: '/transfers', icon: ArrowRightLeft },
-      { name: 'Incoming Transfers', href: '/receiving/transfers', icon: Inbox },
-      { name: 'Hospitals', href: '/hospitals', icon: Building2 },
-      { name: 'Ambulances', href: '/ambulances', icon: Ambulance },
     ];
   };
 

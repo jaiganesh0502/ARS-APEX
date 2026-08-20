@@ -5,8 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user_stub
-from app.api.dependencies.database import get_db
+from app.api.dependencies import get_db, require_doctor, require_staff, require_superintendent
 from app.models.admission import Admission, AdmissionStatus
 from app.models.user import User
 from app.schemas.admission import AdmissionRead, AdmissionCreate, AdmissionDetail
@@ -19,7 +18,13 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("", response_model=List[AdmissionRead])
-def list_admissions(status: Optional[AdmissionStatus] = None, skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
+def list_admissions(
+    status: Optional[AdmissionStatus] = None,
+    skip: int = 0,
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     query = db.query(Admission)
     if status:
         query = query.filter(Admission.status == status)
@@ -27,7 +32,11 @@ def list_admissions(status: Optional[AdmissionStatus] = None, skip: int = 0, lim
 
 
 @router.get("/{admission_id}", response_model=AdmissionDetail)
-def get_admission(admission_id: int, db: Session = Depends(get_db)):
+def get_admission(
+    admission_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     admission = db.query(Admission).filter(Admission.id == admission_id).first()
     if not admission:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Admission not found")
@@ -35,7 +44,11 @@ def get_admission(admission_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=AdmissionRead, status_code=status.HTTP_201_CREATED)
-def create_admission(admission_in: AdmissionCreate, db: Session = Depends(get_db)):
+def create_admission(
+    admission_in: AdmissionCreate,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     try:
         return AdmissionAssignmentService(db).create(admission_in)
     except HTTPException:
@@ -53,11 +66,11 @@ def create_admission(admission_in: AdmissionCreate, db: Session = Depends(get_db
 def create_transfer_for_admission(
     admission_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    current_user: User = Depends(require_doctor),
 ):
     """
     Create a new transfer case or return existing active transfer for an admission.
-    Requires a confirmed clinical transfer decision.
+    Requires a confirmed clinical transfer decision. Restricted to Doctors.
     """
     try:
         return TransferService(db).create_or_get_transfer_for_admission(

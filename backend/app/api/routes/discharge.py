@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_db, require_doctor
+from app.api.dependencies import get_db, require_doctor, require_staff
 from app.api.dependencies.llm import get_llm_client
 from app.integrations.llm.client import LLMClientInterface
 from app.integrations.llm.replicate_client import (
@@ -24,7 +24,13 @@ router = APIRouter(prefix="/discharge", tags=["Discharge Orchestration"])
 
 
 @router.get("/reports", response_model=List[DischargeReportRead])
-def list_reports(status: DischargeReportStatus = None, skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
+def list_reports(
+    status: DischargeReportStatus = None,
+    skip: int = 0,
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     query = db.query(DischargeReport)
     if status:
         query = query.filter(DischargeReport.status == status)
@@ -32,7 +38,11 @@ def list_reports(status: DischargeReportStatus = None, skip: int = 0, limit: int
 
 
 @router.get("/reports/{report_id}", response_model=DischargeReportRead)
-def get_report(report_id: int, db: Session = Depends(get_db)):
+def get_report(
+    report_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     service = DischargeService(db)
     report = service.repo.get(report_id)
     if not report:
@@ -41,7 +51,11 @@ def get_report(report_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/admissions/{admission_id}/report", response_model=DischargeReportRead)
-def get_report_for_admission(admission_id: int, db: Session = Depends(get_db)):
+def get_report_for_admission(
+    admission_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     report = DischargeService(db).repo.get_by_admission_id(admission_id)
     if not report:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Discharge report not found")

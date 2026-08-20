@@ -11,7 +11,7 @@ from app.models.hospital_capacity import HospitalCapacity
 from app.models.patient import Patient
 from app.models.transfer import Transfer, TransferStatus
 from app.models.transfer_decision import TransferDecision, TransferDecisionType
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.models.workflow_event import WorkflowEvent
 
 
@@ -64,8 +64,14 @@ def receiving_setup(db_session: Session):
     doctor = User(
         name="Dr. Asha Rao",
         email="asha.rao@metrohospital.org",
+        role=UserRole.DOCTOR,
     )
-    db_session.add(doctor)
+    admin = User(
+        name="Receiving Admin",
+        email="admin@cityheart.org",
+        role=UserRole.MEDICAL_SUPERINTENDENT,
+    )
+    db_session.add_all([admin, doctor])
     db_session.flush()
 
     # Admission 1

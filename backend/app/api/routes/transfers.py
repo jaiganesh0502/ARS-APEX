@@ -4,8 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user_stub
-from app.api.dependencies.database import get_db
+from app.api.dependencies import get_db, require_doctor, require_staff, require_superintendent
 from app.models.transfer import Transfer, TransferStatus
 from app.models.user import User
 from app.schemas.transfer import (
@@ -38,6 +37,7 @@ def list_transfers(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
 ):
     """
     List transfers with filtering by status and emergency urgency.
@@ -53,7 +53,11 @@ def list_transfers(
 
 
 @router.get("/{transfer_id}", response_model=TransferDetailRead)
-def get_transfer(transfer_id: int, db: Session = Depends(get_db)):
+def get_transfer(
+    transfer_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     """
     Retrieve full transfer details including patient, admission, and facility context.
     """
@@ -61,7 +65,11 @@ def get_transfer(transfer_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{transfer_id}/matches", response_model=List[HospitalMatchRead])
-def get_transfer_hospital_matches(transfer_id: int, db: Session = Depends(get_db)):
+def get_transfer_hospital_matches(
+    transfer_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     """
     Compute and return deterministic, explainable ranked partner hospital matches
     for a transfer case based on Required Specialty, Capacity, and Distance.
@@ -74,7 +82,7 @@ def select_receiving_hospital(
     transfer_id: int,
     payload: HospitalSelectPayload,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    current_user: User = Depends(require_doctor),
 ):
     """
     Doctor selects a receiving hospital for the transfer case.
@@ -101,7 +109,7 @@ def select_receiving_hospital(
 def prepare_transfer_packet(
     transfer_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    _current_user: User = Depends(require_staff),
 ):
     """
     Assemble and persist a structured clinical transfer packet for the selected receiving facility.
@@ -124,7 +132,7 @@ def get_transfer_packet(
     transfer_id: int,
     mark_viewed: bool = Query(False, description="Whether to mark sent packet as viewed"),
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    _current_user: User = Depends(require_staff),
 ):
     """
     Retrieve the structured transfer packet for the transfer case.
@@ -136,7 +144,7 @@ def get_transfer_packet(
 def send_transfer_packet(
     transfer_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    current_user: User = Depends(require_staff),
 ):
     """
     Simulate secure delivery into the receiving hospital's application queue.
@@ -160,7 +168,7 @@ def accept_transfer(
     transfer_id: int,
     payload: Optional[TransferAcceptPayload] = None,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    current_user: User = Depends(require_superintendent),
 ):
     """
     Receiving hospital accepts the transfer request, reserves one bed slot transactionally,
@@ -188,7 +196,7 @@ def reject_transfer(
     transfer_id: int,
     payload: TransferRejectPayload,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    current_user: User = Depends(require_superintendent),
 ):
     """
     Receiving hospital rejects the transfer request with mandatory justification.
@@ -215,7 +223,7 @@ def reject_transfer(
 def rematch_transfer(
     transfer_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    current_user: User = Depends(require_staff),
 ):
     """
     Re-open a rejected transfer case for sending-physician hospital re-matching.
@@ -241,10 +249,10 @@ def rematch_transfer(
 def create_transfer_direct(
     transfer_in: TransferCreate,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    current_user: User = Depends(require_doctor),
 ):
     """
-    Direct creation of a transfer case.
+    Direct creation of a transfer case. Restricted to Doctors.
     """
     try:
         return TransferService(db).create_or_get_transfer_for_admission(
@@ -266,11 +274,11 @@ def create_transfer_direct(
 def dispatch_ambulance_for_transfer(
     transfer_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_stub),
+    current_user: User = Depends(require_superintendent),
 ):
     """
     Dispatch an ambulance for an accepted transfer case.
-    Transitions transfer status to 'ambulance_requested' and calculates simulated ETA.
+    Restricted to Medical Superintendent / Operational Admins.
     """
     try:
         return AmbulanceDispatchService(db).dispatch_ambulance(
@@ -289,7 +297,11 @@ def dispatch_ambulance_for_transfer(
 
 
 @router.get("/{transfer_id}/ambulance", response_model=Optional[AmbulanceDispatchRead])
-def get_transfer_ambulance_dispatch(transfer_id: int, db: Session = Depends(get_db)):
+def get_transfer_ambulance_dispatch(
+    transfer_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     """
     Retrieve current ambulance dispatch tracking data for a transfer case.
     """
@@ -301,6 +313,7 @@ def update_transfer_status(
     transfer_id: int,
     update_in: TransferUpdateStatus,
     db: Session = Depends(get_db),
+    _current_user: User = Depends(require_superintendent),
 ):
     transfer = db.query(Transfer).filter(Transfer.id == transfer_id).first()
     if not transfer:
@@ -313,4 +326,3 @@ def update_transfer_status(
     db.commit()
     db.refresh(transfer)
     return transfer
-

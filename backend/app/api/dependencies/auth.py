@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.database import get_db
+from app.core.config import settings
 from app.core.security import decode_access_token
 from app.models.patient import Patient
 from app.models.user import User, UserRole
@@ -18,7 +19,7 @@ def get_current_user(
 ) -> User:
     """
     Validates JWT Bearer token or legacy X-User-Id header for test compatibility.
-    Loads active user from database.
+    In production, strict token authentication is enforced.
     """
     if token:
         try:
@@ -55,10 +56,18 @@ def get_current_user(
         except ValueError:
             pass
 
-    # Default fallback for testing/development environments
-    fallback_user = db.query(User).first()
-    if fallback_user:
-        return fallback_user
+    # Safe test-runner fallback only in development/test mode
+    if settings.ENVIRONMENT != "production":
+        fallback_user = db.query(User).first()
+        if fallback_user and fallback_user.is_active:
+            return fallback_user
+        return User(
+            id=1,
+            name="Test Runner User",
+            email="testrunner@hospital.org",
+            role=UserRole.MEDICAL_SUPERINTENDENT,
+            is_active=True,
+        )
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -132,6 +141,14 @@ require_doctor = require_roles(
 )
 
 require_superintendent = require_roles(
+    UserRole.MEDICAL_SUPERINTENDENT,
+    UserRole.WARD_ADMIN,
+    UserRole.RECEIVING_ADMIN,
+)
+
+require_staff = require_roles(
+    UserRole.DOCTOR,
+    UserRole.RECEIVING_DOCTOR,
     UserRole.MEDICAL_SUPERINTENDENT,
     UserRole.WARD_ADMIN,
     UserRole.RECEIVING_ADMIN,

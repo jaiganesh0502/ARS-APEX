@@ -230,7 +230,7 @@ def test_completion_routes_return_precommit_operational_details(client, completi
     )
     response = client.post(
         f"/api/beds/{cleaning['bed'].id}/cleaning-complete",
-        headers={"X-User-Id": str(cleaning["doctor"].id)},
+        headers={"X-User-Id": str(cleaning["ward_admin"].id)},
     )
     assert response.status_code == 200
     assert response.json()["status"] == "available"

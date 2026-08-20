@@ -13,6 +13,7 @@ import { MetricCard } from '../components/common/MetricCard';
 import { Card } from '../components/common/Card';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { Button } from '../components/common/Button';
+import { useAuth } from '../context/AuthContext';
 import { listAllBeds } from '../api/beds';
 import { summarizeBeds } from '../features/beds/bedState';
 import type { BedSummary } from '../types';
@@ -50,6 +51,12 @@ export const DashboardSafetyNotice: React.FC = () => <div className="p-4 bg-slat
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isSuperintendent =
+    user?.role === 'medical_superintendent' ||
+    user?.role === 'ward_admin' ||
+    user?.role === 'receiving_admin';
+
   const [beds, setBeds] = useState<BedSummary[]>([]);
   const [bedMetricState, setBedMetricState] = useState<BedMetricState>('loading');
   const loadEpochRef = useRef(0);
@@ -59,39 +66,74 @@ export const DashboardPage: React.FC = () => {
     loadEpochRef.current = epoch;
     setBeds([]);
     setBedMetricState('loading');
-    listAllBeds().then((loadedBeds) => {
-      if (loadEpochRef.current !== epoch) return;
-      setBeds(loadedBeds);
-      setBedMetricState('ready');
-    }).catch(() => {
-      if (loadEpochRef.current === epoch) setBedMetricState('error');
-    });
-    return () => { if (loadEpochRef.current === epoch) loadEpochRef.current += 1; };
+    listAllBeds()
+      .then((loadedBeds) => {
+        if (loadEpochRef.current !== epoch) return;
+        setBeds(loadedBeds);
+        setBedMetricState('ready');
+      })
+      .catch(() => {
+        if (loadEpochRef.current === epoch) setBedMetricState('error');
+      });
+    return () => {
+      if (loadEpochRef.current === epoch) loadEpochRef.current += 1;
+    };
   }, []);
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Clinical Operations & Discharge Orchestration"
-        description="Live overview of patient discharge summaries, bed releases, and inter-hospital transfers."
+        title={
+          isSuperintendent
+            ? 'Hospital Operations & Orchestration Command'
+            : 'Clinical Operations & Discharge Orchestration'
+        }
+        description={
+          isSuperintendent
+            ? 'Superintendent command center for bed turnovers, fleet coordination, and hospital capacity.'
+            : 'Physician portal for clinical decisions, discharge reviews, and specialized transfer requests.'
+        }
         action={
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<BedDouble className="w-4 h-4" />}
-              onClick={() => navigate('/beds')}
-            >
-              Manage Beds
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              leftIcon={<Users className="w-4 h-4" />}
-              onClick={() => navigate('/patients')}
-            >
-              Patient Directory
-            </Button>
+            {isSuperintendent ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<BedDouble className="w-4 h-4" />}
+                  onClick={() => navigate('/beds')}
+                >
+                  Manage Beds
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  leftIcon={<Users className="w-4 h-4" />}
+                  onClick={() => navigate('/patients')}
+                >
+                  Patient Directory
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<ArrowRightLeft className="w-4 h-4" />}
+                  onClick={() => navigate('/transfers')}
+                >
+                  Transfer Cases
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  leftIcon={<Users className="w-4 h-4" />}
+                  onClick={() => navigate('/patients')}
+                >
+                  My Inpatients
+                </Button>
+              </>
+            )}
           </div>
         }
       />

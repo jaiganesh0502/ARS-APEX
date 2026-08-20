@@ -6,6 +6,7 @@ from app.api.dependencies.auth import (
     require_roles,
     require_doctor,
     require_superintendent,
+    require_staff,
     require_patient,
     get_current_patient_entity,
 )

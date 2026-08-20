@@ -2,7 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_db, require_roles, require_superintendent
+from app.api.dependencies import get_db, require_roles, require_staff, require_superintendent
 from app.models.user import User, UserRole
 from app.models.workflow_event import WorkflowEvent
 from app.schemas.workflow_event import (
@@ -54,6 +54,7 @@ def list_workflow_telemetry_events(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
 ):
     """
     Detailed telemetry log for operations dashboard with delivery and orchestration tracking.
@@ -72,7 +73,10 @@ def list_workflow_telemetry_events(
 
 
 @router.get("/workflow-events/counts", response_model=WorkflowDashboardCounts)
-def get_workflow_dashboard_counts(db: Session = Depends(get_db)):
+def get_workflow_dashboard_counts(
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     """
     Aggregate counts for the Operations & Orchestration Dashboard.
     """
@@ -84,9 +88,11 @@ def get_workflow_dashboard_counts(db: Session = Depends(get_db)):
 def get_workflow_event_detail(
     event_id: int,
     db: Session = Depends(get_db),
+    _current_user: User = Depends(require_superintendent),
 ):
     """
     Retrieve full workflow event detail with audit payload. Never exposes secrets.
+    Restricted to Medical Superintendent / Operational Admins.
     """
     event = db.query(WorkflowEvent).filter(WorkflowEvent.id == event_id).first()
     if not event:

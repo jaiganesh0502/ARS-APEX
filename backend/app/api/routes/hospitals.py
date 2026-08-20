@@ -2,9 +2,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.database import get_db
+from app.api.dependencies import get_db, require_staff, require_superintendent
 from app.models.hospital import Hospital
 from app.models.hospital_capacity import HospitalCapacity
+from app.models.user import User
 from app.schemas.hospital import HospitalRead, HospitalCreate
 from app.schemas.hospital_capacity import HospitalCapacityRead, HospitalCapacityUpdate
 
@@ -12,12 +13,21 @@ router = APIRouter(prefix="/hospitals", tags=["Hospitals"])
 
 
 @router.get("", response_model=List[HospitalRead])
-def list_hospitals(skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
+def list_hospitals(
+    skip: int = 0,
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     return db.query(Hospital).offset(skip).limit(limit).all()
 
 
 @router.get("/{hospital_id}", response_model=HospitalRead)
-def get_hospital(hospital_id: int, db: Session = Depends(get_db)):
+def get_hospital(
+    hospital_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     hospital = db.query(Hospital).filter(Hospital.id == hospital_id).first()
     if not hospital:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found")
@@ -25,7 +35,11 @@ def get_hospital(hospital_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=HospitalRead, status_code=status.HTTP_201_CREATED)
-def create_hospital(hospital_in: HospitalCreate, db: Session = Depends(get_db)):
+def create_hospital(
+    hospital_in: HospitalCreate,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_superintendent),
+):
     hospital = Hospital(**hospital_in.model_dump())
     db.add(hospital)
     db.commit()
@@ -34,12 +48,21 @@ def create_hospital(hospital_in: HospitalCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{hospital_id}/capacities", response_model=List[HospitalCapacityRead])
-def list_hospital_capacities(hospital_id: int, db: Session = Depends(get_db)):
+def list_hospital_capacities(
+    hospital_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     return db.query(HospitalCapacity).filter(HospitalCapacity.hospital_id == hospital_id).all()
 
 
 @router.put("/capacities/{capacity_id}", response_model=HospitalCapacityRead)
-def update_capacity(capacity_id: int, update_in: HospitalCapacityUpdate, db: Session = Depends(get_db)):
+def update_capacity(
+    capacity_id: int,
+    update_in: HospitalCapacityUpdate,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_superintendent),
+):
     cap = db.query(HospitalCapacity).filter(HospitalCapacity.id == capacity_id).first()
     if not cap:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Capacity record not found")

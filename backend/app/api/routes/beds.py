@@ -5,10 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user_stub
-from app.api.dependencies.database import get_db
+from app.api.dependencies import get_db, require_staff, require_superintendent
 from app.models.bed import BedStatus
-from app.models.user import User, UserRole
+from app.models.user import User
 from app.schemas.bed import BedDetail, BedSummary
 from app.services.bed_query_service import BedQueryService
 from app.services.bed_release_service import BedReleaseService
@@ -23,44 +22,30 @@ def list_beds(
     status: Optional[BedStatus] = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
 ):
     return BedQueryService(db).list_beds(status=status, ward=ward, skip=skip, limit=limit)
 
 
 @router.get("/{bed_id}", response_model=BedDetail)
-def get_bed(bed_id: int, db: Session = Depends(get_db)):
+def get_bed(
+    bed_id: int,
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_staff),
+):
     bed = BedQueryService(db).get_bed(bed_id)
     if bed is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bed not found")
     return bed
 
 
-OPERATIONAL_BED_ROLES = {
-    UserRole.DOCTOR,
-    UserRole.WARD_ADMIN,
-    UserRole.MEDICAL_SUPERINTENDENT,
-    UserRole.RECEIVING_ADMIN,
-}
-
-
 @router.post("/{bed_id}/start-release", response_model=BedDetail)
 def start_bed_release(
     bed_id: int,
     db: Session = Depends(get_db),
-    current_user: User | None = Depends(get_current_user_stub),
+    current_user: User = Depends(require_superintendent),
 ):
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication required",
-        )
-    if current_user.role not in OPERATIONAL_BED_ROLES:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only doctors, ward administrators, and medical superintendents can start bed release",
-        )
-
     try:
         bed = BedReleaseService(db).start_release_detail(bed_id, current_user)
     except HTTPException:
@@ -80,19 +65,8 @@ def start_bed_release(
 def confirm_patient_departure(
     bed_id: int,
     db: Session = Depends(get_db),
-    current_user: User | None = Depends(get_current_user_stub),
+    current_user: User = Depends(require_superintendent),
 ):
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication required",
-        )
-    if current_user.role not in OPERATIONAL_BED_ROLES:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only doctors, ward administrators, and medical superintendents can confirm patient departure",
-        )
-
     try:
         return BedReleaseService(db).patient_departed_detail(bed_id, current_user)
     except HTTPException:
@@ -110,19 +84,8 @@ def confirm_patient_departure(
 def complete_bed_cleaning(
     bed_id: int,
     db: Session = Depends(get_db),
-    current_user: User | None = Depends(get_current_user_stub),
+    current_user: User = Depends(require_superintendent),
 ):
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication required",
-        )
-    if current_user.role not in OPERATIONAL_BED_ROLES:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only doctors, ward administrators, and medical superintendents can complete bed cleaning",
-        )
-
     try:
         return BedReleaseService(db).cleaning_complete_detail(bed_id, current_user)
     except HTTPException:

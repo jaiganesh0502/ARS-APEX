@@ -8,6 +8,7 @@ from sqlalchemy.pool import StaticPool
 from app.main import app
 from app.db.base import Base
 from app.api.dependencies.database import get_db
+from app.models.user import User, UserRole
 
 # Use in-memory SQLite for fast testing
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
