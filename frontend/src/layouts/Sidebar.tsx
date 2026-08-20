@@ -33,15 +33,7 @@ export const Sidebar: React.FC = () => {
       ];
     }
 
-    if (role === 'receiving_doctor' || role === 'receiving_admin') {
-      return [
-        { name: 'Incoming Transfers', href: '/transfers', icon: Inbox },
-        { name: 'Receiving Bed Capacity', href: '/beds', icon: BedDouble },
-        { name: 'Hospital Network', href: '/hospitals', icon: Building2 },
-      ];
-    }
-
-    if (role === 'medical_superintendent' || role === 'ward_admin') {
+    if (role === 'medical_superintendent' || role === 'ward_admin' || role === 'receiving_admin') {
       return [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Operations & Events', href: '/operations', icon: Cpu },
@@ -54,7 +46,7 @@ export const Sidebar: React.FC = () => {
       ];
     }
 
-    // Doctor navigation (Clinical only - Sending Hospital)
+    // Doctor navigation (Clinical: Doctor / Receiving Doctor)
     return [
       { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
       { name: 'Patients', href: '/patients', icon: Users },
@@ -107,9 +99,7 @@ export const Sidebar: React.FC = () => {
         <div className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
           <span className="font-semibold text-slate-300">
-            {role === 'receiving_doctor' || role === 'receiving_admin'
-              ? 'City Heart & Neuro Authority'
-              : role === 'medical_superintendent'
+            {role === 'medical_superintendent'
               ? 'Superintendent View'
               : role === 'patient'
               ? 'Patient Care Portal'
@@ -117,13 +107,11 @@ export const Sidebar: React.FC = () => {
           </span>
         </div>
         <p className="text-[11px] text-slate-500 leading-tight">
-          {role === 'receiving_doctor' || role === 'receiving_admin'
-            ? 'Incoming patient triage & Cath Lab bed reservation.'
-            : role === 'medical_superintendent'
+          {role === 'medical_superintendent'
             ? 'Bed release & operational tracking active.'
             : role === 'patient'
             ? 'Access your personalized recovery instructions.'
-            : 'Physician sign-off required for discharge.'}
+            : 'Physician sign-off & transfer handoff authority.'}
         </p>
       </div>
     </aside>
