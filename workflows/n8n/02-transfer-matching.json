@@ -17,6 +17,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/admissions/{{ $json.body ? ($json.body.payload ? $json.body.payload.admission_id : $json.body.admission_id) : ($json.payload ? $json.payload.admission_id : $json.admission_id) }}/start-transfer-matching",
         "sendHeaders": true,
         "headerParameters": {
@@ -36,6 +37,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: clinical_transfer_decision_confirmed').first().json.body ? $('Webhook: clinical_transfer_decision_confirmed').first().json.body.event_id : $('Webhook: clinical_transfer_decision_confirmed').first().json.event_id }}/complete",
         "sendHeaders": true,
         "headerParameters": {

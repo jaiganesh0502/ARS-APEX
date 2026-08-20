@@ -17,6 +17,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/billing-clearances/{{ $json.body ? ($json.body.payload ? $json.body.payload.billing_id : $json.body.billing_id) : ($json.payload ? $json.payload.billing_id : $json.billing_id) }}/finalize-handoff",
         "sendHeaders": true,
         "headerParameters": {
@@ -36,6 +37,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: billing_cleared').first().json.body ? $('Webhook: billing_cleared').first().json.body.event_id : $('Webhook: billing_cleared').first().json.event_id }}/complete",
         "sendHeaders": true,
         "headerParameters": {

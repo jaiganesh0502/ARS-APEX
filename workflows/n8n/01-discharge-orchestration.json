@@ -17,6 +17,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/beds/{{ $json.body ? ($json.body.payload ? $json.body.payload.bed_id : $json.body.bed_id) : ($json.payload ? $json.payload.bed_id : $json.bed_id) }}/start-release",
         "sendHeaders": true,
         "headerParameters": {
@@ -36,6 +37,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/admissions/{{ $json.body ? ($json.body.payload ? $json.body.payload.admission_id : $json.body.admission_id) : ($json.payload ? $json.payload.admission_id : $json.admission_id) }}/billing-clearance",
         "sendHeaders": true,
         "headerParameters": {
@@ -55,6 +57,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: report_approved').first().json.body ? $('Webhook: report_approved').first().json.body.event_id : $('Webhook: report_approved').first().json.event_id }}/complete",
         "sendHeaders": true,
         "headerParameters": {

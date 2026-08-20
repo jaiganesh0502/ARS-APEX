@@ -17,6 +17,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/transfers/{{ $json.body ? ($json.body.payload ? $json.body.payload.transfer_id : $json.body.transfer_id) : ($json.payload ? $json.payload.transfer_id : $json.transfer_id) }}/request-dispatch",
         "sendHeaders": true,
         "headerParameters": {
@@ -36,6 +37,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/admissions/{{ $json.body ? ($json.body.payload ? $json.body.payload.admission_id : $json.body.admission_id) : ($json.payload ? $json.payload.admission_id : $json.admission_id) }}/defer-billing",
         "sendHeaders": true,
         "headerParameters": {
@@ -55,6 +57,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: receiving_hospital_accepted').first().json.body ? $('Webhook: receiving_hospital_accepted').first().json.body.event_id : $('Webhook: receiving_hospital_accepted').first().json.event_id }}/complete",
         "sendHeaders": true,
         "headerParameters": {

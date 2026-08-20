@@ -17,6 +17,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/beds/{{ $json.body ? ($json.body.payload ? $json.body.payload.bed_id : $json.body.bed_id) : ($json.payload ? $json.payload.bed_id : $json.bed_id) }}/verify-departure",
         "sendHeaders": true,
         "headerParameters": {
@@ -36,6 +37,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: patient_transfer_started').first().json.body ? $('Webhook: patient_transfer_started').first().json.body.event_id : $('Webhook: patient_transfer_started').first().json.event_id }}/complete",
         "sendHeaders": true,
         "headerParameters": {

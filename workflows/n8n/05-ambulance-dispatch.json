@@ -17,6 +17,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/ambulance/{{ $json.body ? ($json.body.payload ? $json.body.payload.transfer_id : $json.body.transfer_id) : ($json.payload ? $json.payload.transfer_id : $json.transfer_id) }}/auto-dispatch",
         "sendHeaders": true,
         "headerParameters": {
@@ -36,6 +37,7 @@
     },
     {
       "parameters": {
+        "method": "POST",
         "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: ambulance_dispatch_requested').first().json.body ? $('Webhook: ambulance_dispatch_requested').first().json.body.event_id : $('Webhook: ambulance_dispatch_requested').first().json.event_id }}/complete",
         "sendHeaders": true,
         "headerParameters": {
