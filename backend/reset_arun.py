@@ -33,12 +33,16 @@ def reset_arun():
             return
 
         # 1. Clean up transfer related entities
-        transfers = db.query(Transfer).filter(Transfer.patient_id == patient.id).all()
+        dec_ids = [d.id for d in db.query(ClinicalDecision.id).filter(ClinicalDecision.admission_id == admission.id).all()]
+        transfers = db.query(Transfer).filter(
+            (Transfer.patient_id == patient.id) | (Transfer.admission_id == admission.id) | (Transfer.clinical_decision_id.in_(dec_ids))
+        ).all()
         for t in transfers:
             db.query(AmbulanceDispatch).filter(AmbulanceDispatch.transfer_id == t.id).delete()
             db.query(TransferPacket).filter(TransferPacket.transfer_id == t.id).delete()
             db.query(TransferDecision).filter(TransferDecision.transfer_id == t.id).delete()
             db.delete(t)
+        db.flush()
 
         # 2. Clean up invoices & payments
         invoices = db.query(Invoice).filter(Invoice.admission_id == admission.id).all()
