@@ -273,10 +273,17 @@ class TransferService:
         )
         self.db.add(event)
         self.db.commit()
-        self.db.refresh(transfer)
+        # Auto-prepare and deliver Clinical Transfer Packet immediately
+        try:
+            from app.services.transfer_packet_service import TransferPacketService
+            pkt_svc = TransferPacketService(self.db)
+            pkt_svc.prepare_packet(transfer.id)
+            pkt_svc.send_packet(transfer.id, sender_user=selecting_user)
+        except Exception as e:
+            logger.warning("Auto packet preparation encountered: %s", e)
 
         logger.info(
-            "Selected hospital %s for transfer %s. Status updated to awaiting_acceptance.",
+            "Selected hospital %s for transfer %s. Status updated to awaiting_acceptance and packet dispatched.",
             hospital.name,
             transfer.id,
         )

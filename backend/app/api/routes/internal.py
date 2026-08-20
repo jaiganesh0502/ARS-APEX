@@ -110,21 +110,24 @@ def internal_start_transfer_matching(
 
 
 @router.post("/transfers/{transfer_id}/prepare-packet")
-def internal_prepare_transfer_packet(
+def internal_prepare_packet(
     transfer_id: int,
     payload: Optional[InternalEventPayload] = None,
     db: Session = Depends(get_db),
 ):
     """
-    Prepares structured clinical transfer packet. Idempotent.
+    Auto-prepares and delivers structured clinical packet into receiving hospital queue.
     """
+    system_user = _get_system_user(db)
     pkt_svc = TransferPacketService(db)
     packet = pkt_svc.prepare_packet(transfer_id)
+    packet = pkt_svc.send_packet(transfer_id, sender_user=system_user)
     return {
         "success": True,
         "packet_id": packet.id,
         "transfer_id": packet.transfer_id,
         "status": packet.status.value,
+        "message": "Transfer packet auto-prepared and delivered to receiving facility queue.",
     }
 
 
