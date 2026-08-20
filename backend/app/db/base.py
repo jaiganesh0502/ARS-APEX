@@ -1,0 +1,40 @@
+# Import Base and all models so that Alembic can inspect Base.metadata
+from app.db.session import Base
+from app.models import (
+    User,
+    Patient,
+    Admission,
+    Bed,
+    MedicalRecord,
+    Medication,
+    Vital,
+    DischargeReport,
+    Hospital,
+    HospitalCapacity,
+    Transfer,
+    TransferPacket,
+    TransferDecision,
+    AmbulanceDispatch,
+    WorkflowEvent,
+    ClinicalDecision,
+)
+
+__all__ = [
+    "Base",
+    "User",
+    "Patient",
+    "Admission",
+    "Bed",
+    "MedicalRecord",
+    "Medication",
+    "Vital",
+    "DischargeReport",
+    "Hospital",
+    "HospitalCapacity",
+    "Transfer",
+    "TransferPacket",
+    "TransferDecision",
+    "AmbulanceDispatch",
+    "WorkflowEvent",
+    "ClinicalDecision",
+]

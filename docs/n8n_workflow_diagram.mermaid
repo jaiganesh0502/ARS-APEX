@@ -1,0 +1,20 @@
+flowchart TD
+    subgraph Current[Current Feature 4: internal manual workflow]
+        A[Approved discharge report] --> B[Persist pending internal report_approved event]
+        B --> C[Authorized doctor or ward administrator starts release]
+        C --> D[Bed: occupied to vacating]
+        D --> E[Authorized staff confirms physical departure]
+        E --> F[Bed: vacating to cleaning; admission discharged]
+        F --> G[Authorized staff completes cleaning]
+        G --> H[Bed: cleaning to available]
+    end
+
+    subgraph Future[Future/planned external orchestration — not invoked]
+        I[Possible n8n webhook integration] --> J[Possible transfer matching]
+        J --> K[Possible ambulance coordination]
+        K --> L[Possible notifications]
+    end
+
+    Note[No current n8n webhook, automated bed turnover, or PATCH bed-status route]
+    B -. does not invoke .-> I
+    Note -. applies to .-> Current
