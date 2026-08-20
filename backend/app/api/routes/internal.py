@@ -208,6 +208,22 @@ def internal_finalize_handoff(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Billing clearance not found")
 
     result = billing_svc.finalize_discharge_authorization(clearance.admission_id)
+
+    # Automatically generate the final discharge package and PDF
+    from app.services.discharge_package_service import DischargePackageService
+    from app.models.discharge_package import DischargePackage
+    pkg = db.query(DischargePackage).filter(DischargePackage.admission_id == clearance.admission_id).first()
+    if not pkg:
+        system_user = _get_system_user(db)
+        pkg_svc = DischargePackageService(db)
+        package = pkg_svc.finalize_discharge_package(
+            admission_id=clearance.admission_id,
+            authorizing_user=system_user,
+            notes="Automated discharge package authorization by n8n workflow on billing clearance",
+        )
+        result["package_id"] = package.id
+        result["pdf_ready"] = bool(package.pdf_path)
+
     return result
 
 

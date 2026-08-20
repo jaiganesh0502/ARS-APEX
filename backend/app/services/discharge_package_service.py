@@ -134,6 +134,7 @@ class DischargePackageService:
             authorized_at=datetime.now(timezone.utc),
         )
         self.db.add(package)
+        admission.discharge_ready = True
         self.db.flush()
 
         # 6. Generate PDF Document
