@@ -197,12 +197,32 @@ export const LoginPage: React.FC = () => {
                     <Building2 className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-semibold text-slate-200">Medical Superintendent</div>
+                    <div className="text-xs font-semibold text-slate-200">Sending Superintendent (Command Center)</div>
                     <div className="text-[11px] text-slate-400">superintendent@demo.local</div>
                   </div>
                 </div>
                 <span className="text-[10px] font-medium bg-purple-900/60 text-purple-300 px-2 py-0.5 rounded border border-purple-700/50">
-                  Bed Release & Operations
+                  Sending Operations
+                </span>
+              </button>
+
+              {/* Receiving Hospital Doctor / MS Preset */}
+              <button
+                type="button"
+                onClick={() => setDemoPreset('receiving_doctor@demo.local', 'ReceivingDemo123!')}
+                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-950/60 hover:bg-teal-950/30 hover:border-teal-700/50 text-left transition-all group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-teal-600/20 text-teal-400 rounded-md group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                    <Stethoscope className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-slate-200">Receiving Doctor / MS (Dr. Elena)</div>
+                    <div className="text-[11px] text-slate-400">receiving_doctor@demo.local</div>
+                  </div>
+                </div>
+                <span className="text-[10px] font-medium bg-teal-900/60 text-teal-300 px-2 py-0.5 rounded border border-teal-700/50">
+                  Accept Transfer & Bed
                 </span>
               </button>
 
@@ -237,7 +257,7 @@ export const LoginPage: React.FC = () => {
                     <UserIcon className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-semibold text-slate-200">Patient (Eleanor Vance)</div>
+                    <div className="text-xs font-semibold text-slate-200">Patient (Arun Kumar)</div>
                     <div className="text-[11px] text-slate-400">patient@demo.local</div>
                   </div>
                 </div>

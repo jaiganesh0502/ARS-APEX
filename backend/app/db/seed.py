@@ -119,6 +119,38 @@ def _seed_demo_users(db: Session, primary_patient: Optional[Patient] = None) -> 
     else:
         receptionist.password_hash = hash_password("ReceptionDemo123!")
 
+    # 5. Receiving Hospital Doctor / Medical Superintendent
+    rec_doc_email = "receiving_doctor@demo.local"
+    rec_doc = db.query(User).filter(User.email == rec_doc_email).first()
+    if not rec_doc:
+        rec_doc = User(
+            name="Dr. Elena Rostova (Receiving Facility)",
+            email=rec_doc_email,
+            role=UserRole.RECEIVING_DOCTOR,
+            password_hash=hash_password("ReceivingDemo123!"),
+            is_active=True,
+        )
+        db.add(rec_doc)
+        db.flush()
+    else:
+        rec_doc.password_hash = hash_password("ReceivingDemo123!")
+
+    # 6. Receiving Hospital Admin
+    rec_adm_email = "receiving_admin@demo.local"
+    rec_adm = db.query(User).filter(User.email == rec_adm_email).first()
+    if not rec_adm:
+        rec_adm = User(
+            name="Vikram Mehta (Receiving Desk)",
+            email=rec_adm_email,
+            role=UserRole.RECEIVING_ADMIN,
+            password_hash=hash_password("ReceivingAdmin123!"),
+            is_active=True,
+        )
+        db.add(rec_adm)
+        db.flush()
+    else:
+        rec_adm.password_hash = hash_password("ReceivingAdmin123!")
+
     # Legacy Asha Rao user for test backward-compatibility
     asha_email = "asha.rao@synthetic-hospital.test"
     asha = db.query(User).filter(User.email == asha_email).first()
