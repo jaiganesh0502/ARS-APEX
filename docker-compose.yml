@@ -63,7 +63,8 @@ services:
       - N8N_PROTOCOL=https
       - WEBHOOK_URL=https://altaa.duckdns.org/
       - GENERIC_TIMEZONE=UTC
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
       - N8N_DIAGNOSTICS_ENABLED=false
       - INTERNAL_API_KEY=${INTERNAL_API_KEY:-alta_prod_internal_secret_2026}
       - INTERNAL_API_BASE_URL=http://backend:8000/api/internal
