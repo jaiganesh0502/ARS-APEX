@@ -6,7 +6,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "clinical_transfer_decision_confirmed",
-        "responseMode": "onReceived",
+        "responseMode": "lastNode",
         "options": {}
       },
       "name": "Webhook: clinical_transfer_decision_confirmed",

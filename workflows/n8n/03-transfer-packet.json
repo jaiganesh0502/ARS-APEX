@@ -6,7 +6,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "receiving_hospital_selected",
-        "responseMode": "onReceived",
+        "responseMode": "lastNode",
         "options": {}
       },
       "name": "Webhook: receiving_hospital_selected",

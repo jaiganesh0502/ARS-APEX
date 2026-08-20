@@ -6,7 +6,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "billing_cleared",
-        "responseMode": "onReceived",
+        "responseMode": "lastNode",
         "options": {}
       },
       "name": "Webhook: billing_cleared",
