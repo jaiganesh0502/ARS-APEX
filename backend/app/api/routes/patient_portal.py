@@ -63,6 +63,10 @@ def get_patient_portal_profile(
             "attending_doctor": latest_admission.attending_doctor.name if latest_admission and latest_admission.attending_doctor else None,
             "discharge_ready": latest_admission.discharge_ready if latest_admission else False,
         } if latest_admission else None,
+        "bed": {
+            "ward": latest_admission.bed.ward,
+            "bed_number": latest_admission.bed.bed_number,
+        } if latest_admission and latest_admission.bed else None,
         "invoice": {
             "id": invoice.id,
             "invoice_number": invoice.invoice_number,
