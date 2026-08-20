@@ -32,10 +32,15 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-alta_secure_postgres_pass_2026}@postgres:5432/${POSTGRES_DB:-discharge_orchestration}
       ENVIRONMENT: production
       DEBUG: "false"
+      ORCHESTRATION_MODE: n8n
+      N8N_BASE_URL: http://n8n:5678
+      N8N_WEBHOOK_URL: http://n8n:5678/webhook/
+      N8N_WEBHOOK_SECRET: ${N8N_WEBHOOK_SECRET:-alta_n8n_webhook_secret_prod_2026}
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:-alta_prod_internal_secret_2026}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-alta_jwt_super_secret_production_key_2026}
       N8N_WEBHOOK_BASE_URL: http://n8n:5678
       INTERNAL_API_BASE_URL: http://backend:8000/api/internal
+      FASTAPI_INTERNAL_URL: http://backend:8000/api/internal
       REPLICATE_API_TOKEN: ${REPLICATE_API_TOKEN:-}
     ports:
       - "127.0.0.1:8000:8000"
@@ -62,6 +67,8 @@ services:
       - N8N_DIAGNOSTICS_ENABLED=false
       - INTERNAL_API_KEY=${INTERNAL_API_KEY:-alta_prod_internal_secret_2026}
       - INTERNAL_API_BASE_URL=http://backend:8000/api/internal
+      - FASTAPI_INTERNAL_URL=http://backend:8000/api/internal
+      - N8N_WEBHOOK_SECRET=${N8N_WEBHOOK_SECRET:-alta_n8n_webhook_secret_prod_2026}
     volumes:
       - n8n_data:/home/node/.n8n
       - ./workflows/n8n:/workflows:ro
