@@ -63,7 +63,7 @@ export const Sidebar: React.FC = () => {
         <img src="/logo.jpg" alt="Alta" className="w-9 h-9 rounded-lg shrink-0" />
         <div>
           <span className="font-bold text-white text-base tracking-tight leading-none block">
-            MedOrchestrate
+            Alta
           </span>
           <span className="text-[10px] uppercase font-semibold text-primary-400 tracking-wider">
             Discharge & Transfer
