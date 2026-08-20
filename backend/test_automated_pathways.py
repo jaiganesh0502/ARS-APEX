@@ -72,8 +72,9 @@ time.sleep(5)
 # Verify Discharge Package auto-created
 r_pkg = httpx.get(f"{base}/admissions/1/discharge-package", headers=h_doc, verify=False)
 print("Discharge Package Status Code:", r_pkg.status_code)
-if r_pkg.status_code == 200:
-    print("Discharge Package #:", r_pkg.json().get("package_number"), "| Status:", r_pkg.json().get("status"))
+if r_pkg.status_code == 200 and r_pkg.json():
+    pkg_data = r_pkg.json()
+    print("Discharge Package ID:", pkg_data.get("id"), "| Status:", pkg_data.get("status"), "| PDF Ready:", pkg_data.get("pdf_ready"))
 
 print("\n==================================================")
 print("TESTING PATHWAY 2: EMERGENCY TRANSFER AUTOMATION")
