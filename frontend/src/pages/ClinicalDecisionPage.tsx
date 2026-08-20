@@ -16,6 +16,7 @@ import { Card } from '../components/common/Card';
 import { PageHeader } from '../components/common/PageHeader';
 import { Spinner } from '../components/common/Spinner';
 import { StatusBadge } from '../components/common/StatusBadge';
+import { ClinicalDocumentUploader } from '../components/clinical/ClinicalDocumentUploader';
 import { getDecisionConfirmationNavigation } from '../features/clinicalDecision/decisionHandoff';
 import { ClinicalDecision, ClinicalDecisionRequest, ClinicalDecisionType, PatientDetail, TransferUrgency } from '../types';
 
@@ -150,6 +151,21 @@ export const ClinicalDecisionPage: React.FC = () => {
         <DecisionCard selected={decisionType === 'transfer'} title="Transfer Patient" description="Patient requires care at another hospital or specialist facility." icon={<Truck className="h-5 w-5" />} onClick={() => setDecisionType('transfer')} />
       </div>
       {decisionType && <div className="mt-6 space-y-5 border-t border-slate-100 pt-6">
+        {/* Clinical Document Upload & OCR Section */}
+        <div className="mb-4">
+          <ClinicalDocumentUploader
+            admissionId={admission.id}
+            onUploadSuccess={(doc) => {
+              if (doc.ocr_raw_text && !notes) {
+                setNotes(doc.ocr_raw_text);
+              }
+              if (doc.structured_data?.treatments_performed && !reason) {
+                setReason(`Clinically stable following: ${doc.structured_data.treatments_performed.join(', ')}.`);
+              }
+            }}
+          />
+        </div>
+
         {decisionType === 'transfer' && <><fieldset><legend className="mb-2 text-sm font-semibold text-slate-800">Transfer Urgency *</legend><div className="flex flex-wrap gap-3"><Radio label="Emergency" checked={urgency === 'emergency'} onChange={() => setUrgency('emergency')} /><Radio label="Non-Emergency" checked={urgency === 'non_emergency'} onChange={() => setUrgency('non_emergency')} /></div></fieldset><label className="block text-sm font-semibold text-slate-800">Required Specialty *<select className="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 font-normal" value={specialty} onChange={(event) => setSpecialty(event.target.value)}><option value="">Select specialty</option>{CLINICAL_SPECIALTIES.map((item) => <option key={item}>{item}</option>)}</select></label>{urgency === 'emergency' && <Notice warning text="Emergency transfers will follow an expedited workflow after the clinical decision is confirmed." />}{urgency === 'non_emergency' && <Notice text="The receiving facility will require confirmation before transport begins." />}</>}
         <label className="block text-sm font-semibold text-slate-800">{decisionType === 'discharge' ? 'Reason for discharge' : 'Reason for Transfer'} *<textarea className="mt-2 min-h-24 w-full rounded-md border border-slate-300 px-3 py-2 font-normal" placeholder={decisionType === 'discharge' ? 'Patient clinically stable for discharge.' : 'Explain why specialist or facility transfer is required.'} value={reason} onChange={(event) => setReason(event.target.value)} /></label>
         <label className="block text-sm font-semibold text-slate-800">Clinical notes<textarea className="mt-2 min-h-24 w-full rounded-md border border-slate-300 px-3 py-2 font-normal" value={notes} onChange={(event) => setNotes(event.target.value)} /></label>

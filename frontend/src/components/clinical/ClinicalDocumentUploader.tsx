@@ -15,11 +15,13 @@ import { ClinicalDocument, DocumentStatus } from '../../types';
 interface ClinicalDocumentUploaderProps {
   admissionId: number;
   onDocumentProcessed?: () => void;
+  onUploadSuccess?: (doc: ClinicalDocument) => void;
 }
 
 export const ClinicalDocumentUploader: React.FC<ClinicalDocumentUploaderProps> = ({
   admissionId,
   onDocumentProcessed,
+  onUploadSuccess,
 }) => {
   const [documents, setDocuments] = useState<ClinicalDocument[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -63,9 +65,12 @@ export const ClinicalDocumentUploader: React.FC<ClinicalDocumentUploaderProps> =
     try {
       setUploading(true);
       setErrorMsg(null);
-      await documentsApi.uploadDocument(admissionId, selectedFile, selectedDocType);
+      const uploaded = await documentsApi.uploadDocument(admissionId, selectedFile, selectedDocType);
       setSelectedFile(null);
       await fetchDocuments();
+      if (onUploadSuccess) {
+        onUploadSuccess(uploaded);
+      }
       if (onDocumentProcessed) {
         onDocumentProcessed();
       }
