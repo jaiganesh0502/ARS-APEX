@@ -72,19 +72,8 @@ class WorkflowEventService:
             "created_at": event.created_at.isoformat() if event.created_at else now.isoformat(),
         }
 
-        # Run async client in current event loop or asyncio.run
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # In an active event loop (e.g. FastAPI route), create task or run
-                import nest_asyncio
-                # Run coroutine directly
-                coro = self.n8n.send_webhook(event.event_type, webhook_payload)
-                result = loop.run_until_complete(coro) if not loop.is_running() else asyncio.run(coro)
-            else:
-                result = loop.run_until_complete(self.n8n.send_webhook(event.event_type, webhook_payload))
-        except RuntimeError:
-            result = asyncio.run(self.n8n.send_webhook(event.event_type, webhook_payload))
+            result = self.n8n.send_webhook_sync(event.event_type, webhook_payload)
         except Exception as exc:
             logger.error(f"Dispatch error for event #{event.id}: {exc}")
             result = {"success": False, "error": str(exc), "status_code": None}

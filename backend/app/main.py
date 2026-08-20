@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
@@ -17,12 +18,57 @@ logging.basicConfig(
 logger = logging.getLogger("discharge-api")
 
 
+async def event_dispatcher_loop():
+    """
+    Background worker loop that periodically checks for pending workflow events
+    and dispatches them to n8n.
+    """
+    logger.info("Starting background workflow event dispatcher loop...")
+    while True:
+        try:
+            await asyncio.sleep(2.0)
+            if settings.ORCHESTRATION_MODE != "manual":
+                from app.db.session import SessionLocal
+                from app.models.workflow_event import WorkflowEvent
+                from app.services.workflow_event_service import WorkflowEventService
+
+                db = SessionLocal()
+                try:
+                    pending_events = (
+                        db.query(WorkflowEvent)
+                        .filter(WorkflowEvent.delivery_status == "pending")
+                        .order_by(WorkflowEvent.id.asc())
+                        .limit(10)
+                        .all()
+                    )
+                    if pending_events:
+                        logger.info(f"Found {len(pending_events)} pending workflow events to dispatch.")
+                        evt_svc = WorkflowEventService(db)
+                        for event in pending_events:
+                            logger.info(f"Dispatching WorkflowEvent #{event.id} ({event.event_type}) to n8n...")
+                            evt_svc.dispatch_event(event.id)
+                except Exception as err:
+                    logger.error(f"Error in event_dispatcher_loop query: {err}")
+                finally:
+                    db.close()
+        except asyncio.CancelledError:
+            logger.info("Event dispatcher loop stopped.")
+            break
+        except Exception as err:
+            logger.error(f"Unexpected error in event_dispatcher_loop: {err}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Initializing Hospital Discharge Orchestration API...")
-    # Any pre-flight checks or background workers can be started here
+    dispatcher_task = asyncio.create_task(event_dispatcher_loop())
     yield
     logger.info("Shutting down Hospital Discharge Orchestration API...")
+    dispatcher_task.cancel()
+    try:
+        await dispatcher_task
+    except asyncio.CancelledError:
+        pass
 
 
 app = FastAPI(

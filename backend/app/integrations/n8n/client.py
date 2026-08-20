@@ -90,6 +90,59 @@ class N8NClient:
             logger.error(error_msg, exc_info=True)
             return {"success": False, "status_code": None, "error": error_msg, "data": None}
 
+    def send_webhook_sync(
+        self,
+        event_type: str,
+        payload: Dict[str, Any],
+        endpoint_path: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Synchronous version of send_webhook for workflow event execution.
+        """
+        if settings.ORCHESTRATION_MODE == "manual":
+            logger.info("ORCHESTRATION_MODE is 'manual'. Skipping n8n webhook delivery.")
+            return {
+                "success": True,
+                "status_code": 200,
+                "error": None,
+                "data": {"mode": "manual_bypass"},
+            }
+
+        url = endpoint_path if endpoint_path else f"{self.webhook_url.rstrip('/')}/{event_type}"
+        headers = {
+            "Content-Type": "application/json",
+            "X-Workflow-Secret": self.webhook_secret,
+        }
+
+        try:
+            with httpx.Client(timeout=self.timeout_seconds) as client:
+                response = client.post(url, json=payload, headers=headers)
+                if response.status_code in (200, 201, 202, 204):
+                    logger.info(f"Successfully delivered event '{event_type}' to n8n ({response.status_code})")
+                    try:
+                        resp_data = response.json()
+                    except Exception:
+                        resp_data = response.text
+                    return {
+                        "success": True,
+                        "status_code": response.status_code,
+                        "error": None,
+                        "data": resp_data,
+                    }
+                else:
+                    error_msg = f"n8n responded with status {response.status_code}: {response.text[:200]}"
+                    logger.warning(f"n8n webhook warning for '{event_type}': {error_msg}")
+                    return {
+                        "success": False,
+                        "status_code": response.status_code,
+                        "error": error_msg,
+                        "data": None,
+                    }
+        except Exception as exc:
+            error_msg = f"n8n connection error: {str(exc)}"
+            logger.warning(error_msg)
+            return {"success": False, "status_code": None, "error": error_msg, "data": None}
+
 
 # Backwards-compatible alias
 N8nClientInterface = N8NClient
