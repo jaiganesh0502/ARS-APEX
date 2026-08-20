@@ -158,8 +158,9 @@ class ClinicalDocumentService:
         procedures_extracted = []
         if admission and admission.medical_records:
             for r in admission.medical_records:
-                if r.treatment_plan:
-                    procedures_extracted.append(r.treatment_plan)
+                course = getattr(r, "treatment_course", getattr(r, "treatment_plan", None))
+                if course:
+                    procedures_extracted.append(course)
         if not procedures_extracted:
             procedures_extracted = ["Standard inpatient clinical stabilization and therapeutic management"]
 
