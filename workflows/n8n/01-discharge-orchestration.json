@@ -1,0 +1,131 @@
+{
+  "name": "01 - Discharge Orchestration (Parallel Bed Release & Billing)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "report_approved",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook: report_approved",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $headers['x-workflow-secret'] }}",
+              "value2": "={{ $env.N8N_WEBHOOK_SECRET || 'change-me-in-production' }}"
+            }
+          ]
+        }
+      },
+      "name": "Validate Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/beds/{{ $json.payload.bed_id }}/start-release",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-API-Key",
+              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Branch A: Start Bed Release (Vacating)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [550, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/admissions/{{ $json.payload.admission_id }}/billing-clearance",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-API-Key",
+              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Branch B: Get / Create Billing Clearance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [550, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: report_approved').first().json.event_id }}/complete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-API-Key",
+              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Report Orchestration Complete",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [800, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: report_approved": {
+      "main": [
+        [
+          {
+            "node": "Validate Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Secret": {
+      "main": [
+        [
+          {
+            "node": "Branch A: Start Bed Release (Vacating)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Branch B: Get / Create Billing Clearance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Branch A: Start Bed Release (Vacating)": {
+      "main": [
+        [
+          {
+            "node": "Report Orchestration Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

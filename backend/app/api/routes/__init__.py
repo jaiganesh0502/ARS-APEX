@@ -12,6 +12,8 @@ from app.api.routes import (
     events,
     clinical_decisions,
     receiving,
+    billing,
+    internal,
 )
 
 api_router = APIRouter()
@@ -28,5 +30,7 @@ api_router.include_router(hospitals.router)
 api_router.include_router(ambulance.router)
 api_router.include_router(events.router)
 api_router.include_router(clinical_decisions.router)
+api_router.include_router(billing.router)
+api_router.include_router(internal.router)
 
 __all__ = ["api_router"]

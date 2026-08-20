@@ -12,7 +12,17 @@ class WorkflowEvent(Base):
     entity_type = Column(String(50), nullable=False, index=True)
     entity_id = Column(Integer, nullable=False, index=True)
     payload = Column(JSON, default=dict, nullable=False)
+    # Legacy status maintained for backwards compatibility
     status = Column(String(50), default="pending", nullable=False, index=True)
+
+    # Granular Event Delivery & Orchestration Tracking
+    delivery_status = Column(String(30), default="pending", server_default="pending", nullable=False, index=True)
+    orchestration_status = Column(String(30), default="pending", server_default="pending", nullable=False, index=True)
+    attempt_count = Column(Integer, default=0, server_default="0", nullable=False)
+    last_attempt_at = Column(DateTime(timezone=True), nullable=True)
+    delivered_at = Column(DateTime(timezone=True), nullable=True)
+    last_error = Column(String(1000), nullable=True)
+
     trusted_provenance = Column(
         Boolean,
         default=False,

@@ -27,7 +27,23 @@ from app.schemas.ambulance_dispatch import (
     AmbulanceDispatchUpdateStatus,
     AmbulanceDispatchRead,
 )
-from app.schemas.workflow_event import WorkflowEventBase, WorkflowEventCreate, WorkflowEventRead
+from app.schemas.workflow_event import (
+    WorkflowEventBase,
+    WorkflowEventCreate,
+    WorkflowEventRead,
+    WorkflowTelemetryRead,
+    WorkflowEventDetailRead,
+    WorkflowEventRetryResponse,
+    WorkflowDashboardCounts,
+)
+from app.schemas.billing_clearance import (
+    BillingClearanceBase,
+    BillingClearanceCreatePayload,
+    BillingClearanceConfirmPayload,
+    BillingFinalizePayload,
+    BillingClearanceRead,
+    BillingClearanceDetailRead,
+)
 
 __all__ = [
     "HealthResponse",
@@ -81,4 +97,13 @@ __all__ = [
     "WorkflowEventBase",
     "WorkflowEventCreate",
     "WorkflowEventRead",
+    "WorkflowEventDetailRead",
+    "WorkflowEventRetryResponse",
+    "WorkflowDashboardCounts",
+    "BillingClearanceBase",
+    "BillingClearanceCreatePayload",
+    "BillingClearanceConfirmPayload",
+    "BillingFinalizePayload",
+    "BillingClearanceRead",
+    "BillingClearanceDetailRead",
 ]

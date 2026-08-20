@@ -466,6 +466,38 @@ export interface AmbulanceDashboardCounts {
   total: number;
 }
 
+export type BillingStatus = 'pending' | 'processing' | 'cleared' | 'failed' | 'waived' | 'deferred';
+
+export interface BillingClearance {
+  id: number;
+  patient_id: number;
+  admission_id: number;
+  transfer_id?: number | null;
+  discharge_report_id?: number | null;
+  status: BillingStatus;
+  total_amount?: number | null;
+  amount_paid?: number | null;
+  outstanding_amount?: number | null;
+  clearance_reference?: string | null;
+  confirmed_by?: number | null;
+  confirmed_at?: string | null;
+  deferred: boolean;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  patient_name?: string | null;
+  patient_code?: string | null;
+  primary_diagnosis?: string | null;
+  bed_number?: string | null;
+  ward?: string | null;
+  confirmed_by_name?: string | null;
+  report_status?: string | null;
+  transfer_status?: string | null;
+}
+
+export type EventDeliveryStatus = 'pending' | 'delivered' | 'failed';
+export type EventOrchestrationStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
 export interface WorkflowEvent {
   id: number;
   event_type: string;
@@ -473,7 +505,32 @@ export interface WorkflowEvent {
   entity_id: number;
   payload: Record<string, unknown>;
   status: string;
+  delivery_status: EventDeliveryStatus;
+  orchestration_status: EventOrchestrationStatus;
+  attempt_count: number;
+  last_attempt_at?: string | null;
+  delivered_at?: string | null;
+  last_error?: string | null;
+  trusted_provenance: boolean;
   created_at: string;
+}
+
+export interface WorkflowDashboardCounts {
+  total_events: number;
+  delivery_pending: number;
+  delivery_delivered: number;
+  delivery_failed: number;
+  orchestration_pending: number;
+  orchestration_processing: number;
+  orchestration_completed: number;
+  orchestration_failed: number;
+}
+
+export interface WorkflowEventRetryResponse {
+  event_id: number;
+  delivery_status: string;
+  attempt_count: number;
+  message: string;
 }
 
 export type ClinicalDecisionType = 'discharge' | 'transfer';

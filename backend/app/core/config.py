@@ -37,13 +37,22 @@ class Settings(BaseSettings):
             return json.loads(v)
         return []
 
-    # Integration Placeholders
+    # Integration Settings
     REPLICATE_API_TOKEN: str = ""
     LLM_MODEL: str = "openai/gpt-5.6-luna"
     LLM_REASONING_EFFORT: str = "low"
     LLM_VERBOSITY: str = "medium"
     LLM_MAX_COMPLETION_TOKENS: int = 3000
+
+    # Orchestration & n8n
+    ORCHESTRATION_MODE: str = "manual"  # "manual" | "n8n"
+    N8N_BASE_URL: str = "http://localhost:5678"
     N8N_WEBHOOK_URL: str = "http://localhost:5678/webhook/"
+    N8N_WEBHOOK_SECRET: str = "change-me-in-production"
+    INTERNAL_API_KEY: str = "change-me-in-production"
+    N8N_TIMEOUT_SECONDS: float = 5.0
+    N8N_MAX_RETRIES: int = 3
+
     MAPS_API_KEY: str = ""
     NOTIFICATION_SERVICE_URL: str = ""
 

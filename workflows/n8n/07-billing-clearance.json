@@ -1,0 +1,107 @@
+{
+  "name": "07 - Billing Clearance & Final Handoff Authorization",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "billing_cleared",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook: billing_cleared",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $headers['x-workflow-secret'] }}",
+              "value2": "={{ $env.N8N_WEBHOOK_SECRET || 'change-me-in-production' }}"
+            }
+          ]
+        }
+      },
+      "name": "Validate Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/billing-clearances/{{ $json.payload.billing_id }}/finalize-handoff",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-API-Key",
+              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Authorize Final Patient Handoff",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [550, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: billing_cleared').first().json.event_id }}/complete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-API-Key",
+              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Report Billing Clearance Orchestrated",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [800, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: billing_cleared": {
+      "main": [
+        [
+          {
+            "node": "Validate Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Secret": {
+      "main": [
+        [
+          {
+            "node": "Authorize Final Patient Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authorize Final Patient Handoff": {
+      "main": [
+        [
+          {
+            "node": "Report Billing Clearance Orchestrated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

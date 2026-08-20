@@ -17,6 +17,7 @@ from app.models import (
     AmbulanceDispatch,
     WorkflowEvent,
     ClinicalDecision,
+    BillingClearance,
 )
 
 __all__ = [
@@ -37,4 +38,5 @@ __all__ = [
     "AmbulanceDispatch",
     "WorkflowEvent",
     "ClinicalDecision",
+    "BillingClearance",
 ]

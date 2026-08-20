@@ -17,6 +17,7 @@ import { ClinicalDecisionPage } from './pages/ClinicalDecisionPage';
 import { TransferEntryPage } from './pages/TransferEntryPage';
 import { IncomingTransfersPage } from './pages/IncomingTransfersPage';
 import { ReceivingTransferDetailPage } from './pages/ReceivingTransferDetailPage';
+import { OperationsPage } from './pages/OperationsPage';
 
 export const App: React.FC = () => {
   return (
@@ -53,6 +54,9 @@ export const App: React.FC = () => {
           <Route path="/hospitals" element={<HospitalsPage />} />
           <Route path="/ambulances" element={<AmbulancesPage />} />
           <Route path="/ambulances/:dispatchId" element={<AmbulanceDetailPage />} />
+
+          {/* n8n Orchestration Telemetry & Event Audit */}
+          <Route path="/operations" element={<OperationsPage />} />
         </Route>
 
         {/* Fallback route */}

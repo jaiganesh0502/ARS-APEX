@@ -1,0 +1,77 @@
+{
+  "name": "06 - Transfer Departure (Origin Bed Turnover Validation)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "patient_transfer_started",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook: patient_transfer_started",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $headers['x-workflow-secret'] }}",
+              "value2": "={{ $env.N8N_WEBHOOK_SECRET || 'change-me-in-production' }}"
+            }
+          ]
+        }
+      },
+      "name": "Validate Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: patient_transfer_started').first().json.event_id }}/complete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-API-Key",
+              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Confirm Origin Bed Cleaning Turnover Started",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [550, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: patient_transfer_started": {
+      "main": [
+        [
+          {
+            "node": "Validate Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Secret": {
+      "main": [
+        [
+          {
+            "node": "Confirm Origin Bed Cleaning Turnover Started",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

@@ -239,20 +239,48 @@ class DischargeService(BaseService):
         if transition_count != 1:
             self.db.rollback()
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Discharge report is no longer ready for approval")
-        self.db.add(WorkflowEvent(
+        # 1. Parallel Administrative Branch: Create Pending Billing Clearance
+        from app.models.billing_clearance import BillingClearance, BillingStatus
+        existing_billing = (
+            self.db.query(BillingClearance)
+            .filter(BillingClearance.admission_id == report.admission_id)
+            .first()
+        )
+        if not existing_billing:
+            billing = BillingClearance(
+                patient_id=report.patient_id,
+                admission_id=report.admission_id,
+                discharge_report_id=report.id,
+                status=BillingStatus.PENDING,
+                total_amount=18500.00,
+                amount_paid=0.00,
+                outstanding_amount=18500.00,
+                deferred=False,
+                notes="Awaiting finance department billing verification.",
+            )
+            self.db.add(billing)
+
+        # 2. Emit report_approved workflow event
+        event = WorkflowEvent(
             event_type="report_approved",
             entity_type="discharge_report",
             entity_id=report.id,
             status="pending",
+            delivery_status="pending",
+            orchestration_status="pending",
+            attempt_count=0,
             trusted_provenance=True,
             payload={
                 "report_id": report.id,
                 "patient_id": report.patient_id,
                 "admission_id": report.admission_id,
+                "bed_id": admission.bed_id,
                 "approved_by": doctor.id,
                 "approved_at": now.isoformat(),
             },
-        ))
+        )
+        self.db.add(event)
+
         try:
             self.db.commit()
         except SQLAlchemyError:

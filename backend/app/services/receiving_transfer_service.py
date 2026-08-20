@@ -281,12 +281,17 @@ class ReceivingTransferService:
             entity_type="transfer",
             entity_id=transfer.id,
             status="pending",
+            delivery_status="pending",
+            orchestration_status="pending",
+            attempt_count=0,
             trusted_provenance=True,
             payload={
                 "transfer_id": transfer.id,
                 "patient_id": transfer.patient_id,
+                "admission_id": transfer.admission_id,
                 "hospital_id": transfer.receiving_hospital_id,
                 "required_specialty": transfer.required_specialty,
+                "emergency": bool(transfer.emergency),
                 "remaining_available_beds": capacity.available_beds,
                 "notes": notes,
                 "decided_by": decided_by_user.id if decided_by_user else None,
@@ -294,6 +299,46 @@ class ReceivingTransferService:
             },
         )
         self.db.add(event)
+
+        # Parallel Administrative Branch: Billing Clearance Handling
+        from app.models.billing_clearance import BillingClearance, BillingStatus
+        existing_billing = (
+            self.db.query(BillingClearance)
+            .filter(BillingClearance.admission_id == transfer.admission_id)
+            .first()
+        )
+        if transfer.emergency:
+            if existing_billing:
+                existing_billing.status = BillingStatus.DEFERRED
+                existing_billing.deferred = True
+                existing_billing.transfer_id = transfer.id
+            else:
+                self.db.add(BillingClearance(
+                    patient_id=transfer.patient_id,
+                    admission_id=transfer.admission_id,
+                    transfer_id=transfer.id,
+                    status=BillingStatus.DEFERRED,
+                    deferred=True,
+                    total_amount=0.00,
+                    amount_paid=0.00,
+                    outstanding_amount=0.00,
+                    notes="Billing clearance deferred for emergency priority transfer.",
+                ))
+        else:
+            if not existing_billing:
+                billing = BillingClearance(
+                    patient_id=transfer.patient_id,
+                    admission_id=transfer.admission_id,
+                    transfer_id=transfer.id,
+                    status=BillingStatus.PENDING,
+                    total_amount=24500.00,
+                    amount_paid=0.00,
+                    outstanding_amount=24500.00,
+                    deferred=False,
+                    notes="Awaiting finance department billing verification for inter-hospital transfer.",
+                )
+                self.db.add(billing)
+
         self.db.commit()
         self.db.refresh(transfer)
 

@@ -9,6 +9,7 @@ import {
   Building2,
   Ambulance,
   ActivitySquare,
+  Cpu,
 } from 'lucide-react';
 
 const navigation = [
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Incoming Transfers', href: '/receiving/transfers', icon: Inbox },
   { name: 'Hospitals', href: '/hospitals', icon: Building2 },
   { name: 'Ambulances', href: '/ambulances', icon: Ambulance },
+  { name: 'Operations & Events', href: '/operations', icon: Cpu },
 ];
 
 export const Sidebar: React.FC = () => {

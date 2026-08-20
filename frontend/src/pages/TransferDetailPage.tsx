@@ -26,7 +26,8 @@ import { Spinner } from '../components/common/Spinner';
 import { TransferTimeline } from '../features/transfers/TransferTimeline';
 import { TransferPacketModal } from '../features/transfers/TransferPacketModal';
 import { transferApi } from '../api/transfers';
-import { TransferDetail, TransferPacket, AmbulanceDispatch } from '../types';
+import { billingApi } from '../api/billing';
+import { TransferDetail, TransferPacket, AmbulanceDispatch, BillingClearance } from '../types';
 
 export const TransferDetailPage: React.FC = () => {
   const { transferId } = useParams<{ transferId: string }>();
@@ -35,6 +36,7 @@ export const TransferDetailPage: React.FC = () => {
   const [transfer, setTransfer] = useState<TransferDetail | null>(null);
   const [packet, setPacket] = useState<TransferPacket | null>(null);
   const [ambulance, setAmbulance] = useState<AmbulanceDispatch | null>(null);
+  const [billing, setBilling] = useState<BillingClearance | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,6 +72,16 @@ export const TransferDetailPage: React.FC = () => {
           setAmbulance(ambData);
         } catch (ambErr) {
           console.warn('Could not load ambulance dispatch', ambErr);
+        }
+      }
+
+      // Load billing clearance
+      if (data.admission_id) {
+        try {
+          const billingData = await billingApi.getAdmissionBillingClearance(data.admission_id);
+          setBilling(billingData);
+        } catch {
+          setBilling(null);
         }
       }
     } catch (err) {
@@ -572,6 +584,51 @@ export const TransferDetailPage: React.FC = () => {
               rejectionReason={transfer.rejection_reason}
               completedAt={transfer.completed_at}
             />
+          </Card>
+
+          {/* Billing Clearance Status */}
+          <Card
+            title="Billing Clearance Gate"
+            action={
+              transfer.emergency || billing?.status === 'deferred' ? (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800">
+                  DEFERRED (EMERGENCY)
+                </span>
+              ) : billing?.status === 'cleared' ? (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                  CLEARED
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800">
+                  PENDING CLEARANCE
+                </span>
+              )
+            }
+          >
+            <div className="space-y-2 text-xs text-slate-600">
+              {transfer.emergency || billing?.status === 'deferred' ? (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 text-xs">
+                  <p className="font-semibold">Emergency Transfer Clearance Bypass</p>
+                  <p className="mt-1 text-[11px] text-blue-800">
+                    Billing clearance is deferred post-hoc so critical emergency transfer is never delayed.
+                  </p>
+                </div>
+              ) : billing?.status === 'cleared' ? (
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-xs">
+                  <p className="font-semibold">Clearance Verified</p>
+                  <p className="mt-1 text-[11px] text-emerald-800 font-mono">
+                    Ref: {billing.clearance_reference || 'N/A'}
+                  </p>
+                </div>
+              ) : (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs">
+                  <p className="font-semibold">Standard Transfer Billing Verification</p>
+                  <p className="mt-1 text-[11px] text-amber-800">
+                    Bed reservation and ambulance dispatch proceed; transfer handoff packet requires billing clearance.
+                  </p>
+                </div>
+              )}
+            </div>
           </Card>
 
           {/* Transfer Case Meta */}

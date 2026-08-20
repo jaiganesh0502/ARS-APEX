@@ -1,0 +1,77 @@
+{
+  "name": "05 - Ambulance Dispatch (Telemetry Routing & Driver Dispatch)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ambulance_dispatch_requested",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook: ambulance_dispatch_requested",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $headers['x-workflow-secret'] }}",
+              "value2": "={{ $env.N8N_WEBHOOK_SECRET || 'change-me-in-production' }}"
+            }
+          ]
+        }
+      },
+      "name": "Validate Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: ambulance_dispatch_requested').first().json.event_id }}/complete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-API-Key",
+              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Report Dispatch Telemetry Synced",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [550, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: ambulance_dispatch_requested": {
+      "main": [
+        [
+          {
+            "node": "Validate Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Secret": {
+      "main": [
+        [
+          {
+            "node": "Report Dispatch Telemetry Synced",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

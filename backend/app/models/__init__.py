@@ -14,6 +14,7 @@ from app.models.transfer_decision import TransferDecision, TransferDecisionType
 from app.models.ambulance_dispatch import AmbulanceDispatch, AmbulanceStatus
 from app.models.workflow_event import WorkflowEvent
 from app.models.clinical_decision import ClinicalDecision, ClinicalDecisionType, TransferUrgency, ClinicalDecisionStatus
+from app.models.billing_clearance import BillingClearance, BillingStatus
 
 __all__ = [
     "User",
@@ -43,4 +44,6 @@ __all__ = [
     "ClinicalDecisionType",
     "TransferUrgency",
     "ClinicalDecisionStatus",
+    "BillingClearance",
+    "BillingStatus",
 ]

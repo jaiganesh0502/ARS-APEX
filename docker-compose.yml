@@ -37,9 +37,25 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-    profiles:
-      - full-stack
+  # n8n Workflow Orchestrator
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: discharge_orchestration_n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=UTC
+    volumes:
+      - n8n_data:/home/node/.n8n
 
 volumes:
   postgres_data:
+    driver: local
+  n8n_data:
     driver: local

@@ -14,7 +14,129 @@ import { StatusBadge } from '../components/common/StatusBadge';
 import { ReportReviewModal } from '../features/discharge/ReportReviewModal';
 import { ReportSafetyNotice } from '../features/discharge/ReportSafetyNotice';
 import { availableReportActions, effectiveReportContent } from '../features/discharge/reportState';
-import { BedSummary, DischargeReport, PatientDetail } from '../types';
+import { billingApi } from '../api/billing';
+import { BedSummary, BillingClearance, DischargeReport, PatientDetail } from '../types';
+import { CreditCard, CheckCircle, AlertCircle } from 'lucide-react';
+
+export const BillingClearanceCard: React.FC<{
+  admissionId: number;
+  billing?: BillingClearance | null;
+  onClearanceUpdated: () => void;
+}> = ({ admissionId: _admissionId, billing, onClearanceUpdated }) => {
+  const [clearing, setClearing] = useState(false);
+  const [refInput, setRefInput] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleClear = async () => {
+    if (!billing) return;
+    const ref = refInput.trim() || `CLR-${Date.now().toString().slice(-6)}`;
+    try {
+      setClearing(true);
+      setError('');
+      await billingApi.confirmBillingClearance(billing.id, {
+        clearance_reference: ref,
+        notes: 'Simulated finance department settlement',
+      });
+      setShowConfirm(false);
+      onClearanceUpdated();
+    } catch (err: any) {
+      setError(err.response?.data?.error?.message || 'Failed to clear billing');
+    } finally {
+      setClearing(false);
+    }
+  };
+
+  return (
+    <Card
+      title="Billing Clearance Gate"
+      subtitle="Parallel administrative stream: bed turnover is non-blocking while billing clearance is verified."
+      action={
+        billing?.status === 'cleared' ? (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <CheckCircle className="w-3.5 h-3.5 mr-1" /> Cleared
+          </span>
+        ) : billing?.status === 'deferred' ? (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+            Deferred (Emergency)
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+            <AlertCircle className="w-3.5 h-3.5 mr-1" /> Pending Clearance
+          </span>
+        )
+      }
+    >
+      <div className="space-y-4 text-sm">
+        {billing?.status === 'pending' && (
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 text-amber-900">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="font-semibold">Billing Verification in Progress</p>
+                <p className="mt-1 text-xs text-amber-800">
+                  Bed turnover can continue, but final discharge authorization is held until billing clearance is confirmed.
+                </p>
+                <div className="mt-2 text-xs font-medium text-amber-950">
+                  Outstanding Amount: ₹{Number(billing.outstanding_amount || 18500).toLocaleString('en-IN')}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {billing?.status === 'cleared' && (
+          <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-emerald-900">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="font-semibold">Billing Clearance Confirmed</p>
+                <p className="mt-1 text-xs text-emerald-800">
+                  Reference: <span className="font-mono font-medium">{billing.clearance_reference}</span> | All dues settled. Patient handoff authorized.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {billing?.status === 'pending' && !showConfirm && (
+          <Button
+            size="sm"
+            variant="outline"
+            leftIcon={<CreditCard className="w-4 h-4" />}
+            onClick={() => setShowConfirm(true)}
+          >
+            Confirm Billing Clearance (Simulate Finance)
+          </Button>
+        )}
+
+        {showConfirm && (
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
+            <label className="block text-xs font-semibold text-slate-700">
+              Clearance Reference / Transaction ID
+            </label>
+            <input
+              type="text"
+              className="w-full text-xs font-mono px-3 py-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-indigo-500"
+              placeholder="e.g. TXN-INS-98765"
+              value={refInput}
+              onChange={(e) => setRefInput(e.target.value)}
+            />
+            {error && <p className="text-xs text-rose-600">{error}</p>}
+            <div className="flex gap-2 justify-end">
+              <Button size="sm" variant="ghost" onClick={() => setShowConfirm(false)} disabled={clearing}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={handleClear} isLoading={clearing}>
+                Confirm Clearance
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+};
 import {
   acceptsPatientOperationalResponse,
   bedCandidateForPatient,
@@ -85,6 +207,7 @@ const DischargeRoute: React.FC<{ patientId: number }> = ({ patientId: numericPat
   const [patient, setPatient] = useState<PatientDetail>();
   const [report, setReport] = useState<DischargeReport>();
   const [operationalBed, setOperationalBed] = useState<BedSummary>();
+  const [billing, setBilling] = useState<BillingClearance | null>(null);
   const [bedLoadState, setBedLoadState] = useState<BedLoadState>('loading');
   const [patientLoadState, setPatientLoadState] = useState<PrimaryLoadState>('loading');
   const [reportLoadState, setReportLoadState] = useState<PrimaryLoadState>('loading');
@@ -172,8 +295,17 @@ const DischargeRoute: React.FC<{ patientId: number }> = ({ patientId: numericPat
         void loadOperationalBed();
 
         try {
-          const loadedReport = await getAdmissionDischargeReport(loadedPatient.admission.id);
-          if (isCurrentRequest()) setReport(loadedReport);
+          const [loadedReport, loadedBilling] = await Promise.all([
+            getAdmissionDischargeReport(loadedPatient.admission.id).catch((err) => {
+              if (!axios.isAxiosError(err) || err.response?.status !== 404) throw err;
+              return undefined;
+            }),
+            billingApi.getAdmissionBillingClearance(loadedPatient.admission.id).catch(() => null),
+          ]);
+          if (isCurrentRequest()) {
+            if (loadedReport) setReport(loadedReport);
+            setBilling(loadedBilling);
+          }
         } catch (error) {
           if (!axios.isAxiosError(error) || error.response?.status !== 404) throw error;
         }
@@ -276,7 +408,16 @@ const DischargeRoute: React.FC<{ patientId: number }> = ({ patientId: numericPat
       {actionError && <p className="mt-4 text-sm font-medium text-rose-700" role="alert">{actionError}</p>}
       {actions && (actions.canEdit || actions.canReview) && <div className="mt-6 flex flex-wrap gap-3"><Button variant="outline" leftIcon={<Pencil className="h-4 w-4" />} onClick={startEditing} disabled={!actions.canEdit}>Edit Draft</Button><Button leftIcon={<ShieldCheck className="h-4 w-4" />} onClick={startApprovalReview} disabled={!actions.canReview}>Review for Approval</Button></div>}
     </Card></>}
-    {report?.status === 'approved' && mode === 'summary' && <ApprovedBedReleaseStatus bed={operationalBed} state={bedLoadState} />}
+    {report?.status === 'approved' && mode === 'summary' && (
+      <>
+        <ApprovedBedReleaseStatus bed={operationalBed} state={bedLoadState} />
+        <BillingClearanceCard
+          admissionId={admission.id}
+          billing={billing}
+          onClearanceUpdated={() => setReloadKey((v) => v + 1)}
+        />
+      </>
+    )}
 
     {report && mode === 'editing' && <><ReportSafetyNotice status={report.status} /><Card title="Edit discharge report" subtitle="Changes remain a physician-reviewed report and do not finalize discharge.">
       <label className="block text-sm font-semibold text-slate-800" htmlFor="discharge-report-editor">Report text</label><textarea id="discharge-report-editor" className="mt-2 min-h-96 w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-sm leading-6 text-slate-800" value={editorText} onChange={(event) => setEditorText(event.target.value)} />
