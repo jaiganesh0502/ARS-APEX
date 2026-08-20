@@ -29,46 +29,46 @@ export interface IncomingTransferParams {
 export const transferApi = {
   /**
    * Initialize or retrieve an active transfer case for an admission.
-   * POST /api/admissions/{admission_id}/transfer
+   * POST /admissions/{admission_id}/transfer
    */
   createTransferForAdmission: async (admissionId: number): Promise<Transfer> => {
-    const response = await apiClient.post<Transfer>(`/api/admissions/${admissionId}/transfer`);
+    const response = await apiClient.post<Transfer>(`/admissions/${admissionId}/transfer`);
     return response.data;
   },
 
   /**
    * Get full details of a specific transfer case.
-   * GET /api/transfers/{transfer_id}
+   * GET /transfers/{transfer_id}
    */
   getTransfer: async (transferId: number): Promise<TransferDetail> => {
-    const response = await apiClient.get<TransferDetail>(`/api/transfers/${transferId}`);
+    const response = await apiClient.get<TransferDetail>(`/transfers/${transferId}`);
     return response.data;
   },
 
   /**
    * List all transfer summaries with optional filters.
-   * GET /api/transfers
+   * GET /transfers
    */
   getTransfers: async (params?: TransferFilterParams): Promise<TransferSummary[]> => {
-    const response = await apiClient.get<TransferSummary[]>('/api/transfers', { params });
+    const response = await apiClient.get<TransferSummary[]>('/transfers', { params });
     return response.data;
   },
 
   /**
    * Retrieve ranked hospital recommendations for a transfer case.
-   * GET /api/transfers/{transfer_id}/matches
+   * GET /transfers/{transfer_id}/matches
    */
   getHospitalMatches: async (transferId: number): Promise<HospitalMatch[]> => {
-    const response = await apiClient.get<HospitalMatch[]>(`/api/transfers/${transferId}/matches`);
+    const response = await apiClient.get<HospitalMatch[]>(`/transfers/${transferId}/matches`);
     return response.data;
   },
 
   /**
    * Select a partner receiving hospital for the transfer case.
-   * POST /api/transfers/{transfer_id}/select-hospital
+   * POST /transfers/{transfer_id}/select-hospital
    */
   selectReceivingHospital: async (transferId: number, hospitalId: number): Promise<Transfer> => {
-    const response = await apiClient.post<Transfer>(`/api/transfers/${transferId}/select-hospital`, {
+    const response = await apiClient.post<Transfer>(`/transfers/${transferId}/select-hospital`, {
       hospital_id: hospitalId,
     });
     return response.data;
@@ -76,19 +76,19 @@ export const transferApi = {
 
   /**
    * Assemble and persist a structured clinical transfer packet for the selected receiving facility.
-   * POST /api/transfers/{transfer_id}/packet
+   * POST /transfers/{transfer_id}/packet
    */
   prepareTransferPacket: async (transferId: number): Promise<TransferPacket> => {
-    const response = await apiClient.post<TransferPacket>(`/api/transfers/${transferId}/packet`);
+    const response = await apiClient.post<TransferPacket>(`/transfers/${transferId}/packet`);
     return response.data;
   },
 
   /**
    * Retrieve the structured transfer packet for the transfer case.
-   * GET /api/transfers/{transfer_id}/packet
+   * GET /transfers/{transfer_id}/packet
    */
   getTransferPacket: async (transferId: number, markViewed: boolean = false): Promise<TransferPacket> => {
-    const response = await apiClient.get<TransferPacket>(`/api/transfers/${transferId}/packet`, {
+    const response = await apiClient.get<TransferPacket>(`/transfers/${transferId}/packet`, {
       params: { mark_viewed: markViewed },
     });
     return response.data;
@@ -96,19 +96,19 @@ export const transferApi = {
 
   /**
    * Simulate secure delivery into the receiving hospital's application queue.
-   * POST /api/transfers/{transfer_id}/packet/send
+   * POST /transfers/{transfer_id}/packet/send
    */
   sendTransferPacket: async (transferId: number): Promise<TransferPacket> => {
-    const response = await apiClient.post<TransferPacket>(`/api/transfers/${transferId}/packet/send`);
+    const response = await apiClient.post<TransferPacket>(`/transfers/${transferId}/packet/send`);
     return response.data;
   },
 
   /**
    * Receiving hospital accepts the transfer request, reserves bed slot transactionally.
-   * POST /api/transfers/{transfer_id}/accept
+   * POST /transfers/{transfer_id}/accept
    */
   acceptTransfer: async (transferId: number, notes?: string): Promise<Transfer> => {
-    const response = await apiClient.post<Transfer>(`/api/transfers/${transferId}/accept`, {
+    const response = await apiClient.post<Transfer>(`/transfers/${transferId}/accept`, {
       notes: notes || undefined,
     });
     return response.data;
@@ -116,10 +116,10 @@ export const transferApi = {
 
   /**
    * Receiving hospital rejects the transfer request with mandatory justification.
-   * POST /api/transfers/{transfer_id}/reject
+   * POST /transfers/{transfer_id}/reject
    */
   rejectTransfer: async (transferId: number, reason: string): Promise<Transfer> => {
-    const response = await apiClient.post<Transfer>(`/api/transfers/${transferId}/reject`, {
+    const response = await apiClient.post<Transfer>(`/transfers/${transferId}/reject`, {
       reason,
     });
     return response.data;
@@ -127,46 +127,46 @@ export const transferApi = {
 
   /**
    * Re-open a rejected transfer case for sending-physician hospital re-matching.
-   * POST /api/transfers/{transfer_id}/rematch
+   * POST /transfers/{transfer_id}/rematch
    */
   rematchTransfer: async (transferId: number): Promise<Transfer> => {
-    const response = await apiClient.post<Transfer>(`/api/transfers/${transferId}/rematch`);
+    const response = await apiClient.post<Transfer>(`/transfers/${transferId}/rematch`);
     return response.data;
   },
 
   /**
    * Receiving hospital triage queue.
-   * GET /api/receiving/transfers
+   * GET /receiving/transfers
    */
   getIncomingTransfers: async (params?: IncomingTransferParams): Promise<TransferSummary[]> => {
-    const response = await apiClient.get<TransferSummary[]>('/api/receiving/transfers', { params });
+    const response = await apiClient.get<TransferSummary[]>('/receiving/transfers', { params });
     return response.data;
   },
 
   /**
    * Receiving hospital transfer detail (marks packet as viewed).
-   * GET /api/receiving/transfers/{transfer_id}
+   * GET /receiving/transfers/{transfer_id}
    */
   getIncomingTransferDetail: async (transferId: number): Promise<TransferDetail> => {
-    const response = await apiClient.get<TransferDetail>(`/api/receiving/transfers/${transferId}`);
+    const response = await apiClient.get<TransferDetail>(`/receiving/transfers/${transferId}`);
     return response.data;
   },
 
   /**
    * Dispatch an ambulance for an accepted transfer case.
-   * POST /api/transfers/{transfer_id}/ambulance/dispatch
+   * POST /transfers/{transfer_id}/ambulance/dispatch
    */
   dispatchAmbulance: async (transferId: number): Promise<AmbulanceDispatch> => {
-    const response = await apiClient.post<AmbulanceDispatch>(`/api/transfers/${transferId}/ambulance/dispatch`);
+    const response = await apiClient.post<AmbulanceDispatch>(`/transfers/${transferId}/ambulance/dispatch`);
     return response.data;
   },
 
   /**
    * Retrieve active ambulance dispatch tracking data for a transfer case.
-   * GET /api/transfers/{transfer_id}/ambulance
+   * GET /transfers/{transfer_id}/ambulance
    */
   getTransferAmbulance: async (transferId: number): Promise<AmbulanceDispatch | null> => {
-    const response = await apiClient.get<AmbulanceDispatch | null>(`/api/transfers/${transferId}/ambulance`);
+    const response = await apiClient.get<AmbulanceDispatch | null>(`/transfers/${transferId}/ambulance`);
     return response.data;
   },
 };

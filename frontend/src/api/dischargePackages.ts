@@ -37,6 +37,7 @@ export const dischargePackagesApi = {
   },
 
   getPdfDownloadUrl: (packageId: number): string => {
-    return `/api/discharge-packages/${packageId}/pdf`;
+    const base = apiClient.defaults.baseURL || '/api';
+    return `${base}/discharge-packages/${packageId}/pdf`;
   },
 };
