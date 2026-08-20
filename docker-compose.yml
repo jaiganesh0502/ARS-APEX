@@ -41,6 +41,8 @@ services:
       - "127.0.0.1:8000:8000"
     volumes:
       - ./backend:/app
+      - ./data:/data:ro
+      - ./data:/app/data:ro
 
   n8n:
     image: n8nio/n8n:latest

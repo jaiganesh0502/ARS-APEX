@@ -31,8 +31,20 @@ from app.services.bed_event_policy import is_valid_bed_transition_event
 from app.core.security import hash_password
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-DATASET_PATH = Path(__file__).resolve().parents[3] / "data" / "synthetic" / "patients.json"
+def _find_dataset_path() -> Path:
+    candidates = [
+        Path(__file__).resolve().parents[3] / "data" / "synthetic" / "patients.json",
+        Path(__file__).resolve().parents[2] / "data" / "synthetic" / "patients.json",
+        Path(__file__).resolve().parents[1] / "data" / "synthetic" / "patients.json",
+        Path("/app/data/synthetic/patients.json"),
+        Path("/data/synthetic/patients.json"),
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    return candidates[0]
+
+DATASET_PATH = _find_dataset_path()
 
 
 def _seed_demo_users(db: Session, primary_patient: Optional[Patient] = None) -> User:
