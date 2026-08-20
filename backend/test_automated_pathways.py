@@ -89,13 +89,15 @@ r_dec_em = httpx.post(
     headers=h_doc,
     json={
         "decision_type": "transfer",
-        "urgency": "emergency",
-        "specialty": "Cardiology",
+        "transfer_urgency": "emergency",
+        "required_specialty": "Cardiology",
         "reason": "Acute Coronary Syndrome requiring immediate Cath Lab",
         "notes": "Emergency ALS transfer requested"
     },
     verify=False
 )
+if r_dec_em.status_code != 201:
+    print("Decision Create Error:", r_dec_em.status_code, r_dec_em.text)
 em_dec_id = r_dec_em.json()["id"]
 r_conf_em = httpx.post(f"{base}/clinical-decisions/{em_dec_id}/confirm", headers=h_doc, verify=False)
 print("Emergency Transfer Decision Confirmed! Status:", r_conf_em.status_code)
@@ -104,17 +106,17 @@ print("Waiting 5s for background event dispatcher & n8n transfer matching & ambu
 time.sleep(5)
 
 # Check transfer details
-r_trans = httpx.get(f"{base}/transfers/admissions/1", headers=h_doc, verify=False)
-print("Transfer Record Status:", r_trans.status_code)
-if r_trans.status_code == 200:
-    trans_data = r_trans.json()
-    print("Transfer Status:", trans_data.get("status"))
-    print("Urgency:", trans_data.get("urgency"))
-    print("Target Hospital:", trans_data.get("receiving_hospital_name"))
-
-# Check ambulance dispatch
-r_amb = httpx.get(f"{base}/ambulance/transfers/{trans_data['id']}", headers=h_doc, verify=False)
-print("Ambulance Dispatch Status Code:", r_amb.status_code)
-if r_amb.status_code == 200:
-    amb_data = r_amb.json()
-    print("Ambulance Vehicle:", amb_data.get("vehicle_number"), "| Status:", amb_data.get("status"), "| ETA:", amb_data.get("current_eta_minutes"), "mins")
+r_trans = httpx.get(f"{base}/transfers?admission_id=1", headers=h_doc, verify=False)
+print("Transfer List Status:", r_trans.status_code)
+trans_list = r_trans.json()
+if trans_list:
+    trans_id = trans_list[0]["id"]
+    r_detail = httpx.get(f"{base}/transfers/{trans_id}", headers=h_doc, verify=False)
+    trans_data = r_detail.json()
+    print("Transfer ID:", trans_id, "| Status:", trans_data.get("status"))
+    print("Emergency Priority:", trans_data.get("emergency"))
+    print("Specialty:", trans_data.get("required_specialty"))
+    print("Receiving Hospital:", trans_data.get("receiving_hospital", {}).get("name") if trans_data.get("receiving_hospital") else "Matched")
+    if trans_data.get("ambulance_dispatch"):
+        amb = trans_data["ambulance_dispatch"]
+        print("Ambulance Dispatch Vehicle:", amb.get("vehicle_number"), "| Status:", amb.get("status"), "| ETA:", amb.get("current_eta_minutes"), "mins")
