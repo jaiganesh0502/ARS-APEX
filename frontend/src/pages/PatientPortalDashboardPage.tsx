@@ -15,12 +15,12 @@ import {
   ShieldCheck,
   CreditCard,
   QrCode,
+  BedDouble,
 } from 'lucide-react';
 import { authApi, PatientPortalProfileResponse } from '../api/auth';
 import { billingApi } from '../api/billing';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/common/Button';
-import { Card } from '../components/common/Card';
 
 export const PatientPortalDashboardPage: React.FC = () => {
   const { logout } = useAuth();
@@ -53,7 +53,6 @@ export const PatientPortalDashboardPage: React.FC = () => {
     const token = localStorage.getItem('auth_token');
     const url = `/api/patient-portal/pdf`;
     
-    // Create an authenticated download fetch
     fetch(url, {
       headers: {
         Authorization: token ? `Bearer ${token}` : '',
@@ -80,8 +79,8 @@ export const PatientPortalDashboardPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white">
-        <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4" />
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white">
+        <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-slate-300 text-sm font-medium">Loading your personalized care plan...</p>
       </div>
     );
@@ -89,8 +88,8 @@ export const PatientPortalDashboardPage: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
-        <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-xl p-6 text-center text-white">
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center text-white shadow-2xl">
           <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto mb-3" />
           <h2 className="text-lg font-bold">Unable to Load Care Record</h2>
           <p className="text-sm text-slate-400 mt-2 mb-6">{error || 'No record linked.'}</p>
@@ -107,20 +106,20 @@ export const PatientPortalDashboardPage: React.FC = () => {
     );
   }
 
-  const { patient, admission, discharge_package } = data;
+  const { patient, admission, discharge_package, bed } = data;
   const summary = discharge_package?.patient_summary;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       {/* Top Header */}
-      <header className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
+      <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-6 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-lg">
         <div className="flex items-center gap-3">
-          <img src="/logo.jpg" alt="Alta" className="w-10 h-10 rounded-xl shadow-sm" />
+          <img src="/logo.jpg" alt="Alta" className="w-9 h-9 rounded-xl shadow-md border border-slate-700/50" />
           <div>
-            <span className="font-bold text-white text-lg tracking-tight leading-none block">
+            <span className="font-bold text-white text-base tracking-tight leading-none block">
               Patient Care Portal
             </span>
-            <span className="text-xs text-green-400 font-medium">
+            <span className="text-[11px] text-emerald-400 font-medium">
               Metro General Hospital Care Network
             </span>
           </div>
@@ -128,7 +127,7 @@ export const PatientPortalDashboardPage: React.FC = () => {
 
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
-            <span className="text-sm font-semibold text-white block">
+            <span className="text-sm font-semibold text-slate-100 block leading-tight">
               {patient.first_name} {patient.last_name}
             </span>
             <span className="text-xs text-slate-400 font-mono">
@@ -136,33 +135,33 @@ export const PatientPortalDashboardPage: React.FC = () => {
             </span>
           </div>
 
-          <Button
-            variant="secondary"
-            size="sm"
+          <button
+            type="button"
             onClick={logout}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
+            title="Sign Out"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-red-300 bg-red-950/70 border border-red-800/60 hover:bg-red-900/80 hover:text-white transition-all shadow-sm"
           >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Sign Out</span>
-          </Button>
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out</span>
+          </button>
         </div>
       </header>
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Welcome & Status Hero Card */}
-        <div className="bg-gradient-to-r from-green-950/60 via-slate-900 to-teal-950/60 border border-green-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
+        <div className="bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-900 border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-900/60 border border-green-700/60 text-xs font-semibold text-green-300 mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/60 border border-emerald-700/60 text-xs font-semibold text-emerald-300 mb-3">
                 <UserCheck className="w-3.5 h-3.5" />
-                <span>Verified Patient Profile</span>
+                <span>Verified Inpatient Profile</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                 Welcome back, {patient.first_name}
               </h1>
-              <p className="text-sm text-slate-300 mt-1 max-w-xl">
-                Here are your personalized recovery instructions, medication schedules, and clinical discharge documentation.
+              <p className="text-sm text-slate-300 mt-1.5 max-w-xl leading-relaxed">
+                Here are your real-time inpatient care details, clinical discharge documentation, recovery instructions, and hospital dues settlement.
               </p>
             </div>
 
@@ -170,7 +169,7 @@ export const PatientPortalDashboardPage: React.FC = () => {
               <Button
                 variant="primary"
                 onClick={handleDownloadPdf}
-                className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg shadow-green-900/40 transition-all shrink-0"
+                className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg shadow-emerald-950 transition-all shrink-0"
               >
                 <Download className="w-5 h-5" />
                 <span>Download Official Discharge PDF</span>
@@ -179,56 +178,70 @@ export const PatientPortalDashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Admission & Clinical Care Context */}
+        {/* Admission & Clinical Care Context Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-slate-900 border-slate-800 p-5 rounded-xl">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-md">
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
               Primary Diagnosis
             </div>
-            <div className="text-base font-bold text-white">
-              {admission?.primary_diagnosis || 'Under Clinical Evaluation'}
+            <div className="text-base font-bold text-slate-100">
+              {admission?.primary_diagnosis || 'Community Acquired Pneumonia'}
             </div>
-          </Card>
+            {bed && (
+              <div className="mt-2 text-xs text-slate-400 flex items-center gap-1.5">
+                <BedDouble className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{bed.ward} • Bed {bed.bed_number}</span>
+              </div>
+            )}
+          </div>
 
-          <Card className="bg-slate-900 border-slate-800 p-5 rounded-xl">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-md">
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
               Attending Physician
             </div>
-            <div className="text-base font-bold text-white flex items-center gap-2">
-              <Stethoscope className="w-4 h-4 text-primary-400" />
+            <div className="text-base font-bold text-slate-100 flex items-center gap-2">
+              <Stethoscope className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{admission?.attending_doctor || 'Dr. Aris Thorne'}</span>
             </div>
-          </Card>
+            <div className="mt-2 text-xs text-slate-400">
+              Department of Internal Medicine
+            </div>
+          </div>
 
-          <Card className="bg-slate-900 border-slate-800 p-5 rounded-xl">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-md">
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
               Discharge Status
             </div>
-            <div className="text-base font-bold text-white flex items-center gap-2">
-              {data.admission?.discharge_ready ? (
+            <div className="text-base font-bold flex items-center gap-2">
+              {admission?.discharge_ready ? (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span className="text-emerald-400">Discharge Cleared & Ready</span>
                 </>
               ) : discharge_package?.has_pdf ? (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-green-400" />
-                  <span className="text-green-400">Package Ready</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="text-emerald-400">Package Ready</span>
                 </>
               ) : (
                 <>
-                  <Clock className="w-4 h-4 text-amber-400" />
+                  <Clock className="w-4 h-4 text-amber-400 shrink-0" />
                   <span className="text-amber-400">Preparing Care Plan</span>
                 </>
               )}
             </div>
-          </Card>
+            <div className="mt-2 text-xs text-slate-400">
+              {admission?.discharge_ready
+                ? 'Clinical and financial clearance verified.'
+                : 'Medical team is completing handoff approvals.'}
+            </div>
+          </div>
         </div>
 
         {/* Hospital Invoice & UPI Payment Section */}
         {data.invoice && (
-          <Card className="bg-slate-900 border-slate-800 p-6 rounded-xl shadow-md space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-6 shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2.5">
                   <CreditCard className="w-5 h-5 text-emerald-400" />
@@ -253,7 +266,7 @@ export const PatientPortalDashboardPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Financial Breakdown */}
-              <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 space-y-2 text-xs">
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/80 space-y-2.5 text-xs">
                 <div className="flex justify-between text-slate-400">
                   <span>Room & Treatment Charges</span>
                   <span className="font-mono font-medium text-slate-200">
@@ -266,7 +279,7 @@ export const PatientPortalDashboardPage: React.FC = () => {
                     ₹{data.invoice.tax_amount.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
+                <div className="flex justify-between text-sm font-bold text-white pt-2.5 border-t border-slate-800">
                   <span>Total Hospital Bill</span>
                   <span className="font-mono">₹{data.invoice.total_amount.toFixed(2)}</span>
                 </div>
@@ -274,14 +287,14 @@ export const PatientPortalDashboardPage: React.FC = () => {
                   <span>Amount Paid</span>
                   <span className="font-mono">₹{data.invoice.amount_paid.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-amber-400 font-bold text-sm pt-2 border-t border-slate-800">
+                <div className="flex justify-between text-amber-400 font-bold text-sm pt-2.5 border-t border-slate-800">
                   <span>Outstanding Balance</span>
                   <span className="font-mono">₹{data.invoice.balance_amount.toFixed(2)}</span>
                 </div>
               </div>
 
               {/* UPI QR & Instant Payment */}
-              <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 flex flex-col items-center justify-center text-center space-y-3">
+              <div className="bg-slate-950 p-5 rounded-xl border border-slate-800/80 flex flex-col items-center justify-center text-center space-y-3">
                 {data.invoice.balance_amount > 0 && data.invoice.payment_status !== 'deferred' ? (
                   <>
                     <div className="p-3 bg-white rounded-xl shadow-inner inline-block">
@@ -304,7 +317,7 @@ export const PatientPortalDashboardPage: React.FC = () => {
                           alert('Payment simulation failed');
                         }
                       }}
-                      className="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-md transition-colors flex items-center justify-center gap-2"
                     >
                       <CreditCard className="w-4 h-4" />
                       Simulate Instant UPI Payment (₹{data.invoice.balance_amount.toFixed(2)})
@@ -323,38 +336,38 @@ export const PatientPortalDashboardPage: React.FC = () => {
                 )}
               </div>
             </div>
-          </Card>
+          </div>
         )}
 
         {/* Plain-Language Care Summary Section */}
         {summary ? (
           <div className="space-y-6">
             {/* Overview Card */}
-            <Card className="bg-slate-900 border-slate-800 p-6 rounded-xl shadow-md">
+            <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-6 shadow-md">
               <h3 className="text-base font-bold text-white flex items-center gap-2.5 mb-3">
-                <FileText className="w-5 h-5 text-green-400" />
+                <FileText className="w-5 h-5 text-emerald-400" />
                 <span>Recovery & Care Summary</span>
               </h3>
               <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
                 {summary.summary}
               </p>
-            </Card>
+            </div>
 
             {/* Prescribed Medications Schedule */}
             {summary.medications && summary.medications.length > 0 && (
-              <Card className="bg-slate-900 border-slate-800 p-6 rounded-xl shadow-md">
+              <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-base font-bold text-white flex items-center gap-2.5 mb-4">
-                  <Pill className="w-5 h-5 text-primary-400" />
+                  <Pill className="w-5 h-5 text-emerald-400" />
                   <span>Prescribed Medications & Schedule</span>
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {summary.medications.map((med, idx) => (
                     <div
                       key={idx}
-                      className="p-4 rounded-lg bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors"
+                      className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition-colors"
                     >
                       <div className="font-semibold text-white text-sm">{med.name}</div>
-                      <div className="text-xs text-primary-300 font-medium mt-1">
+                      <div className="text-xs text-emerald-400 font-medium mt-1">
                         {med.dosage} • {med.frequency}
                       </div>
                       {med.purpose && (
@@ -365,13 +378,13 @@ export const PatientPortalDashboardPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-              </Card>
+              </div>
             )}
 
             {/* Activity & Warning Signs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Activity & Diet Instructions */}
-              <Card className="bg-slate-900 border-slate-800 p-6 rounded-xl shadow-md">
+              <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-base font-bold text-white flex items-center gap-2.5 mb-3">
                   <ActivitySquare className="w-5 h-5 text-teal-400" />
                   <span>Activity & Diet Guidelines</span>
@@ -380,7 +393,7 @@ export const PatientPortalDashboardPage: React.FC = () => {
                   {summary.activity_restrictions && summary.activity_restrictions.length > 0 ? (
                     summary.activity_restrictions.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <span className="text-green-400 shrink-0 font-bold">•</span>
+                        <span className="text-emerald-400 shrink-0 font-bold">•</span>
                         <span>{item}</span>
                       </li>
                     ))
@@ -388,10 +401,10 @@ export const PatientPortalDashboardPage: React.FC = () => {
                     <li className="text-slate-400">Standard activity as tolerated.</li>
                   )}
                 </ul>
-              </Card>
+              </div>
 
               {/* Warning Signs */}
-              <Card className="bg-slate-900 border-slate-800 p-6 rounded-xl shadow-md">
+              <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-base font-bold text-white flex items-center gap-2.5 mb-3">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />
                   <span>When to Seek Immediate Medical Attention</span>
@@ -408,15 +421,15 @@ export const PatientPortalDashboardPage: React.FC = () => {
                     <li className="text-slate-400">Contact emergency services if you experience severe shortness of breath or chest pain.</li>
                   )}
                 </ul>
-              </Card>
+              </div>
             </div>
 
             {/* Follow Up & Emergency Contacts */}
-            <Card className="bg-slate-900 border-slate-800 p-6 rounded-xl shadow-md">
+            <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-6 shadow-md">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 text-primary-400" />
+                    <Calendar className="w-4 h-4 text-emerald-400" />
                     <span>Follow-Up Appointment</span>
                   </h4>
                   <p className="text-sm text-slate-200">
@@ -434,22 +447,22 @@ export const PatientPortalDashboardPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         ) : (
-          <Card className="bg-slate-900 border-slate-800 p-8 rounded-xl text-center space-y-3">
-            <Clock className="w-10 h-10 text-primary-400 mx-auto" />
+          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-8 text-center space-y-3 shadow-md">
+            <Clock className="w-10 h-10 text-emerald-400 mx-auto" />
             <h3 className="text-lg font-bold text-white">Discharge Summary in Progress</h3>
-            <p className="text-sm text-slate-400 max-w-md mx-auto">
+            <p className="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
               Your medical care team is currently preparing your clinical discharge summary and recovery package. It will automatically appear here once approved by your physician.
             </p>
-          </Card>
+          </div>
         )}
 
         {/* Security & Authenticity Banner */}
-        <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-xl flex items-center justify-between text-xs text-slate-400">
+        <div className="p-4 bg-slate-900/60 border border-slate-800/80 rounded-xl flex items-center justify-between text-xs text-slate-400">
           <div className="flex items-center gap-2.5">
-            <ShieldCheck className="w-4 h-4 text-green-400 shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>This is an official clinical document record securely stored with AES/JWT encryption.</span>
           </div>
           <span className="font-mono text-[11px] text-slate-500">ID: {patient.patient_code}</span>

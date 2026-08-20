@@ -34,6 +34,10 @@ export interface PatientPortalProfileResponse {
     attending_doctor?: string | null;
     discharge_ready?: boolean;
   } | null;
+  bed?: {
+    ward?: string;
+    bed_number?: string;
+  } | null;
   invoice?: {
     id: number;
     invoice_number: string;
