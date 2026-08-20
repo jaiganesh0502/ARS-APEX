@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_db, require_doctor, require_staff, require_superintendent
+from app.api.dependencies import get_db, require_doctor, require_staff, require_superintendent, require_transfer_authority
 from app.models.transfer import Transfer, TransferStatus
 from app.models.user import User
 from app.schemas.transfer import (
@@ -168,7 +168,7 @@ def accept_transfer(
     transfer_id: int,
     payload: Optional[TransferAcceptPayload] = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_superintendent),
+    current_user: User = Depends(require_transfer_authority),
 ):
     """
     Receiving hospital accepts the transfer request, reserves one bed slot transactionally,
@@ -196,7 +196,7 @@ def reject_transfer(
     transfer_id: int,
     payload: TransferRejectPayload,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_superintendent),
+    current_user: User = Depends(require_transfer_authority),
 ):
     """
     Receiving hospital rejects the transfer request with mandatory justification.

@@ -6,6 +6,7 @@ from app.api.dependencies.auth import (
     require_roles,
     require_doctor,
     require_superintendent,
+    require_transfer_authority,
     require_staff,
     require_patient,
     get_current_patient_entity,
@@ -19,6 +20,7 @@ __all__ = [
     "require_roles",
     "require_doctor",
     "require_superintendent",
+    "require_transfer_authority",
     "require_patient",
     "get_current_patient_entity",
 ]

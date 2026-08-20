@@ -342,6 +342,14 @@ class ReceivingTransferService:
         self.db.commit()
         self.db.refresh(transfer)
 
+        # Auto-dispatch ALS Ambulance immediately upon transfer acceptance
+        try:
+            from app.services.ambulance_dispatch_service import AmbulanceDispatchService
+            amb_svc = AmbulanceDispatchService(self.db)
+            amb_svc.dispatch_ambulance(transfer.id, requesting_user=decided_by_user)
+        except Exception as e:
+            logger.warning("Auto ambulance dispatch on transfer acceptance encountered: %s", e)
+
         logger.info(
             "Transfer %s accepted by hospital %s. Remaining beds for %s: %s",
             transfer.id,

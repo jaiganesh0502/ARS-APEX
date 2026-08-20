@@ -146,6 +146,14 @@ require_superintendent = require_roles(
     UserRole.RECEIVING_ADMIN,
 )
 
+require_transfer_authority = require_roles(
+    UserRole.DOCTOR,
+    UserRole.RECEIVING_DOCTOR,
+    UserRole.MEDICAL_SUPERINTENDENT,
+    UserRole.WARD_ADMIN,
+    UserRole.RECEIVING_ADMIN,
+)
+
 require_receptionist = require_roles(
     UserRole.RECEPTIONIST,
 )

@@ -153,6 +153,7 @@ def internal_send_transfer_packet(
 
 
 @router.post("/transfers/{transfer_id}/dispatch-ambulance")
+@router.post("/ambulance/{transfer_id}/auto-dispatch")
 def internal_dispatch_ambulance(
     transfer_id: int,
     payload: Optional[InternalEventPayload] = None,
