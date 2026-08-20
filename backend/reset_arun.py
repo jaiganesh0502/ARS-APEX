@@ -11,7 +11,7 @@ from app.models import (
     Invoice,
     Patient,
     PaymentTransaction,
-    TransferRequest,
+    Transfer,
     WorkflowEvent,
 )
 
@@ -26,7 +26,7 @@ def reset_arun():
         print(f"Found Patient: {patient.first_name} {patient.last_name} (ID: {patient.id})")
 
         # 1. Clear any active transfer requests
-        transfers = db.query(TransferRequest).filter(TransferRequest.patient_id == patient.id).all()
+        transfers = db.query(Transfer).filter(Transfer.patient_id == patient.id).all()
         for t in transfers:
             db.delete(t)
 
