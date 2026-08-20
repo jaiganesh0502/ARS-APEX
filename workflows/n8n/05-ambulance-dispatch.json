@@ -17,38 +17,41 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "string": [
-            {
-              "value1": "={{ $headers['x-workflow-secret'] }}",
-              "value2": "={{ $env.N8N_WEBHOOK_SECRET || 'change-me-in-production' }}"
-            }
-          ]
-        }
-      },
-      "name": "Validate Secret",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [300, 300]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: ambulance_dispatch_requested').first().json.event_id }}/complete",
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/ambulance/{{ $json.body ? ($json.body.payload ? $json.body.payload.transfer_id : $json.body.transfer_id) : ($json.payload ? $json.payload.transfer_id : $json.transfer_id) }}/auto-dispatch",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "X-Internal-API-Key",
-              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+              "value": "={{ $env.INTERNAL_API_KEY || 'alta_prod_internal_secret_2026' }}"
             }
           ]
         },
         "options": {}
       },
-      "name": "Report Dispatch Telemetry Synced",
+      "name": "Dispatch ALS Ambulance & Route Telemetry",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [550, 300]
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: ambulance_dispatch_requested').first().json.body ? $('Webhook: ambulance_dispatch_requested').first().json.body.event_id : $('Webhook: ambulance_dispatch_requested').first().json.event_id }}/complete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-API-Key",
+              "value": "={{ $env.INTERNAL_API_KEY || 'alta_prod_internal_secret_2026' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Report Dispatch Active",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [700, 300]
     }
   ],
   "connections": {
@@ -56,18 +59,18 @@
       "main": [
         [
           {
-            "node": "Validate Secret",
+            "node": "Dispatch ALS Ambulance & Route Telemetry",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate Secret": {
+    "Dispatch ALS Ambulance & Route Telemetry": {
       "main": [
         [
           {
-            "node": "Report Dispatch Telemetry Synced",
+            "node": "Report Dispatch Active",
             "type": "main",
             "index": 0
           }

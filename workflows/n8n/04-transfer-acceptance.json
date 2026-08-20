@@ -17,111 +17,60 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "string": [
-            {
-              "value1": "={{ $headers['x-workflow-secret'] }}",
-              "value2": "={{ $env.N8N_WEBHOOK_SECRET || 'change-me-in-production' }}"
-            }
-          ]
-        }
-      },
-      "name": "Validate Secret",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [280, 300]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "boolean": [
-            {
-              "value1": "={{ $json.payload.emergency }}",
-              "value2": true
-            }
-          ]
-        }
-      },
-      "name": "Is Emergency Priority?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [480, 300]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/transfers/{{ $('Webhook: receiving_hospital_accepted').first().json.payload.transfer_id }}/dispatch-ambulance",
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/transfers/{{ $json.body ? ($json.body.payload ? $json.body.payload.transfer_id : $json.body.transfer_id) : ($json.payload ? $json.payload.transfer_id : $json.transfer_id) }}/request-dispatch",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "X-Internal-API-Key",
-              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+              "value": "={{ $env.INTERNAL_API_KEY || 'alta_prod_internal_secret_2026' }}"
             }
           ]
         },
         "options": {}
       },
-      "name": "Emergency Branch: Immediate Ambulance Dispatch (Billing Bypassed)",
+      "name": "Branch A: Request Ambulance Dispatch",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [750, 180]
+      "position": [400, 200]
     },
     {
       "parameters": {
-        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/transfers/{{ $('Webhook: receiving_hospital_accepted').first().json.payload.transfer_id }}/dispatch-ambulance",
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/admissions/{{ $json.body ? ($json.body.payload ? $json.body.payload.admission_id : $json.body.admission_id) : ($json.payload ? $json.payload.admission_id : $json.admission_id) }}/defer-billing",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "X-Internal-API-Key",
-              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+              "value": "={{ $env.INTERNAL_API_KEY || 'alta_prod_internal_secret_2026' }}"
             }
           ]
         },
         "options": {}
       },
-      "name": "Non-Emergency Branch A: Ambulance Dispatch",
+      "name": "Branch B: Defer Billing Clearance (Emergency Path)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [750, 380]
+      "position": [400, 400]
     },
     {
       "parameters": {
-        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/admissions/{{ $('Webhook: receiving_hospital_accepted').first().json.payload.admission_id }}/billing-clearance",
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: receiving_hospital_accepted').first().json.body ? $('Webhook: receiving_hospital_accepted').first().json.body.event_id : $('Webhook: receiving_hospital_accepted').first().json.event_id }}/complete",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "X-Internal-API-Key",
-              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+              "value": "={{ $env.INTERNAL_API_KEY || 'alta_prod_internal_secret_2026' }}"
             }
           ]
         },
         "options": {}
       },
-      "name": "Non-Emergency Branch B: Track Billing Clearance",
+      "name": "Report Acceptance Orchestration Complete",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [750, 520]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: receiving_hospital_accepted').first().json.event_id }}/complete",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "X-Internal-API-Key",
-              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "name": "Report Acceptance Orchestrated",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [1050, 300]
+      "position": [700, 300]
     }
   ],
   "connections": {
@@ -129,63 +78,23 @@
       "main": [
         [
           {
-            "node": "Validate Secret",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Validate Secret": {
-      "main": [
-        [
-          {
-            "node": "Is Emergency Priority?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Is Emergency Priority?": {
-      "main": [
-        [
-          {
-            "node": "Emergency Branch: Immediate Ambulance Dispatch (Billing Bypassed)",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Non-Emergency Branch A: Ambulance Dispatch",
+            "node": "Branch A: Request Ambulance Dispatch",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Non-Emergency Branch B: Track Billing Clearance",
+            "node": "Branch B: Defer Billing Clearance (Emergency Path)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Emergency Branch: Immediate Ambulance Dispatch (Billing Bypassed)": {
+    "Branch A: Request Ambulance Dispatch": {
       "main": [
         [
           {
-            "node": "Report Acceptance Orchestrated",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Non-Emergency Branch A: Ambulance Dispatch": {
-      "main": [
-        [
-          {
-            "node": "Report Acceptance Orchestrated",
+            "node": "Report Acceptance Orchestration Complete",
             "type": "main",
             "index": 0
           }

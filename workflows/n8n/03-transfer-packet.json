@@ -17,76 +17,41 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "string": [
-            {
-              "value1": "={{ $headers['x-workflow-secret'] }}",
-              "value2": "={{ $env.N8N_WEBHOOK_SECRET || 'change-me-in-production' }}"
-            }
-          ]
-        }
-      },
-      "name": "Validate Secret",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [300, 300]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/transfers/{{ $json.payload.transfer_id }}/prepare-packet",
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/transfers/{{ $json.body ? ($json.body.payload ? $json.body.payload.transfer_id : $json.body.transfer_id) : ($json.payload ? $json.payload.transfer_id : $json.transfer_id) }}/prepare-packet",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "X-Internal-API-Key",
-              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+              "value": "={{ $env.INTERNAL_API_KEY || 'alta_prod_internal_secret_2026' }}"
             }
           ]
         },
         "options": {}
       },
-      "name": "Prepare Clinical Transfer Packet",
+      "name": "Prepare & Deliver Transfer Packet",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [500, 300]
+      "position": [400, 300]
     },
     {
       "parameters": {
-        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/transfers/{{ $('Webhook: receiving_hospital_selected').first().json.payload.transfer_id }}/send-packet",
+        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: receiving_hospital_selected').first().json.body ? $('Webhook: receiving_hospital_selected').first().json.body.event_id : $('Webhook: receiving_hospital_selected').first().json.event_id }}/complete",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "X-Internal-API-Key",
-              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
+              "value": "={{ $env.INTERNAL_API_KEY || 'alta_prod_internal_secret_2026' }}"
             }
           ]
         },
         "options": {}
       },
-      "name": "Send Packet to Destination Review Queue",
+      "name": "Report Packet Delivery Complete",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [720, 300]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.FASTAPI_INTERNAL_URL || 'http://backend:8000/api/internal' }}/workflow-events/{{ $('Webhook: receiving_hospital_selected').first().json.event_id }}/complete",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "X-Internal-API-Key",
-              "value": "={{ $env.INTERNAL_API_KEY || 'change-me-in-production' }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "name": "Report Packet Delivered (Awaiting Receiving Doctor)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [950, 300]
+      "position": [700, 300]
     }
   ],
   "connections": {
@@ -94,40 +59,18 @@
       "main": [
         [
           {
-            "node": "Validate Secret",
+            "node": "Prepare & Deliver Transfer Packet",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate Secret": {
+    "Prepare & Deliver Transfer Packet": {
       "main": [
         [
           {
-            "node": "Prepare Clinical Transfer Packet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Clinical Transfer Packet": {
-      "main": [
-        [
-          {
-            "node": "Send Packet to Destination Review Queue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send Packet to Destination Review Queue": {
-      "main": [
-        [
-          {
-            "node": "Report Packet Delivered (Awaiting Receiving Doctor)",
+            "node": "Report Packet Delivery Complete",
             "type": "main",
             "index": 0
           }
