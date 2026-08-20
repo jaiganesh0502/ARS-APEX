@@ -3,18 +3,18 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.database import get_db
-from app.models.billing_clearance import BillingClearance, BillingStatus
+from app.api.dependencies import get_db, require_superintendent
 from app.models.admission import Admission
-from app.models.patient import Patient
 from app.models.bed import Bed
+from app.models.billing_clearance import BillingClearance, BillingStatus
 from app.models.discharge_report import DischargeReport
+from app.models.patient import Patient
 from app.models.transfer import Transfer
 from app.models.user import User
 from app.schemas.billing_clearance import (
-    BillingClearanceRead,
-    BillingClearanceDetailRead,
     BillingClearanceConfirmPayload,
+    BillingClearanceDetailRead,
+    BillingClearanceRead,
 )
 from app.services.billing_clearance_service import BillingClearanceService
 
@@ -95,14 +95,17 @@ def confirm_billing_clearance(
     billing_id: int,
     payload: BillingClearanceConfirmPayload,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_superintendent),
 ):
     """
     Confirm billing clearance (simulated finance approval). Idempotent.
+    Restricted to Medical Superintendent / Ward Admin roles.
     """
     billing_svc = BillingClearanceService(db)
     updated = billing_svc.clear_billing(
         billing_id=billing_id,
         clearance_reference=payload.clearance_reference,
         notes=payload.notes,
+        confirmed_by_user=current_user,
     )
     return _to_detail_read(updated, db)

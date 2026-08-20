@@ -10,20 +10,47 @@ import {
   Ambulance,
   ActivitySquare,
   Cpu,
+  FileHeart,
 } from 'lucide-react';
-
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Patients', href: '/patients', icon: Users },
-  { name: 'Beds', href: '/beds', icon: BedDouble },
-  { name: 'Transfers', href: '/transfers', icon: ArrowRightLeft },
-  { name: 'Incoming Transfers', href: '/receiving/transfers', icon: Inbox },
-  { name: 'Hospitals', href: '/hospitals', icon: Building2 },
-  { name: 'Ambulances', href: '/ambulances', icon: Ambulance },
-  { name: 'Operations & Events', href: '/operations', icon: Cpu },
-];
+import { useAuth } from '../context/AuthContext';
 
 export const Sidebar: React.FC = () => {
+  const { user } = useAuth();
+  const role = user?.role;
+
+  const getNavigationItems = () => {
+    if (role === 'patient') {
+      return [
+        { name: 'My Care Plan & Summary', href: '/patient-portal', icon: FileHeart },
+      ];
+    }
+
+    if (role === 'medical_superintendent' || role === 'ward_admin' || role === 'receiving_admin') {
+      return [
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Operations & Events', href: '/operations', icon: Cpu },
+        { name: 'Patients', href: '/patients', icon: Users },
+        { name: 'Beds', href: '/beds', icon: BedDouble },
+        { name: 'Transfers', href: '/transfers', icon: ArrowRightLeft },
+        { name: 'Incoming Transfers', href: '/receiving/transfers', icon: Inbox },
+        { name: 'Hospitals', href: '/hospitals', icon: Building2 },
+        { name: 'Ambulances', href: '/ambulances', icon: Ambulance },
+      ];
+    }
+
+    // Default Doctor navigation
+    return [
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'Patients', href: '/patients', icon: Users },
+      { name: 'Transfers', href: '/transfers', icon: ArrowRightLeft },
+      { name: 'Incoming Transfers', href: '/receiving/transfers', icon: Inbox },
+      { name: 'Hospitals', href: '/hospitals', icon: Building2 },
+      { name: 'Ambulances', href: '/ambulances', icon: Ambulance },
+    ];
+  };
+
+  const navigation = getNavigationItems();
+
   return (
     <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shrink-0">
       {/* Brand & Logo */}
@@ -64,14 +91,24 @@ export const Sidebar: React.FC = () => {
         })}
       </nav>
 
-      {/* System Status / Clinical Protocol Footer */}
+      {/* Role-Specific System Status Footer */}
       <div className="p-4 border-t border-slate-800 bg-slate-950/50 text-xs text-slate-400">
         <div className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="font-semibold text-slate-300">Safety Guardrail Active</span>
+          <span className="font-semibold text-slate-300">
+            {role === 'medical_superintendent'
+              ? 'Superintendent View'
+              : role === 'patient'
+              ? 'Patient Care Portal'
+              : 'Physician Authority'}
+          </span>
         </div>
         <p className="text-[11px] text-slate-500 leading-tight">
-          Physician sign-off required before workflow emission.
+          {role === 'medical_superintendent'
+            ? 'Bed release & operational tracking active.'
+            : role === 'patient'
+            ? 'Access your personalized recovery instructions.'
+            : 'Physician sign-off required for discharge.'}
         </p>
       </div>
     </aside>

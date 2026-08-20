@@ -88,11 +88,16 @@ def test_feature9_e2e_normal_discharge_to_pdf_package(client: TestClient, db_ses
     assert avail_bed.status == BedStatus.AVAILABLE
 
     # Step 5: Finance confirms billing clearance
+    superintendent = User(name="Superintendent", email="superintendent.f9@hospital.org", role=UserRole.MEDICAL_SUPERINTENDENT)
+    db_session.add(superintendent)
+    db_session.flush()
+
     billing = db_session.query(BillingClearance).filter_by(admission_id=admission.id).first()
     assert billing is not None
     res_clear = client.post(
         f"/api/billing-clearances/{billing.id}/clear",
         json={"clearance_reference": "TXN-F9-FULL-PAID", "notes": "Cashless TPA settled"},
+        headers={"X-User-Id": str(superintendent.id)},
     )
     assert res_clear.status_code == 200
     assert res_clear.json()["status"] == "cleared"

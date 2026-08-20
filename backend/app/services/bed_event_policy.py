@@ -136,6 +136,8 @@ def is_valid_bed_transition_event(db: Session, event: WorkflowEvent) -> bool:
         or payload.get("actor_role") not in {
             UserRole.DOCTOR.value,
             UserRole.WARD_ADMIN.value,
+            UserRole.MEDICAL_SUPERINTENDENT.value,
+            UserRole.RECEIVING_ADMIN.value,
         }
     ):
         return False
@@ -149,7 +151,12 @@ def is_valid_bed_transition_event(db: Session, event: WorkflowEvent) -> bool:
     if (
         bed is None
         or actor is None
-        or actor.role not in {UserRole.DOCTOR, UserRole.WARD_ADMIN}
+        or actor.role not in {
+            UserRole.DOCTOR,
+            UserRole.WARD_ADMIN,
+            UserRole.MEDICAL_SUPERINTENDENT,
+            UserRole.RECEIVING_ADMIN,
+        }
         or payload.get("actor_name") != actor.name
         or payload.get("actor_role") != actor.role.value
     ):

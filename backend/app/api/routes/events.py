@@ -2,8 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import require_role
-from app.api.dependencies.database import get_db
+from app.api.dependencies import get_db, require_roles, require_superintendent
 from app.models.user import User, UserRole
 from app.models.workflow_event import WorkflowEvent
 from app.schemas.workflow_event import (
@@ -25,7 +24,13 @@ def list_events(
     skip: int = 0,
     limit: int = 50,
     db: Session = Depends(get_db),
-    _current_user: User = Depends(require_role([UserRole.DOCTOR, UserRole.WARD_ADMIN])),
+    _current_user: User = Depends(
+        require_roles(
+            UserRole.DOCTOR,
+            UserRole.MEDICAL_SUPERINTENDENT,
+            UserRole.WARD_ADMIN,
+        )
+    ),
 ):
     """
     Standard event audit log with minimal metadata for authorized operational roles.
@@ -93,9 +98,11 @@ def get_workflow_event_detail(
 def retry_workflow_event(
     event_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_superintendent),
 ):
     """
     Retry webhook delivery for a pending or failed workflow event.
+    Restricted to Medical Superintendent / Operational Admins.
     """
     evt_svc = WorkflowEventService(db)
     event = evt_svc.retry_event(event_id)

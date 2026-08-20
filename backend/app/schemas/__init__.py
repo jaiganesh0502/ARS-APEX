@@ -55,6 +55,11 @@ from app.schemas.notification import (
     NotificationDetail,
     NotificationListResponse,
 )
+from app.schemas.auth import (
+    LoginRequest,
+    UserProfileRead,
+    TokenResponse,
+)
 
 __all__ = [
     "HealthResponse",
@@ -124,4 +129,7 @@ __all__ = [
     "NotificationBase",
     "NotificationDetail",
     "NotificationListResponse",
+    "LoginRequest",
+    "UserProfileRead",
+    "TokenResponse",
 ]

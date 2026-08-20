@@ -28,9 +28,86 @@ from app.models import (
 )
 from app.services.bed_event_policy import is_valid_bed_transition_event
 
+from app.core.security import hash_password
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 DATASET_PATH = Path(__file__).resolve().parents[3] / "data" / "synthetic" / "patients.json"
+
+
+def _seed_demo_users(db: Session, primary_patient: Optional[Patient] = None) -> User:
+    # 1. Primary Attending Doctor
+    doc_email = "doctor@demo.local"
+    doctor = db.query(User).filter(User.email == doc_email).first()
+    if not doctor:
+        doctor = User(
+            name="Dr. Aris Thorne",
+            email=doc_email,
+            role=UserRole.DOCTOR,
+            password_hash=hash_password("DoctorDemo123!"),
+            is_active=True,
+        )
+        db.add(doctor)
+        db.flush()
+    else:
+        doctor.password_hash = hash_password("DoctorDemo123!")
+
+    # 2. Medical Superintendent
+    super_email = "superintendent@demo.local"
+    superintendent = db.query(User).filter(User.email == super_email).first()
+    if not superintendent:
+        superintendent = User(
+            name="Dr. Marcus Vance (Superintendent)",
+            email=super_email,
+            role=UserRole.MEDICAL_SUPERINTENDENT,
+            password_hash=hash_password("SuperDemo123!"),
+            is_active=True,
+        )
+        db.add(superintendent)
+        db.flush()
+    else:
+        superintendent.password_hash = hash_password("SuperDemo123!")
+
+    # 3. Patient Demo User
+    pat_email = "patient@demo.local"
+    patient_user = db.query(User).filter(User.email == pat_email).first()
+    target_patient_id = primary_patient.id if primary_patient else None
+    if not patient_user:
+        patient_user = User(
+            name=f"{primary_patient.first_name} {primary_patient.last_name}" if primary_patient else "Eleanor Vance",
+            email=pat_email,
+            role=UserRole.PATIENT,
+            password_hash=hash_password("PatientDemo123!"),
+            is_active=True,
+            patient_id=target_patient_id,
+        )
+        db.add(patient_user)
+        db.flush()
+    else:
+        patient_user.password_hash = hash_password("PatientDemo123!")
+        if target_patient_id:
+            patient_user.patient_id = target_patient_id
+
+    # Legacy Asha Rao user for test backward-compatibility
+    asha_email = "asha.rao@synthetic-hospital.test"
+    asha = db.query(User).filter(User.email == asha_email).first()
+    if not asha:
+        asha = User(
+            name="Dr. Asha Rao",
+            email=asha_email,
+            role=UserRole.DOCTOR,
+            password_hash=hash_password("DoctorDemo123!"),
+            is_active=True,
+        )
+        db.add(asha)
+        db.flush()
+
+    return doctor
+
+
+def _doctor(db: Session) -> User:
+    return _seed_demo_users(db)
+
 
 SYNTHETIC_HOSPITALS = [
     {
@@ -287,9 +364,16 @@ def seed_database(db: Optional[Session] = None) -> None:
     try:
         doctor = _doctor(session)
         _seed_hospitals(session)
+        first_patient = None
         with DATASET_PATH.open("r", encoding="utf-8") as dataset:
             for patient_data in json.load(dataset):
-                _seed_patient(session, patient_data, doctor)
+                p = _seed_patient(session, patient_data, doctor)
+                if not first_patient:
+                    first_patient = p
+        
+        # Link patient demo user to the primary demo patient
+        if first_patient:
+            _seed_demo_users(session, primary_patient=first_patient)
         if savepoint is not None:
             savepoint.commit()
         session.commit()

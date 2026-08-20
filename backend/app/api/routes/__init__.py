@@ -16,13 +16,17 @@ from app.api.routes import (
     internal,
     discharge_packages,
     notifications,
+    auth,
+    patient_portal,
 )
 
 api_router = APIRouter()
 
 api_router.include_router(health.router)
+api_router.include_router(auth.router)
 api_router.include_router(users.router)
 api_router.include_router(patients.router)
+api_router.include_router(patient_portal.router)
 api_router.include_router(admissions.router)
 api_router.include_router(beds.router)
 api_router.include_router(discharge.router)

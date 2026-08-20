@@ -33,3 +33,4 @@ class Patient(Base):
     discharge_reports = relationship("DischargeReport", back_populates="patient", cascade="all, delete-orphan")
     transfers = relationship("Transfer", back_populates="patient", cascade="all, delete-orphan")
     clinical_decisions = relationship("ClinicalDecision", back_populates="patient")
+    portal_user = relationship("User", back_populates="patient", uselist=False)

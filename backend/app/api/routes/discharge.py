@@ -2,8 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.database import get_db
-from app.api.dependencies.auth import get_current_user_stub
+from app.api.dependencies import get_db, require_doctor
 from app.api.dependencies.llm import get_llm_client
 from app.integrations.llm.client import LLMClientInterface
 from app.integrations.llm.replicate_client import (
@@ -54,10 +53,12 @@ def generate_discharge_draft(
     admission_id: int,
     db: Session = Depends(get_db),
     llm_client: LLMClientInterface = Depends(get_llm_client),
+    current_user: User = Depends(require_doctor),
 ):
     """
     Trigger AI draft generation.
     SAFETY: Generates a DRAFT report (status='generated'). Does NOT approve.
+    Restricted to Attending Physicians / Doctors.
     """
     try:
         return DischargeService(db).generate_report(admission_id, llm_client)
@@ -83,13 +84,9 @@ def edit_discharge_report(
     report_id: int,
     edit_in: DischargeReportEdit,
     db: Session = Depends(get_db),
-    current_user: User | None = Depends(get_current_user_stub),
+    current_user: User = Depends(require_doctor),
 ):
     """Doctor reviews and modifies the discharge report."""
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-    if current_user.role != UserRole.DOCTOR:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only doctors can edit discharge reports")
     return DischargeService(db).edit_report(report_id, edit_in.edited_content, current_user)
 
 
@@ -98,14 +95,11 @@ def approve_discharge_report(
     report_id: int,
     approval_in: DischargeReportApprove,
     db: Session = Depends(get_db),
-    current_user: User | None = Depends(get_current_user_stub),
+    current_user: User = Depends(require_doctor),
 ):
     """
     MANDATORY CLINICAL SAFETY: Explicit physician approval of discharge summary.
     Transitions status to 'approved' and records an internal 'report_approved' event.
+    Restricted strictly to Doctors.
     """
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-    if current_user.role != UserRole.DOCTOR:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only doctors can approve discharge reports")
     return DischargeService(db).approve_report(report_id, current_user, approval_in.clinical_notes)

@@ -36,6 +36,14 @@ def get_bed(bed_id: int, db: Session = Depends(get_db)):
     return bed
 
 
+OPERATIONAL_BED_ROLES = {
+    UserRole.DOCTOR,
+    UserRole.WARD_ADMIN,
+    UserRole.MEDICAL_SUPERINTENDENT,
+    UserRole.RECEIVING_ADMIN,
+}
+
+
 @router.post("/{bed_id}/start-release", response_model=BedDetail)
 def start_bed_release(
     bed_id: int,
@@ -47,10 +55,10 @@ def start_bed_release(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required",
         )
-    if current_user.role not in {UserRole.DOCTOR, UserRole.WARD_ADMIN}:
+    if current_user.role not in OPERATIONAL_BED_ROLES:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only doctors and ward administrators can start bed release",
+            detail="Only doctors, ward administrators, and medical superintendents can start bed release",
         )
 
     try:
@@ -79,10 +87,10 @@ def confirm_patient_departure(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required",
         )
-    if current_user.role not in {UserRole.DOCTOR, UserRole.WARD_ADMIN}:
+    if current_user.role not in OPERATIONAL_BED_ROLES:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only doctors and ward administrators can confirm patient departure",
+            detail="Only doctors, ward administrators, and medical superintendents can confirm patient departure",
         )
 
     try:
@@ -109,10 +117,10 @@ def complete_bed_cleaning(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required",
         )
-    if current_user.role not in {UserRole.DOCTOR, UserRole.WARD_ADMIN}:
+    if current_user.role not in OPERATIONAL_BED_ROLES:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only doctors and ward administrators can complete bed cleaning",
+            detail="Only doctors, ward administrators, and medical superintendents can complete bed cleaning",
         )
 
     try:

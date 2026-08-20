@@ -93,10 +93,15 @@ def test_e2e_normal_discharge_with_parallel_billing_gate(client: TestClient, db_
     res_fin_fail = client.post(f"/api/internal/billing-clearances/{billing_id}/finalize-handoff", headers=headers)
     assert res_fin_fail.status_code == 409
 
+    superintendent = User(name="Superintendent", email="superintendent.e2e@hospital.org", role=UserRole.MEDICAL_SUPERINTENDENT)
+    db_session.add(superintendent)
+    db_session.flush()
+
     # Step 5: Finance confirms billing clearance
     res_clear = client.post(
         f"/api/billing-clearances/{billing_id}/clear",
         json={"clearance_reference": "TXN-E2E-9988", "notes": "Settled via insurance cashless"},
+        headers={"X-User-Id": str(superintendent.id)},
     )
     assert res_clear.status_code == 200
     assert res_clear.json()["status"] == "cleared"
