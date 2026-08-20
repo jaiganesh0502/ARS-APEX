@@ -8,9 +8,9 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-discharge_orchestration}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-alta_secure_postgres_pass_2026}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -19,7 +19,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Optional backend container for containerized runtime
   backend:
     build:
       context: ./backend
@@ -30,29 +29,39 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-discharge_orchestration}
-      ENVIRONMENT: development
-      DEBUG: "true"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-alta_secure_postgres_pass_2026}@postgres:5432/${POSTGRES_DB:-discharge_orchestration}
+      ENVIRONMENT: production
+      DEBUG: "false"
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-alta_prod_internal_secret_2026}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-alta_jwt_super_secret_production_key_2026}
+      N8N_WEBHOOK_BASE_URL: http://n8n:5678
+      INTERNAL_API_BASE_URL: http://backend:8000/api/internal
+      REPLICATE_API_TOKEN: ${REPLICATE_API_TOKEN:-}
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./backend:/app
-  # n8n Workflow Orchestrator
+
   n8n:
     image: n8nio/n8n:latest
     container_name: discharge_orchestration_n8n
     restart: unless-stopped
     ports:
-      - "5678:5678"
+      - "127.0.0.1:5678:5678"
     environment:
       - N8N_BASIC_AUTH_ACTIVE=false
-      - N8N_HOST=localhost
+      - N8N_HOST=altaa.duckdns.org
       - N8N_PORT=5678
-      - N8N_PROTOCOL=http
-      - WEBHOOK_URL=http://localhost:5678/
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://altaa.duckdns.org/
       - GENERIC_TIMEZONE=UTC
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY:-alta_prod_internal_secret_2026}
+      - INTERNAL_API_BASE_URL=http://backend:8000/api/internal
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./workflows/n8n:/workflows:ro
 
 volumes:
   postgres_data:
