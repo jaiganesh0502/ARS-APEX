@@ -43,6 +43,7 @@ services:
       - ./backend:/app
       - ./data:/data:ro
       - ./data:/app/data:ro
+      - backend_storage:/app/storage
 
   n8n:
     image: n8nio/n8n:latest
@@ -69,4 +70,6 @@ volumes:
   postgres_data:
     driver: local
   n8n_data:
+    driver: local
+  backend_storage:
     driver: local

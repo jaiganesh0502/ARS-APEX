@@ -72,3 +72,9 @@ jobs:
             sudo docker exec discharge_orchestration_backend alembic upgrade head
             sudo docker exec discharge_orchestration_backend python -m app.db.seed
             sudo systemctl reload nginx
+
+      - name: Verify Live Deployment Health
+        run: |
+          echo "Verifying backend health on staging..."
+          curl --fail --retry 5 --retry-delay 3 https://${{ secrets.EC2_HOST || 'altaa.duckdns.org' }}/api/health
+
