@@ -214,14 +214,22 @@ class BillingService:
         invoice.qr_code_uri = qr_uri
 
         # Sync BillingClearance
-        if not billing_clearance.total_amount:
-            billing_clearance.total_amount = total
-            billing_clearance.amount_paid = Decimal("0.00")
-            billing_clearance.outstanding_amount = balance
+        billing_clearance.total_amount = total
+        billing_clearance.amount_paid = invoice.amount_paid
+        billing_clearance.outstanding_amount = balance
         if is_emergency:
             billing_clearance.status = BillingStatus.DEFERRED
             billing_clearance.deferred = True
             billing_clearance.notes = "Emergency transfer: financial gate bypassed for immediate transport."
+        elif balance > Decimal("0.00"):
+            billing_clearance.status = BillingStatus.PENDING
+            billing_clearance.deferred = False
+            billing_clearance.notes = "Awaiting financial settlement."
+            billing_clearance.clearance_reference = None
+        else:
+            billing_clearance.status = BillingStatus.CLEARED
+            billing_clearance.deferred = False
+            billing_clearance.notes = "All dues settled."
 
         if auto_commit:
             self.db.commit()
@@ -243,8 +251,6 @@ class BillingService:
             )
         else:
             self.db.flush()
-
-        return invoice
 
         return invoice
 
@@ -291,6 +297,30 @@ class BillingService:
                 invoice.billing_clearance.confirmed_by = user.id if user else None
                 invoice.billing_clearance.confirmed_at = datetime.now(timezone.utc)
                 invoice.billing_clearance.clearance_reference = reference
+
+        # In-App Notification for MS on settlement
+        if invoice.balance_amount <= Decimal("0.00"):
+            from app.models.notification import Notification, NotificationChannel, NotificationType, NotificationStatus
+            admission = invoice.admission
+            patient = admission.patient if admission else None
+            patient_name = f"{patient.first_name} {patient.last_name}" if patient else "Patient"
+            patient_code = patient.patient_code if patient else "N/A"
+            ward_bed = f"{admission.bed.ward} / {admission.bed.bed_number}" if admission and admission.bed else "Assigned Bed"
+
+            ms_pay_notif = Notification(
+                recipient_type="medical_superintendent",
+                recipient_reference="superintendent@demo.local",
+                channel=NotificationChannel.IN_APP,
+                notification_type=NotificationType.DISCHARGE_PACKAGE_READY,
+                status=NotificationStatus.DELIVERED,
+                subject=f"Payment Settled & Discharge Ready: {patient_name} ({patient_code})",
+                message=f"Hospital invoice {invoice.invoice_number} (INR {invoice.total_amount:.2f}) has been paid in full. Patient in {ward_bed} is now DISCHARGE READY for physical bed turnover.",
+                related_entity_type="admission",
+                related_entity_id=invoice.admission_id,
+                created_at=datetime.now(timezone.utc),
+                sent_at=datetime.now(timezone.utc),
+            )
+            self.db.add(ms_pay_notif)
 
         self.db.commit()
         self.db.refresh(invoice)
@@ -360,6 +390,29 @@ class BillingService:
             invoice.billing_clearance.status = BillingStatus.CLEARED
             invoice.billing_clearance.confirmed_at = datetime.now(timezone.utc)
             invoice.billing_clearance.clearance_reference = reference
+
+        # In-App Notification for Medical Superintendent
+        from app.models.notification import Notification, NotificationChannel, NotificationType, NotificationStatus
+        admission = invoice.admission
+        patient = admission.patient if admission else None
+        patient_name = f"{patient.first_name} {patient.last_name}" if patient else "Patient"
+        patient_code = patient.patient_code if patient else "N/A"
+        ward_bed = f"{admission.bed.ward} / {admission.bed.bed_number}" if admission and admission.bed else "Assigned Bed"
+
+        ms_online_notif = Notification(
+            recipient_type="medical_superintendent",
+            recipient_reference="superintendent@demo.local",
+            channel=NotificationChannel.IN_APP,
+            notification_type=NotificationType.DISCHARGE_PACKAGE_READY,
+            status=NotificationStatus.DELIVERED,
+            subject=f"Online Payment Settled: {patient_name} ({patient_code})",
+            message=f"Patient {patient_name} settled invoice {invoice.invoice_number} (INR {pay_amount:.2f}) via UPI/Online Gateway. Patient in {ward_bed} is DISCHARGE READY.",
+            related_entity_type="admission",
+            related_entity_id=invoice.admission_id,
+            created_at=datetime.now(timezone.utc),
+            sent_at=datetime.now(timezone.utc),
+        )
+        self.db.add(ms_online_notif)
 
         self.db.commit()
         self.db.refresh(invoice)

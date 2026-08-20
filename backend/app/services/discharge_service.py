@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 from typing import Optional
 from fastapi import HTTPException, status
 from sqlalchemy import update
@@ -252,9 +253,9 @@ class DischargeService(BaseService):
                 admission_id=report.admission_id,
                 discharge_report_id=report.id,
                 status=BillingStatus.PENDING,
-                total_amount=18500.00,
-                amount_paid=0.00,
-                outstanding_amount=18500.00,
+                total_amount=Decimal("0.00"),
+                amount_paid=Decimal("0.00"),
+                outstanding_amount=Decimal("0.00"),
                 deferred=False,
                 notes="Awaiting finance department billing verification.",
             )
@@ -265,7 +266,29 @@ class DischargeService(BaseService):
         billing_svc = BillingService(self.db)
         billing_svc.generate_or_get_invoice(report.admission_id, auto_commit=False)
 
-        # 2. Emit report_approved workflow event
+        # 2. In-App Notification for Medical Superintendent
+        from app.models.notification import Notification, NotificationChannel, NotificationType, NotificationStatus
+        patient = admission.patient
+        patient_name = f"{patient.first_name} {patient.last_name}" if patient else f"Patient #{report.patient_id}"
+        patient_code = patient.patient_code if patient else "N/A"
+        ward_bed = f"{admission.bed.ward} / {admission.bed.bed_number}" if admission.bed else "Unassigned"
+
+        ms_notif = Notification(
+            recipient_type="medical_superintendent",
+            recipient_reference="superintendent@demo.local",
+            channel=NotificationChannel.IN_APP,
+            notification_type=NotificationType.DISCHARGE_PACKAGE_READY,
+            status=NotificationStatus.DELIVERED,
+            subject=f"Discharge Approved: {patient_name} ({patient_code})",
+            message=f"Dr. {doctor.name} approved clinical discharge for {patient_name} in Bed {ward_bed}. Awaiting financial clearance for departure.",
+            related_entity_type="admission",
+            related_entity_id=admission.id,
+            created_at=now,
+            sent_at=now,
+        )
+        self.db.add(ms_notif)
+
+        # 3. Emit report_approved workflow event
         event = WorkflowEvent(
             event_type="report_approved",
             entity_type="discharge_report",

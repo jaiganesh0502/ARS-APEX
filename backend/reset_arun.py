@@ -5,11 +5,13 @@ from app.models import (
     AmbulanceDispatch,
     Bed,
     BedStatus,
+    BillingClearance,
     ClinicalDecision,
     ClinicalDocument,
     DischargePackage,
     DischargeReport,
     Invoice,
+    Notification,
     Patient,
     PaymentTransaction,
     Transfer,
@@ -44,17 +46,19 @@ def reset_arun():
             db.delete(t)
         db.flush()
 
-        # 2. Clean up invoices & payments
+        # 2. Clean up invoices, payments, and billing clearance
+        db.query(BillingClearance).filter(BillingClearance.admission_id == admission.id).delete()
         invoices = db.query(Invoice).filter(Invoice.admission_id == admission.id).all()
         for inv in invoices:
             db.query(PaymentTransaction).filter(PaymentTransaction.invoice_id == inv.id).delete()
             db.delete(inv)
 
-        # 3. Clean up packages, reports, documents, decisions
+        # 3. Clean up packages, reports, documents, decisions, notifications
         db.query(DischargePackage).filter(DischargePackage.admission_id == admission.id).delete()
         db.query(DischargeReport).filter(DischargeReport.admission_id == admission.id).delete()
         db.query(ClinicalDecision).filter(ClinicalDecision.admission_id == admission.id).delete()
         db.query(ClinicalDocument).filter(ClinicalDocument.admission_id == admission.id).delete()
+        db.query(Notification).filter(Notification.related_entity_id == admission.id).delete()
 
         # 4. Get Bed GM-12 in General Medicine
         bed = db.query(Bed).filter(Bed.ward == "General Medicine", Bed.bed_number == "GM-12").first()
