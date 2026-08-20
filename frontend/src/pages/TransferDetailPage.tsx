@@ -25,6 +25,9 @@ import { Badge } from '../components/common/Badge';
 import { Spinner } from '../components/common/Spinner';
 import { TransferTimeline } from '../features/transfers/TransferTimeline';
 import { TransferPacketModal } from '../features/transfers/TransferPacketModal';
+import { TransferAcceptModal } from '../features/transfers/TransferAcceptModal';
+import { TransferRejectModal } from '../features/transfers/TransferRejectModal';
+import { useAuth } from '../context/AuthContext';
 import { transferApi } from '../api/transfers';
 import { billingApi } from '../api/billing';
 import { TransferDetail, TransferPacket, AmbulanceDispatch, BillingClearance } from '../types';
@@ -32,6 +35,7 @@ import { TransferDetail, TransferPacket, AmbulanceDispatch, BillingClearance } f
 export const TransferDetailPage: React.FC = () => {
   const { transferId } = useParams<{ transferId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [transfer, setTransfer] = useState<TransferDetail | null>(null);
   const [packet, setPacket] = useState<TransferPacket | null>(null);
@@ -42,6 +46,9 @@ export const TransferDetailPage: React.FC = () => {
 
   // Modals & Action states
   const [isPacketModalOpen, setIsPacketModalOpen] = useState(false);
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [isSendingPacket, setIsSendingPacket] = useState(false);
   const [isRematching, setIsRematching] = useState(false);
   const [isDispatchingAmbulance, setIsDispatchingAmbulance] = useState(false);
@@ -123,6 +130,36 @@ export const TransferDetailPage: React.FC = () => {
       alert('Unable to send packet. Please try again.');
     } finally {
       setIsSendingPacket(false);
+    }
+  };
+
+  const handleAcceptConfirm = async (notes?: string) => {
+    if (!transfer) return;
+    setIsActionLoading(true);
+    try {
+      await transferApi.acceptTransfer(transfer.id, notes);
+      setIsAcceptModalOpen(false);
+      await fetchTransferData();
+    } catch (err: unknown) {
+      console.error('Accept transfer error', err);
+      alert('Failed to accept transfer. Bed capacity may no longer be available.');
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleRejectConfirm = async (reason: string) => {
+    if (!transfer) return;
+    setIsActionLoading(true);
+    try {
+      await transferApi.rejectTransfer(transfer.id, reason);
+      setIsRejectModalOpen(false);
+      await fetchTransferData();
+    } catch (err: unknown) {
+      console.error('Reject transfer error', err);
+      alert('Failed to reject transfer. Please try again.');
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -231,6 +268,56 @@ export const TransferDetailPage: React.FC = () => {
           <span className="px-3 py-1 bg-red-200/80 text-red-950 font-bold text-xs rounded-full uppercase">
             Emergency
           </span>
+        </div>
+      )}
+
+      {/* Receiving Facility Decision Action Banner */}
+      {(transfer.status === 'awaiting_acceptance' || transfer.status === 'hospital_selected') && (
+        <div className="p-5 bg-amber-50/90 border-2 border-amber-300 rounded-2xl shadow-sm space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 bg-amber-600 text-white rounded-xl shrink-0 mt-0.5">
+                <Clock className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-amber-800 uppercase tracking-wider block">
+                  Receiving Facility Action Required
+                </span>
+                <h4 className="text-base font-extrabold text-amber-950">
+                  {transfer.receiving_hospital_name} — Inbound Clinical Packet Evaluated
+                </h4>
+                <p className="text-xs text-amber-800 mt-1">
+                  {user?.role === 'receiving_doctor' || user?.role === 'receiving_admin' || user?.role === 'medical_superintendent'
+                    ? 'Review clinical packet, reserve Cath Lab / ICU bed, and confirm transfer acceptance.'
+                    : `Clinical transfer packet delivered to ${transfer.receiving_hospital_name} review queue. Awaiting receiving physician acceptance.`}
+                </p>
+              </div>
+            </div>
+
+            {/* Action buttons for Receiving Physician / Superintendent */}
+            {(user?.role === 'receiving_doctor' || user?.role === 'receiving_admin' || user?.role === 'medical_superintendent') && (
+              <div className="flex items-center gap-2.5 shrink-0">
+                <Button
+                  variant="primary"
+                  size="md"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-md flex items-center gap-1.5 font-bold"
+                  leftIcon={<CheckCircle2 className="w-4 h-4" />}
+                  onClick={() => setIsAcceptModalOpen(true)}
+                >
+                  Accept Transfer & Reserve Bed
+                </Button>
+                <Button
+                  variant="outline"
+                  size="md"
+                  className="border-red-300 text-red-700 hover:bg-red-50 font-semibold"
+                  leftIcon={<XCircle className="w-4 h-4" />}
+                  onClick={() => setIsRejectModalOpen(true)}
+                >
+                  Reject
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -666,6 +753,29 @@ export const TransferDetailPage: React.FC = () => {
         isLoadingSend={isSendingPacket}
         onSend={handleSendPacket}
         onClose={() => setIsPacketModalOpen(false)}
+      />
+
+      {/* Acceptance Modal */}
+      <TransferAcceptModal
+        isOpen={isAcceptModalOpen}
+        patientName={transfer.patient_name}
+        specialty={transfer.required_specialty}
+        hospitalName={transfer.receiving_hospital_name}
+        availableBeds={transfer.receiving_hospital_available_beds}
+        isLoading={isActionLoading}
+        onClose={() => setIsAcceptModalOpen(false)}
+        onConfirm={handleAcceptConfirm}
+      />
+
+      {/* Rejection Modal */}
+      <TransferRejectModal
+        isOpen={isRejectModalOpen}
+        patientName={transfer.patient_name}
+        specialty={transfer.required_specialty}
+        sendingHospitalName={transfer.sending_hospital_name}
+        isLoading={isActionLoading}
+        onClose={() => setIsRejectModalOpen(false)}
+        onConfirm={handleRejectConfirm}
       />
     </div>
   );

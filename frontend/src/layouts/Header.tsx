@@ -67,9 +67,15 @@ export const Header: React.FC = () => {
         </div>
         <div>
           <span className="text-sm font-semibold text-slate-800 leading-none block">
-            Metro General Hospital
+            {user?.role === 'receiving_doctor' || user?.role === 'receiving_admin'
+              ? 'City Heart & Neuro Institute'
+              : 'Metro General Hospital'}
           </span>
-          <span className="text-xs text-slate-500">Central Medical Ward & ICU Network</span>
+          <span className="text-xs text-slate-500">
+            {user?.role === 'receiving_doctor' || user?.role === 'receiving_admin'
+              ? 'Tertiary Cardiology & Neuro Receiving Network'
+              : 'Central Medical Ward & ICU Network'}
+          </span>
         </div>
       </div>
 
