@@ -112,9 +112,7 @@ export const PatientPortalDashboardPage: React.FC = () => {
       {/* Top Header */}
       <header className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-tr from-green-600 to-teal-500 rounded-xl text-white shadow-sm">
-            <ActivitySquare className="w-6 h-6" />
-          </div>
+          <img src="/logo.jpg" alt="Alta" className="w-10 h-10 rounded-xl shadow-sm" />
           <div>
             <span className="font-bold text-white text-lg tracking-tight leading-none block">
               Patient Care Portal

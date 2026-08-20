@@ -8,7 +8,6 @@ import {
   Inbox,
   Building2,
   Ambulance,
-  ActivitySquare,
   Cpu,
   FileHeart,
 } from 'lucide-react';
@@ -52,9 +51,7 @@ export const Sidebar: React.FC = () => {
     <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shrink-0">
       {/* Brand & Logo */}
       <div className="h-16 flex items-center px-6 gap-3 border-b border-slate-800 bg-slate-950">
-        <div className="p-2 bg-primary-600 rounded-lg text-white">
-          <ActivitySquare className="w-5 h-5" />
-        </div>
+        <img src="/logo.jpg" alt="Alta" className="w-9 h-9 rounded-lg shrink-0" />
         <div>
           <span className="font-bold text-white text-base tracking-tight leading-none block">
             MedOrchestrate

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
-  HeartPulse,
   Download,
   AlertTriangle,
   Calendar,
@@ -82,9 +81,7 @@ export const PatientPortalPage: React.FC = () => {
         {/* Navigation & Brand Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center shadow-md">
-              <HeartPulse className="w-6 h-6" />
-            </div>
+            <img src="/logo.jpg" alt="Alta" className="w-10 h-10 rounded-xl shadow-md" />
             <div>
               <h1 className="text-lg font-bold text-slate-900 leading-tight">
                 MedOrchestrate Health System

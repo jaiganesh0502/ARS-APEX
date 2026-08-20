@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  ActivitySquare,
   ShieldCheck,
   Stethoscope,
   Building2,
@@ -79,11 +78,13 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex items-center justify-center p-3.5 bg-gradient-to-tr from-primary-700 to-indigo-600 rounded-2xl shadow-lg shadow-primary-500/20 mb-4 ring-1 ring-white/10">
-          <ActivitySquare className="w-9 h-9 text-white" />
-        </div>
+        <img
+          src="/logo.jpg"
+          alt="Alta"
+          className="inline-block w-16 h-16 rounded-2xl shadow-lg shadow-primary-500/20 mb-4 ring-1 ring-white/10"
+        />
         <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-          MedOrchestrate
+          Alta
         </h1>
         <p className="mt-1.5 text-xs text-slate-400 font-medium tracking-wide uppercase">
           AI Hospital Discharge & Inter-Hospital Transfer System
