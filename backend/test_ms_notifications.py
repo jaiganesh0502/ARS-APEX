@@ -13,7 +13,7 @@ h_doc = {"Authorization": f"Bearer {token_doc}"}
 
 # Doctor creates & confirms decision
 r_dec = httpx.post(
-    f"{base}/clinical-decisions/1",
+    f"{base}/admissions/1/clinical-decision",
     headers=h_doc,
     json={"decision_type": "discharge", "reason": "Patient clinically stable.", "notes": "Completed course."},
     verify=False
