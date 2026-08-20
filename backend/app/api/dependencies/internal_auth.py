@@ -1,9 +1,10 @@
+from typing import Optional
 from fastapi import Header, HTTPException, status
 from app.core.config import settings
 
 
 async def verify_internal_api_key(
-    x_internal_api_key: str = Header(..., alias="X-Internal-API-Key")
+    x_internal_api_key: Optional[str] = Header(None, alias="X-Internal-API-Key")
 ) -> str:
     """
     Dependency to verify internal service-to-service API key for /api/internal/* routes.

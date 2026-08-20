@@ -25,7 +25,11 @@ ResultT = TypeVar("ResultT")
 class BedReleaseService:
     """Own the guarded start of the operational bed-turnover workflow."""
 
-    _ALLOWED_ROLES = {UserRole.DOCTOR, UserRole.WARD_ADMIN}
+    _ALLOWED_ROLES = {
+        UserRole.DOCTOR,
+        UserRole.WARD_ADMIN,
+        UserRole.MEDICAL_SUPERINTENDENT,
+    }
     _ACTIVE_ADMISSION_STATUSES = (
         AdmissionStatus.ADMITTED,
         AdmissionStatus.DISCHARGING,

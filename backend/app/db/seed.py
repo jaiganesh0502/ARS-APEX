@@ -102,7 +102,7 @@ def _seed_demo_users(db: Session, primary_patient: Optional[Patient] = None) -> 
         db.add(asha)
         db.flush()
 
-    return doctor
+    return asha
 
 
 def _doctor(db: Session) -> User:
@@ -161,16 +161,6 @@ SYNTHETIC_HOSPITALS = [
         ],
     },
 ]
-
-
-def _doctor(db: Session) -> User:
-    email = "asha.rao@synthetic-hospital.test"
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        user = User(name="Dr. Asha Rao", email=email, role=UserRole.DOCTOR)
-        db.add(user)
-        db.flush()
-    return user
 
 
 ACTIVE_ADMISSION_STATUSES = (
