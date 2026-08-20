@@ -12,7 +12,8 @@
       "name": "Webhook: ambulance_dispatch_requested",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [100, 300]
+      "position": [100, 300],
+      "webhookId": "ambulance_dispatch_requested"
     },
     {
       "parameters": {

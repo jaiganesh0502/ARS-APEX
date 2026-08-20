@@ -12,7 +12,8 @@
       "name": "Webhook: patient_transfer_started",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [100, 300]
+      "position": [100, 300],
+      "webhookId": "patient_transfer_started"
     },
     {
       "parameters": {

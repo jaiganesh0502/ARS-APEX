@@ -12,7 +12,8 @@
       "name": "Webhook: clinical_transfer_decision_confirmed",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [100, 300]
+      "position": [100, 300],
+      "webhookId": "clinical_transfer_decision_confirmed"
     },
     {
       "parameters": {

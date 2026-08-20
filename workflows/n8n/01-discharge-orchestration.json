@@ -12,7 +12,8 @@
       "name": "Webhook: report_approved",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [100, 300]
+      "position": [100, 300],
+      "webhookId": "report_approved"
     },
     {
       "parameters": {

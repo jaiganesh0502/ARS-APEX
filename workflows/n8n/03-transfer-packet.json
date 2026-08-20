@@ -12,7 +12,8 @@
       "name": "Webhook: receiving_hospital_selected",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [100, 300]
+      "position": [100, 300],
+      "webhookId": "receiving_hospital_selected"
     },
     {
       "parameters": {

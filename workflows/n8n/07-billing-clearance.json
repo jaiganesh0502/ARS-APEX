@@ -12,7 +12,8 @@
       "name": "Webhook: billing_cleared",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [100, 300]
+      "position": [100, 300],
+      "webhookId": "billing_cleared"
     },
     {
       "parameters": {
