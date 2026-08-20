@@ -71,6 +71,10 @@ jobs:
             sudo docker compose up -d --build
             sudo docker exec discharge_orchestration_backend alembic upgrade head
             sudo docker exec discharge_orchestration_backend python -m app.db.seed
+            cd /home/ubuntu/alta/frontend
+            npm ci
+            npm run build
+            sudo chmod o+x /home /home/ubuntu /home/ubuntu/alta /home/ubuntu/alta/frontend /home/ubuntu/alta/frontend/dist
             sudo systemctl reload nginx
 
       - name: Verify Live Deployment Health
