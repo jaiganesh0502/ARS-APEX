@@ -211,6 +211,32 @@ def internal_finalize_handoff(
     return result
 
 
+@router.post("/admissions/{admission_id}/finalize-discharge")
+def internal_finalize_discharge(
+    admission_id: int,
+    payload: Optional[InternalEventPayload] = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Automated n8n trigger to finalize discharge package and generate PDF once billing clears.
+    """
+    from app.services.discharge_package_service import DischargePackageService
+    system_user = _get_system_user(db)
+    pkg_svc = DischargePackageService(db)
+    package = pkg_svc.finalize_discharge_package(
+        admission_id=admission_id,
+        authorizing_user=system_user,
+        notes=payload.reason if payload else "Automated discharge package authorization by n8n workflow",
+    )
+    return {
+        "success": True,
+        "package_id": package.id,
+        "admission_id": package.admission_id,
+        "status": package.status.value,
+        "pdf_ready": bool(package.pdf_path),
+    }
+
+
 @router.post("/workflow-events/{event_id}/complete")
 def internal_complete_workflow_event(
     event_id: int,

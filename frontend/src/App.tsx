@@ -18,6 +18,7 @@ import { TransferEntryPage } from './pages/TransferEntryPage';
 import { IncomingTransfersPage } from './pages/IncomingTransfersPage';
 import { ReceivingTransferDetailPage } from './pages/ReceivingTransferDetailPage';
 import { OperationsPage } from './pages/OperationsPage';
+import { PatientPortalPage } from './pages/PatientPortalPage';
 
 export const App: React.FC = () => {
   return (
@@ -25,6 +26,9 @@ export const App: React.FC = () => {
       <Routes>
         {/* Public login route */}
         <Route path="/login" element={<LoginPage />} />
+
+        {/* Public Patient Care Portal View */}
+        <Route path="/patient-view/:patientId" element={<PatientPortalPage />} />
 
         {/* Protected Dashboard layout routes */}
         <Route element={<DashboardLayout />}>

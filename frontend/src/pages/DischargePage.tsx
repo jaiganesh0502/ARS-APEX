@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, FileText, Pencil, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, FileText, Pencil, ShieldCheck, Download, ExternalLink, CreditCard, CheckCircle, AlertCircle } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { getBed, listAllBeds } from '../api/beds';
@@ -15,8 +15,8 @@ import { ReportReviewModal } from '../features/discharge/ReportReviewModal';
 import { ReportSafetyNotice } from '../features/discharge/ReportSafetyNotice';
 import { availableReportActions, effectiveReportContent } from '../features/discharge/reportState';
 import { billingApi } from '../api/billing';
-import { BedSummary, BillingClearance, DischargeReport, PatientDetail } from '../types';
-import { CreditCard, CheckCircle, AlertCircle } from 'lucide-react';
+import { dischargePackagesApi } from '../api/dischargePackages';
+import { BedSummary, BillingClearance, DischargePackage, DischargeReport, PatientDetail } from '../types';
 
 export const BillingClearanceCard: React.FC<{
   admissionId: number;
@@ -131,6 +131,185 @@ export const BillingClearanceCard: React.FC<{
                 Confirm Clearance
               </Button>
             </div>
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+};
+
+export const FinalDischargePackageCard: React.FC<{
+  admissionId: number;
+  patientId: number;
+  billing?: BillingClearance | null;
+  report?: DischargeReport | null;
+}> = ({ admissionId, patientId, billing, report }) => {
+  const [pkg, setPkg] = useState<DischargePackage | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState('');
+  const [showSummary, setShowSummary] = useState(false);
+
+  const fetchPackage = async () => {
+    try {
+      const data = await dischargePackagesApi.getAdmissionDischargePackage(admissionId);
+      setPkg(data);
+    } catch {
+      // Ignored if 404
+    }
+  };
+
+  useEffect(() => {
+    fetchPackage();
+  }, [admissionId, billing?.status]);
+
+  const handleGenerate = async () => {
+    try {
+      setGenerating(true);
+      setError('');
+      const created = await dischargePackagesApi.finalizeDischargePackage(admissionId);
+      setPkg(created);
+    } catch (err: any) {
+      setError(err?.response?.data?.detail || 'Failed to generate discharge package.');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const isBillingCleared =
+    billing?.status === 'cleared' || billing?.status === 'waived' || billing?.status === 'deferred';
+  const isReportApproved = report?.status === 'approved';
+
+  if (!isReportApproved) return null;
+
+  return (
+    <Card
+      title="Final Discharge Package & Patient Instructions"
+      subtitle="Physician-approved clinical discharge document, patient-friendly summary, and official PDF export."
+      action={
+        pkg ? (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
+            <CheckCircle className="w-3.5 h-3.5" />
+            Authorized & Ready
+          </span>
+        ) : isBillingCleared ? (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+            Ready to Generate
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">
+            Awaiting Billing Clearance
+          </span>
+        )
+      }
+    >
+      <div className="space-y-4">
+        {!isBillingCleared && (
+          <div className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-200 rounded-md text-xs text-amber-900 leading-relaxed">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold">Billing Clearance Required</p>
+              <p className="mt-0.5">
+                The physician has approved the clinical report. Bed release continues independently in parallel, but final discharge package generation is locked until administrative billing clearance clears.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isBillingCleared && !pkg && (
+          <div className="p-4 bg-blue-50/50 border border-blue-200 rounded-lg">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-blue-950">Ready to Authorize Discharge Package</p>
+                <p className="text-xs text-blue-800 mt-1 leading-relaxed">
+                  Both physician approval and billing clearance are verified. Generate the final discharge documentation, compile patient-friendly recovery instructions, and produce the vector PDF.
+                </p>
+              </div>
+              <Button onClick={handleGenerate} isLoading={generating} size="sm">
+                Generate Final Package
+              </Button>
+            </div>
+            {error && <p className="text-xs text-rose-600 mt-2 font-medium">{error}</p>}
+          </div>
+        )}
+
+        {pkg && (
+          <div className="p-4 bg-emerald-50/40 border border-emerald-200 rounded-lg space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-emerald-950">
+                  Discharge Package #PKG-{pkg.id.toString().padStart(5, '0')}
+                </p>
+                <p className="text-xs text-emerald-800 mt-0.5">
+                  Authorized on {new Date(pkg.authorized_at).toLocaleString()} • Snapshot frozen
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={`/api/discharge-packages/${pkg.id}/pdf`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition shadow-sm"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download PDF
+                </a>
+                <Link
+                  to={`/patient-view/${patientId}`}
+                  target="_blank"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-md transition"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Patient Portal View
+                </Link>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowSummary(!showSummary)}
+                >
+                  {showSummary ? 'Hide Instructions' : 'View Instructions'}
+                </Button>
+              </div>
+            </div>
+
+            {showSummary && pkg.patient_summary && (
+              <div className="mt-4 pt-4 border-t border-emerald-200/60 grid gap-3 sm:grid-cols-2 text-xs text-slate-700">
+                <div className="p-3 bg-white border border-slate-200 rounded-md">
+                  <p className="font-bold text-slate-900 mb-1">Why You Were Admitted</p>
+                  <p>{pkg.patient_summary.why_you_were_admitted || 'Observation & Care'}</p>
+                </div>
+                <div className="p-3 bg-white border border-slate-200 rounded-md">
+                  <p className="font-bold text-slate-900 mb-1">Summary of Treatment</p>
+                  <p>{pkg.patient_summary.what_treatment_you_received || 'Inpatient Therapy'}</p>
+                </div>
+                <div className="p-3 bg-white border border-slate-200 rounded-md">
+                  <p className="font-bold text-emerald-800 mb-1">Medications to Take</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {pkg.patient_summary.medications_to_take?.map((m, i) => (
+                      <li key={i}>{m}</li>
+                    )) || <li>As labeled on discharge prescriptions.</li>}
+                  </ul>
+                </div>
+                <div className="p-3 bg-white border border-slate-200 rounded-md">
+                  <p className="font-bold text-rose-800 mb-1">Medications to Stop</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {pkg.patient_summary.medications_to_stop?.length ? (
+                      pkg.patient_summary.medications_to_stop.map((m, i) => (
+                        <li key={i}>{m}</li>
+                      ))
+                    ) : (
+                      <li>None noted</li>
+                    )}
+                  </ul>
+                </div>
+                <div className="p-3 bg-white border border-slate-200 rounded-md sm:col-span-2">
+                  <p className="font-bold text-slate-900 mb-1">Follow-Up & Warning Signs</p>
+                  <p className="mb-1">{pkg.patient_summary.follow_up_plan}</p>
+                  <p className="text-rose-700 font-medium">
+                    {pkg.patient_summary.when_to_seek_urgent_help}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -415,6 +594,12 @@ const DischargeRoute: React.FC<{ patientId: number }> = ({ patientId: numericPat
           admissionId={admission.id}
           billing={billing}
           onClearanceUpdated={() => setReloadKey((v) => v + 1)}
+        />
+        <FinalDischargePackageCard
+          admissionId={admission.id}
+          patientId={patient.id}
+          billing={billing}
+          report={report}
         />
       </>
     )}

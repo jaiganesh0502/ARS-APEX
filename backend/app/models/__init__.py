@@ -15,6 +15,8 @@ from app.models.ambulance_dispatch import AmbulanceDispatch, AmbulanceStatus
 from app.models.workflow_event import WorkflowEvent
 from app.models.clinical_decision import ClinicalDecision, ClinicalDecisionType, TransferUrgency, ClinicalDecisionStatus
 from app.models.billing_clearance import BillingClearance, BillingStatus
+from app.models.discharge_package import DischargePackage, DischargePackageStatus
+from app.models.notification import Notification, NotificationChannel, NotificationType, NotificationStatus
 
 __all__ = [
     "User",
@@ -46,4 +48,10 @@ __all__ = [
     "ClinicalDecisionStatus",
     "BillingClearance",
     "BillingStatus",
+    "DischargePackage",
+    "DischargePackageStatus",
+    "Notification",
+    "NotificationChannel",
+    "NotificationType",
+    "NotificationStatus",
 ]

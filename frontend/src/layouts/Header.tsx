@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Building, Wifi, WifiOff, Stethoscope } from 'lucide-react';
 import { checkSystemHealth } from '../api/health';
+import { NotificationBell } from '../components/common/NotificationBell';
 
 export const Header: React.FC = () => {
   const [apiOnline, setApiOnline] = useState<boolean | null>(null);
@@ -61,6 +62,9 @@ export const Header: React.FC = () => {
               : 'Checking API...'}
           </span>
         </div>
+
+        {/* In-App Notification Feed */}
+        <NotificationBell />
 
         {/* Doctor Persona Indicator */}
         <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200">

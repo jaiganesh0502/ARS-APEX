@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     MAPS_API_KEY: str = ""
     NOTIFICATION_SERVICE_URL: str = ""
 
+    # Feature 9: Discharge Package & Storage Settings
+    STORAGE_DIR: str = "storage/discharge-packages"
+    PATIENT_SUMMARY_MODE: str = "mock"  # "mock" | "live"
+
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
         env_file_encoding="utf-8",

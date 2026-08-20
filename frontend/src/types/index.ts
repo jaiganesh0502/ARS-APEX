@@ -561,3 +561,64 @@ export interface HealthStatusResponse {
   status: string;
   service: string;
 }
+
+export type DischargePackageStatus = 'draft' | 'authorized' | 'pdf_ready' | 'delivered' | 'failed';
+
+export interface PatientSummary {
+  why_you_were_admitted?: string;
+  what_treatment_you_received?: string;
+  medications_to_take?: string[];
+  medications_to_stop?: string[];
+  diet_instructions?: string;
+  activity_instructions?: string;
+  follow_up_plan?: string;
+  warning_signs?: string[];
+  when_to_seek_urgent_help?: string;
+}
+
+export interface DischargePackage {
+  id: number;
+  patient_id: number;
+  admission_id: number;
+  discharge_report_id: number;
+  billing_clearance_id?: number | null;
+  status: DischargePackageStatus;
+  clinical_snapshot: Record<string, any>;
+  patient_summary: PatientSummary;
+  pdf_path?: string | null;
+  pdf_generated_at?: string | null;
+  authorized_at: string;
+  authorized_by?: number | null;
+  created_at: string;
+  updated_at: string;
+  pdf_ready: boolean;
+  download_url?: string | null;
+}
+
+export type NotificationChannel = 'in_app' | 'simulated_email' | 'simulated_sms';
+export type NotificationType = 'discharge_package_ready' | 'transfer_update' | 'ambulance_dispatched' | 'transfer_completed';
+export type NotificationStatus = 'pending' | 'delivered' | 'read' | 'failed';
+
+export interface Notification {
+  id: number;
+  recipient_type: string;
+  recipient_reference: string;
+  channel: NotificationChannel;
+  notification_type: NotificationType;
+  status: NotificationStatus;
+  subject: string;
+  message: string;
+  related_entity_type?: string | null;
+  related_entity_id?: number | null;
+  created_at: string;
+  sent_at?: string | null;
+  failed_at?: string | null;
+  error_message?: string | null;
+}
+
+export interface NotificationListResponse {
+  items: Notification[];
+  total: number;
+  unread_count: number;
+}
+
