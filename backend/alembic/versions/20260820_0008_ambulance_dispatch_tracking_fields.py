@@ -49,11 +49,15 @@ def upgrade() -> None:
         if col_name not in existing_cols:
             op.add_column("ambulance_dispatches", col_def)
 
-    # Add index on dispatch_reference if column was added
-    try:
+    # Add index on dispatch_reference if it doesn't already exist. The ORM
+    # model declares this column unique+indexed, so 20260819_0001's
+    # create_all already creates it on a fresh database; a bare
+    # try/except here doesn't help under Postgres, since a failed
+    # statement aborts the whole migration transaction even when the
+    # Python exception is caught.
+    existing_indexes = {idx["name"] for idx in inspector.get_indexes("ambulance_dispatches")}
+    if "ix_ambulance_dispatches_dispatch_reference" not in existing_indexes:
         op.create_index("ix_ambulance_dispatches_dispatch_reference", "ambulance_dispatches", ["dispatch_reference"], unique=True)
-    except Exception:
-        pass
 
 
 def downgrade() -> None:

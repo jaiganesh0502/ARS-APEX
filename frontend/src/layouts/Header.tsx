@@ -30,7 +30,7 @@ export const Header: React.FC = () => {
         return {
           icon: Stethoscope,
           label: 'Attending Physician',
-          badgeBg: 'bg-blue-100 text-blue-700 border-blue-200',
+          badgeBg: 'bg-primary-100 text-primary-700 border-primary-200',
         };
       case 'medical_superintendent':
       case 'ward_admin':
@@ -44,7 +44,7 @@ export const Header: React.FC = () => {
         return {
           icon: UserIcon,
           label: 'Patient Record',
-          badgeBg: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+          badgeBg: 'bg-green-100 text-green-700 border-green-200',
         };
       default:
         return {
@@ -79,17 +79,17 @@ export const Header: React.FC = () => {
         <div
           className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${
             apiOnline === true
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              ? 'bg-green-50 text-green-700 border-green-200'
               : apiOnline === false
-              ? 'bg-rose-50 text-rose-700 border-rose-200'
+              ? 'bg-red-50 text-red-700 border-red-200'
               : 'bg-slate-100 text-slate-600 border-slate-200'
           }`}
           title={apiOnline ? 'FastAPI Backend Online' : 'Backend Unreachable'}
         >
           {apiOnline === true ? (
-            <Wifi className="w-3.5 h-3.5 text-emerald-600" />
+            <Wifi className="w-3.5 h-3.5 text-green-600" />
           ) : (
-            <WifiOff className="w-3.5 h-3.5 text-rose-600" />
+            <WifiOff className="w-3.5 h-3.5 text-red-600" />
           )}
           <span>
             {apiOnline === true
@@ -122,7 +122,7 @@ export const Header: React.FC = () => {
             type="button"
             onClick={logout}
             title="Sign Out"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors ml-1"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors ml-1"
           >
             <LogOut className="w-4 h-4" />
           </button>

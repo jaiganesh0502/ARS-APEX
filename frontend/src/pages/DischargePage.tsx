@@ -53,11 +53,11 @@ export const BillingClearanceCard: React.FC<{
       subtitle="Parallel administrative stream: bed turnover is non-blocking while billing clearance is verified."
       action={
         billing?.status === 'cleared' ? (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
             <CheckCircle className="w-3.5 h-3.5 mr-1" /> Cleared
           </span>
         ) : billing?.status === 'deferred' ? (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800 border border-primary-200">
             Deferred (Emergency)
           </span>
         ) : (
@@ -86,12 +86,12 @@ export const BillingClearanceCard: React.FC<{
         )}
 
         {billing?.status === 'cleared' && (
-          <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-emerald-900">
+          <div className="rounded-lg bg-green-50 border border-green-200 p-4 text-green-900">
             <div className="flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
+              <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
               <div>
                 <p className="font-semibold">Billing Clearance Confirmed</p>
-                <p className="mt-1 text-xs text-emerald-800">
+                <p className="mt-1 text-xs text-green-800">
                   Reference: <span className="font-mono font-medium">{billing.clearance_reference}</span> | All dues settled. Patient handoff authorized.
                 </p>
               </div>
@@ -122,7 +122,7 @@ export const BillingClearanceCard: React.FC<{
               value={refInput}
               onChange={(e) => setRefInput(e.target.value)}
             />
-            {error && <p className="text-xs text-rose-600">{error}</p>}
+            {error && <p className="text-xs text-red-600">{error}</p>}
             <div className="flex gap-2 justify-end">
               <Button size="sm" variant="ghost" onClick={() => setShowConfirm(false)} disabled={clearing}>
                 Cancel
@@ -187,12 +187,12 @@ export const FinalDischargePackageCard: React.FC<{
       subtitle="Physician-approved clinical discharge document, patient-friendly summary, and official PDF export."
       action={
         pkg ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
             <CheckCircle className="w-3.5 h-3.5" />
             Authorized & Ready
           </span>
         ) : isBillingCleared ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-primary-100 text-primary-800">
             Ready to Generate
           </span>
         ) : (
@@ -216,11 +216,11 @@ export const FinalDischargePackageCard: React.FC<{
         )}
 
         {isBillingCleared && !pkg && (
-          <div className="p-4 bg-blue-50/50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-primary-50/50 border border-primary-200 rounded-lg">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-blue-950">Ready to Authorize Discharge Package</p>
-                <p className="text-xs text-blue-800 mt-1 leading-relaxed">
+                <p className="text-sm font-semibold text-primary-950">Ready to Authorize Discharge Package</p>
+                <p className="text-xs text-primary-800 mt-1 leading-relaxed">
                   Both physician approval and billing clearance are verified. Generate the final discharge documentation, compile patient-friendly recovery instructions, and produce the vector PDF.
                 </p>
               </div>
@@ -228,18 +228,18 @@ export const FinalDischargePackageCard: React.FC<{
                 Generate Final Package
               </Button>
             </div>
-            {error && <p className="text-xs text-rose-600 mt-2 font-medium">{error}</p>}
+            {error && <p className="text-xs text-red-600 mt-2 font-medium">{error}</p>}
           </div>
         )}
 
         {pkg && (
-          <div className="p-4 bg-emerald-50/40 border border-emerald-200 rounded-lg space-y-3">
+          <div className="p-4 bg-green-50/40 border border-green-200 rounded-lg space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-emerald-950">
+                <p className="text-sm font-semibold text-green-950">
                   Discharge Package #PKG-{pkg.id.toString().padStart(5, '0')}
                 </p>
-                <p className="text-xs text-emerald-800 mt-0.5">
+                <p className="text-xs text-green-800 mt-0.5">
                   Authorized on {new Date(pkg.authorized_at).toLocaleString()} • Snapshot frozen
                 </p>
               </div>
@@ -248,7 +248,7 @@ export const FinalDischargePackageCard: React.FC<{
                   href={`/api/discharge-packages/${pkg.id}/pdf`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 rounded-md transition shadow-sm"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Download PDF
@@ -272,7 +272,7 @@ export const FinalDischargePackageCard: React.FC<{
             </div>
 
             {showSummary && pkg.patient_summary && (
-              <div className="mt-4 pt-4 border-t border-emerald-200/60 grid gap-3 sm:grid-cols-2 text-xs text-slate-700">
+              <div className="mt-4 pt-4 border-t border-green-200/60 grid gap-3 sm:grid-cols-2 text-xs text-slate-700">
                 <div className="p-3 bg-white border border-slate-200 rounded-md">
                   <p className="font-bold text-slate-900 mb-1">Why You Were Admitted</p>
                   <p>{pkg.patient_summary.why_you_were_admitted || 'Observation & Care'}</p>
@@ -282,7 +282,7 @@ export const FinalDischargePackageCard: React.FC<{
                   <p>{pkg.patient_summary.what_treatment_you_received || 'Inpatient Therapy'}</p>
                 </div>
                 <div className="p-3 bg-white border border-slate-200 rounded-md">
-                  <p className="font-bold text-emerald-800 mb-1">Medications to Take</p>
+                  <p className="font-bold text-green-800 mb-1">Medications to Take</p>
                   <ul className="list-disc list-inside space-y-0.5">
                     {pkg.patient_summary.medications_to_take?.map((m, i) => (
                       <li key={i}>{m}</li>
@@ -290,7 +290,7 @@ export const FinalDischargePackageCard: React.FC<{
                   </ul>
                 </div>
                 <div className="p-3 bg-white border border-slate-200 rounded-md">
-                  <p className="font-bold text-rose-800 mb-1">Medications to Stop</p>
+                  <p className="font-bold text-red-800 mb-1">Medications to Stop</p>
                   <ul className="list-disc list-inside space-y-0.5">
                     {pkg.patient_summary.medications_to_stop?.length ? (
                       pkg.patient_summary.medications_to_stop.map((m, i) => (
@@ -304,7 +304,7 @@ export const FinalDischargePackageCard: React.FC<{
                 <div className="p-3 bg-white border border-slate-200 rounded-md sm:col-span-2">
                   <p className="font-bold text-slate-900 mb-1">Follow-Up & Warning Signs</p>
                   <p className="mb-1">{pkg.patient_summary.follow_up_plan}</p>
-                  <p className="text-rose-700 font-medium">
+                  <p className="text-red-700 font-medium">
                     {pkg.patient_summary.when_to_seek_urgent_help}
                   </p>
                 </div>
@@ -356,7 +356,7 @@ export const ApprovedBedReleaseStatus: React.FC<{ bed?: BedSummary; state: BedLo
       <p className="font-semibold text-slate-900">{nextStep}</p>
       {bed && <p>Bed Status: {bed.status.charAt(0).toUpperCase() + bed.status.slice(1)}</p>}
       <p>Approval alone does not discharge the patient or release the bed.</p>
-      {canStart && <Link className="inline-flex rounded-md bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800" to={`/beds/${bed.id}`}>Start Bed Release</Link>}
+      {canStart && <Link className="inline-flex rounded-md bg-primary-700 px-4 py-2 font-medium text-white hover:bg-primary-800" to={`/beds/${bed.id}`}>Start Bed Release</Link>}
     </div>
   </Card>;
 };
@@ -578,13 +578,13 @@ const DischargeRoute: React.FC<{ patientId: number }> = ({ patientId: numericPat
     {!report && <Card title="Generate AI draft" subtitle="Generation is started only when you choose it.">
       <ReportSafetyNotice status="generated" />
       <div className="mt-5 flex items-start gap-3 text-sm leading-6 text-slate-600"><FileText className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" aria-hidden="true" /><p>The draft uses persisted patient, admission, medical-record, medication, vital-sign, and confirmed clinical-decision information. Missing information remains marked as not documented.</p></div>
-      {actionError && <p className="mt-4 text-sm font-medium text-rose-700" role="alert">{actionError}</p>}
+      {actionError && <p className="mt-4 text-sm font-medium text-red-700" role="alert">{actionError}</p>}
       <div className="mt-6"><Button onClick={generate} isLoading={generating} disabled={generating}>{generating ? 'Generating draft' : actionError ? 'Retry Generation' : 'Generate AI Draft'}</Button></div>
     </Card>}
 
     {report && mode === 'summary' && <><ReportSafetyNotice status={report.status} /><Card title="Clinical discharge report" subtitle={`Generated with ${report.generation_model || 'the configured clinical model'}.`} action={<StatusBadge status={report.status} />}>
       {report.status === 'approved' && <ApprovalAudit report={report} />}<ReportText content={effectiveContent} />
-      {actionError && <p className="mt-4 text-sm font-medium text-rose-700" role="alert">{actionError}</p>}
+      {actionError && <p className="mt-4 text-sm font-medium text-red-700" role="alert">{actionError}</p>}
       {actions && (actions.canEdit || actions.canReview) && <div className="mt-6 flex flex-wrap gap-3"><Button variant="outline" leftIcon={<Pencil className="h-4 w-4" />} onClick={startEditing} disabled={!actions.canEdit}>Edit Draft</Button><Button leftIcon={<ShieldCheck className="h-4 w-4" />} onClick={startApprovalReview} disabled={!actions.canReview}>Review for Approval</Button></div>}
     </Card></>}
     {report?.status === 'approved' && mode === 'summary' && (
@@ -606,14 +606,14 @@ const DischargeRoute: React.FC<{ patientId: number }> = ({ patientId: numericPat
 
     {report && mode === 'editing' && <><ReportSafetyNotice status={report.status} /><Card title="Edit discharge report" subtitle="Changes remain a physician-reviewed report and do not finalize discharge.">
       <label className="block text-sm font-semibold text-slate-800" htmlFor="discharge-report-editor">Report text</label><textarea id="discharge-report-editor" className="mt-2 min-h-96 w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-sm leading-6 text-slate-800" value={editorText} onChange={(event) => setEditorText(event.target.value)} />
-      {actionError && <p className="mt-4 text-sm font-medium text-rose-700" role="alert">{actionError}</p>}
+      {actionError && <p className="mt-4 text-sm font-medium text-red-700" role="alert">{actionError}</p>}
       <div className="mt-6 flex flex-wrap justify-between gap-3"><Button variant="outline" onClick={() => { setMode('summary'); setActionError(''); }} disabled={saving}>Cancel</Button><Button onClick={saveEdits} isLoading={saving}>Save Changes</Button></div>
     </Card></>}
 
     {report && mode === 'approval_review' && <><ReportSafetyNotice status={report.status} /><Card title="Review report for approval" subtitle="Read the effective report before recording physician approval." action={<StatusBadge status={report.status} />}>
       <dl className="mb-5 grid gap-4 text-sm sm:grid-cols-2"><Info label="Patient" value={`${demographics.first_name} ${demographics.last_name} (${patient.patient_code})`} /><Info label="Generation model" value={report.generation_model} /></dl><ReportText content={effectiveContent} />
       <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-md border border-slate-200 p-3 text-sm leading-6 text-slate-700"><input type="checkbox" className="mt-1" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} /><span>I have reviewed the full report and understand that approval records this report only; it does not discharge the patient or release the bed.</span></label>
-      {actionError && <p className="mt-4 text-sm font-medium text-rose-700" role="alert">{actionError}</p>}
+      {actionError && <p className="mt-4 text-sm font-medium text-red-700" role="alert">{actionError}</p>}
       <div className="mt-6 flex flex-wrap justify-between gap-3"><Button variant="outline" onClick={() => { setMode('summary'); setActionError(''); }} disabled={saving}>Back to Report</Button><Button onClick={() => setShowApprovalModal(true)} disabled={!acknowledged || saving}>Approve Report</Button></div>
     </Card></>}
     {showApprovalModal && <ReportReviewModal acknowledged={acknowledged} saving={saving} error={actionError} onAcknowledgedChange={setAcknowledged} onCancel={() => { if (!saving) setShowApprovalModal(false); }} onApprove={approve} />}
@@ -622,4 +622,4 @@ const DischargeRoute: React.FC<{ patientId: number }> = ({ patientId: numericPat
 
 const Info: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => <div><dt className="text-slate-500">{label}</dt><dd className="mt-1 font-medium text-slate-900">{value || 'Not recorded'}</dd></div>;
 const ReportText: React.FC<{ content: string }> = ({ content }) => <pre className="max-h-[36rem] overflow-auto whitespace-pre-wrap rounded-md bg-slate-50 p-4 font-mono text-sm leading-6 text-slate-800">{content}</pre>;
-const ApprovalAudit: React.FC<{ report: DischargeReport }> = ({ report }) => <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950"><p className="font-semibold">Approved by {report.approving_doctor_name || 'the reviewing doctor'} on {formatDateTime(report.approved_at)}.</p><p>Final discharge and bed release are separate later steps.</p></div>;
+const ApprovalAudit: React.FC<{ report: DischargeReport }> = ({ report }) => <div className="mb-5 rounded-md border border-green-200 bg-green-50 p-4 text-sm leading-6 text-green-950"><p className="font-semibold">Approved by {report.approving_doctor_name || 'the reviewing doctor'} on {formatDateTime(report.approved_at)}.</p><p>Final discharge and bed release are separate later steps.</p></div>;

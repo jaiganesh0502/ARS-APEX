@@ -130,7 +130,7 @@ export const BedTransitionModal: React.FC<BedTransitionModalProps> = ({
     <div ref={dialogRef} tabIndex={-1} className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl outline-none" aria-busy={saving}>
       <h2 id="bed-transition-title" className="text-lg font-semibold text-slate-900">{copy.title}</h2>
       <p id="bed-transition-description" className="mt-3 text-sm leading-6 text-slate-600">{copy.description}</p>
-      {error && <p className="mt-4 rounded-md bg-rose-50 p-3 text-sm font-medium text-rose-800" role="alert">{error}</p>}
+      {error && <p className="mt-4 rounded-md bg-red-50 p-3 text-sm font-medium text-red-800" role="alert">{error}</p>}
       <div className="mt-6 flex justify-end gap-3">
         <Button variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
         <Button onClick={onConfirm} isLoading={saving} disabled={saving}>{copy.confirmLabel}</Button>

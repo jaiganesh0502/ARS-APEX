@@ -61,7 +61,7 @@ export const HospitalsPage: React.FC = () => {
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {h.specialties.map((spec) => (
-                    <Badge key={spec} variant="blue">
+                    <Badge key={spec} variant="primary">
                       {spec}
                     </Badge>
                   ))}
@@ -80,7 +80,7 @@ export const HospitalsPage: React.FC = () => {
                     >
                       <span className="font-medium text-slate-800">{cap.specialty}</span>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-emerald-700">
+                        <span className="font-bold text-green-700">
                           {cap.available} Available
                         </span>
                         <span className="text-slate-400">/ {cap.total} Total</span>

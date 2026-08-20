@@ -43,7 +43,7 @@ export const PatientsPage: React.FC = () => {
       <PageHeader title="Patients" description="Review active patient records and admission context." />
 
       <div className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_220px_auto] md:items-center">
-        <label className="flex items-center gap-3 rounded-md border border-slate-300 px-3 py-2 focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+        <label className="flex items-center gap-3 rounded-md border border-slate-300 px-3 py-2 focus-within:border-primary-600 focus-within:ring-1 focus-within:ring-primary-600">
           <Search className="h-4 w-4 shrink-0 text-slate-400" />
           <span className="sr-only">Search patient</span>
           <input className="w-full bg-transparent text-sm outline-none" placeholder="Search patient code or name" value={search} onChange={(event) => setSearch(event.target.value)} />
@@ -80,7 +80,7 @@ export const PatientsPage: React.FC = () => {
               <tbody className="divide-y divide-slate-100">
                 {result.items.map((patient) => (
                   <tr key={patient.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-4 font-mono text-xs font-semibold text-blue-700">{patient.patient_code}</td>
+                    <td className="px-4 py-4 font-mono text-xs font-semibold text-primary-700">{patient.patient_code}</td>
                     <td className="px-4 py-4 font-medium text-slate-900">{patient.first_name} {patient.last_name}</td>
                     <td className="px-4 py-4">{patient.age} / {patient.gender}</td>
                     <td className="px-4 py-4">{patient.primary_diagnosis || 'Not recorded'}</td>

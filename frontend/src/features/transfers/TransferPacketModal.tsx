@@ -50,7 +50,7 @@ export const TransferPacketModal: React.FC<TransferPacketModalProps> = ({
         {/* Modal Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50 rounded-t-2xl">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-100/80 text-blue-700 rounded-xl">
+            <div className="p-2.5 bg-primary-100/80 text-primary-700 rounded-xl">
               <FileText className="w-6 h-6" />
             </div>
             <div>
@@ -61,7 +61,7 @@ export const TransferPacketModal: React.FC<TransferPacketModalProps> = ({
                     packet.status === 'viewed'
                       ? 'green'
                       : packet.status === 'sent'
-                      ? 'blue'
+                      ? 'primary'
                       : 'slate'
                   }
                   size="sm"
@@ -87,14 +87,14 @@ export const TransferPacketModal: React.FC<TransferPacketModalProps> = ({
         <div className="overflow-y-auto p-6 space-y-6 text-xs text-slate-700">
           {/* Emergency Alert */}
           {isEmergency && (
-            <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between">
+            <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0" />
-                <span className="font-bold text-rose-950">
+                <ShieldAlert className="w-5 h-5 text-red-600 shrink-0" />
+                <span className="font-bold text-red-950">
                   Emergency Priority Transfer Packet
                 </span>
               </div>
-              <span className="text-[10px] font-bold uppercase bg-rose-200 text-rose-900 px-2 py-0.5 rounded">
+              <span className="text-[10px] font-bold uppercase bg-red-200 text-red-900 px-2 py-0.5 rounded">
                 Critical
               </span>
             </div>
@@ -121,10 +121,10 @@ export const TransferPacketModal: React.FC<TransferPacketModalProps> = ({
                 Destination Facility & Specialty
               </span>
               <span className="font-bold text-slate-900 text-sm block mt-0.5 flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-emerald-600" />
+                <Building2 className="w-4 h-4 text-green-600" />
                 {content.receiving_hospital.hospital_name}
               </span>
-              <span className="text-blue-700 font-semibold mt-1 block">
+              <span className="text-primary-700 font-semibold mt-1 block">
                 Required Specialty: {content.required_specialty}
               </span>
             </div>
@@ -166,21 +166,21 @@ export const TransferPacketModal: React.FC<TransferPacketModalProps> = ({
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Clinical Assessment & History
             </h4>
-            <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-xl space-y-2">
+            <div className="p-4 bg-primary-50/50 border border-primary-100 rounded-xl space-y-2">
               <div>
                 <span className="text-slate-500 block text-[11px] font-semibold">Primary Diagnosis</span>
                 <p className="font-bold text-slate-900 text-sm">{content.primary_diagnosis}</p>
               </div>
-              <div className="pt-2 border-t border-blue-200/50">
+              <div className="pt-2 border-t border-primary-200/50">
                 <span className="text-slate-500 block text-[11px] font-semibold">Transfer Justification</span>
                 <p className="text-slate-800 mt-0.5">{content.transfer_reason}</p>
               </div>
-              <div className="pt-2 border-t border-blue-200/50">
+              <div className="pt-2 border-t border-primary-200/50">
                 <span className="text-slate-500 block text-[11px] font-semibold">Treatment Course</span>
                 <p className="text-slate-700 whitespace-pre-wrap mt-0.5">{content.treatment_course}</p>
               </div>
               {content.clinical_notes && (
-                <div className="pt-2 border-t border-blue-200/50">
+                <div className="pt-2 border-t border-primary-200/50">
                   <span className="text-slate-500 block text-[11px] font-semibold">Physician Notes</span>
                   <p className="text-slate-700 italic mt-0.5">{content.clinical_notes}</p>
                 </div>
@@ -252,7 +252,7 @@ export const TransferPacketModal: React.FC<TransferPacketModalProps> = ({
                         <td className="px-3 py-2">{v.temperature.toFixed(1)} °C</td>
                         <td className="px-3 py-2 font-semibold text-slate-900">{v.heart_rate} bpm</td>
                         <td className="px-3 py-2">{v.blood_pressure}</td>
-                        <td className="px-3 py-2 font-semibold text-emerald-700">{v.oxygen_saturation}%</td>
+                        <td className="px-3 py-2 font-semibold text-green-700">{v.oxygen_saturation}%</td>
                         <td className="px-3 py-2 text-slate-500">{new Date(v.recorded_at).toLocaleTimeString()}</td>
                       </tr>
                     ))}
@@ -270,13 +270,13 @@ export const TransferPacketModal: React.FC<TransferPacketModalProps> = ({
             </div>
             {packet.sent_at && (
               <div className="flex items-center gap-1.5">
-                <Send className="w-3.5 h-3.5 text-blue-500" />
+                <Send className="w-3.5 h-3.5 text-primary-500" />
                 <span>Sent: {formatTimestamp(packet.sent_at)}</span>
               </div>
             )}
             {packet.viewed_at && (
               <div className="flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5 text-emerald-500" />
+                <Eye className="w-3.5 h-3.5 text-green-500" />
                 <span>Viewed: {formatTimestamp(packet.viewed_at)}</span>
               </div>
             )}

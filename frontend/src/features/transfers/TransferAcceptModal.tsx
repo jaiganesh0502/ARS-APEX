@@ -37,7 +37,7 @@ export const TransferAcceptModal: React.FC<TransferAcceptModalProps> = ({
       <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-          <div className="p-2.5 bg-emerald-50 text-emerald-700 rounded-xl">
+          <div className="p-2.5 bg-green-50 text-green-700 rounded-xl">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
@@ -57,7 +57,7 @@ export const TransferAcceptModal: React.FC<TransferAcceptModalProps> = ({
             </div>
             <div className="flex justify-between items-center py-1 border-b border-slate-200/60">
               <span className="text-slate-500 font-medium">Required Specialty:</span>
-              <span className="font-semibold text-blue-700">{specialty}</span>
+              <span className="font-semibold text-primary-700">{specialty}</span>
             </div>
             {hospitalName && (
               <div className="flex justify-between items-center py-1 border-b border-slate-200/60">
@@ -70,7 +70,7 @@ export const TransferAcceptModal: React.FC<TransferAcceptModalProps> = ({
                 <span className="text-slate-500 font-medium flex items-center gap-1">
                   <BedDouble className="w-3.5 h-3.5 text-slate-400" /> Current Capacity:
                 </span>
-                <span className="font-bold text-emerald-700">
+                <span className="font-bold text-green-700">
                   {availableBeds} {availableBeds === 1 ? 'bed' : 'beds'} free
                 </span>
               </div>
@@ -78,8 +78,8 @@ export const TransferAcceptModal: React.FC<TransferAcceptModalProps> = ({
           </div>
 
           {/* Atomic Reservation Notice */}
-          <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-2.5 text-emerald-900">
-            <AlertCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="p-3.5 bg-green-50 border border-green-200 rounded-xl flex items-start gap-2.5 text-green-900">
+            <AlertCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
             <p>
               <strong>Capacity Reservation Notice:</strong> Accepting this case will atomically decrement 1 bed slot in your facility&apos;s <strong>{specialty}</strong> capacity.
             </p>
@@ -95,7 +95,7 @@ export const TransferAcceptModal: React.FC<TransferAcceptModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g., Bed assigned in ICU-West. On-call catheterization team notified."
-              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs text-slate-800"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 text-xs text-slate-800"
             />
           </div>
 

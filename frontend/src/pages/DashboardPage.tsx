@@ -40,7 +40,7 @@ export const DashboardBedMetric: React.FC<{ beds: BedSummary[]; state: BedMetric
 
 export const DashboardSafetyNotice: React.FC = () => <div className="p-4 bg-slate-900 text-slate-300 rounded-lg flex items-center justify-between">
   <div className="flex items-center gap-3">
-    <ShieldCheck className="w-5 h-5 text-blue-400 shrink-0" />
+    <ShieldCheck className="w-5 h-5 text-primary-400 shrink-0" />
     <div className="text-xs">
       <span className="font-semibold text-white">Clinical Safety Architecture:</span>{' '}
       AI summaries remain in draft status until a physician explicitly signs off. Staff manually start bed release after approval, and each turnover step remains an explicit internal action.

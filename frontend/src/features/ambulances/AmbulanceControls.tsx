@@ -34,7 +34,7 @@ export const AmbulanceControls: React.FC<AmbulanceControlsProps> = ({
       title="Simulation Controls"
       subtitle="Operational transit state machine progression"
       action={
-        <span className="flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+        <span className="flex items-center gap-1 text-[11px] font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded border border-primary-200">
           <FlaskConical className="w-3 h-3" /> MVP Simulation Mode
         </span>
       }
@@ -125,7 +125,7 @@ export const AmbulanceControls: React.FC<AmbulanceControlsProps> = ({
               <Button
                 variant="primary"
                 size="md"
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
+                className="w-full bg-green-600 hover:bg-green-700"
                 isLoading={isLoading}
                 leftIcon={<CheckCircle2 className="w-4 h-4" />}
                 onClick={() => onAdvanceStatus('completed')}
@@ -135,15 +135,15 @@ export const AmbulanceControls: React.FC<AmbulanceControlsProps> = ({
             )}
 
             {status === 'completed' && (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-900 font-semibold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
                 <span>Transfer is fully completed. Bed turnover active at origin facility.</span>
               </div>
             )}
 
             {status === 'cancelled' && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-900 font-semibold flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-rose-600" />
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-900 font-semibold flex items-center gap-2">
+                <XCircle className="w-4 h-4 text-red-600" />
                 <span>Ambulance dispatch cancelled. Case is ready for re-dispatch.</span>
               </div>
             )}
@@ -152,7 +152,7 @@ export const AmbulanceControls: React.FC<AmbulanceControlsProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full text-rose-700 hover:bg-rose-50"
+                className="w-full text-red-700 hover:bg-red-50"
                 leftIcon={<XCircle className="w-3.5 h-3.5" />}
                 onClick={onRequestCancel}
                 disabled={isLoading}

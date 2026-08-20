@@ -74,7 +74,7 @@ export const OperationsPage: React.FC = () => {
     switch (status) {
       case 'delivered':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
             <CheckCircle2 className="w-3 h-3 mr-1" /> Delivered
           </span>
         );
@@ -97,19 +97,19 @@ export const OperationsPage: React.FC = () => {
     switch (status) {
       case 'completed':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-300">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-50 text-green-700 border border-green-300">
             <CheckCircle2 className="w-3 h-3 mr-1" /> Completed
           </span>
         );
       case 'processing':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-300">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-300">
             <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> In-Progress
           </span>
         );
       case 'failed':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-300">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-50 text-red-700 border border-red-300">
             <AlertTriangle className="w-3 h-3 mr-1" /> Failed
           </span>
         );
@@ -170,10 +170,10 @@ export const OperationsPage: React.FC = () => {
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Webhook Delivery</span>
-            <Send className="w-5 h-5 text-emerald-600" />
+            <Send className="w-5 h-5 text-green-600" />
           </div>
           <div className="flex items-baseline gap-2 mt-2">
-            <p className="text-2xl font-bold text-emerald-600">{counts?.delivery_delivered || 0}</p>
+            <p className="text-2xl font-bold text-green-600">{counts?.delivery_delivered || 0}</p>
             <span className="text-xs text-slate-500">/ {counts?.delivery_failed || 0} failed</span>
           </div>
           <span className="text-xs text-slate-500 mt-1 block">{counts?.delivery_pending || 0} pending transmission</span>
@@ -182,10 +182,10 @@ export const OperationsPage: React.FC = () => {
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Orchestrations</span>
-            <Cpu className="w-5 h-5 text-blue-600" />
+            <Cpu className="w-5 h-5 text-primary-600" />
           </div>
           <div className="flex items-baseline gap-2 mt-2">
-            <p className="text-2xl font-bold text-blue-600">{counts?.orchestration_completed || 0}</p>
+            <p className="text-2xl font-bold text-primary-600">{counts?.orchestration_completed || 0}</p>
             <span className="text-xs text-slate-500">completed</span>
           </div>
           <span className="text-xs text-slate-500 mt-1 block">{counts?.orchestration_processing || 0} active in n8n</span>
@@ -194,9 +194,9 @@ export const OperationsPage: React.FC = () => {
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Action Needed</span>
-            <AlertTriangle className="w-5 h-5 text-rose-500" />
+            <AlertTriangle className="w-5 h-5 text-red-500" />
           </div>
-          <p className="text-2xl font-bold text-rose-600 mt-2">
+          <p className="text-2xl font-bold text-red-600 mt-2">
             {(counts?.delivery_failed || 0) + (counts?.orchestration_failed || 0)}
           </p>
           <span className="text-xs text-slate-500 mt-1 block">Failed deliveries or workflows</span>
@@ -225,7 +225,7 @@ export const OperationsPage: React.FC = () => {
           <button
             onClick={() => setFilterTab('orch_failed')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-              filterTab === 'orch_failed' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200/60'
+              filterTab === 'orch_failed' ? 'bg-red-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200/60'
             }`}
           >
             Orchestration Failed ({events.filter((e) => e.orchestration_status === 'failed').length})
@@ -306,7 +306,7 @@ export const OperationsPage: React.FC = () => {
                         <button
                           onClick={() => handleRetry(event.id)}
                           disabled={retryingId === event.id}
-                          className="inline-flex items-center px-2.5 py-1 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition"
+                          className="inline-flex items-center px-2.5 py-1 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded transition"
                           title="Retry Webhook Delivery"
                         >
                           <RefreshCw className={`w-3.5 h-3.5 mr-1 ${retryingId === event.id ? 'animate-spin' : ''}`} />
@@ -362,7 +362,7 @@ export const OperationsPage: React.FC = () => {
               </div>
 
               {selectedEvent.last_error && (
-                <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3 rounded-lg text-xs">
+                <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg text-xs">
                   <span className="font-bold block mb-1">Last Error Trace:</span>
                   {selectedEvent.last_error}
                 </div>
@@ -372,13 +372,13 @@ export const OperationsPage: React.FC = () => {
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
                   Event JSON Payload (FastAPI $\to$ n8n)
                 </span>
-                <pre className="bg-slate-900 text-emerald-400 p-4 rounded-xl text-xs overflow-x-auto font-mono">
+                <pre className="bg-slate-900 text-green-400 p-4 rounded-xl text-xs overflow-x-auto font-mono">
                   {JSON.stringify(selectedEvent.payload, null, 2)}
                 </pre>
               </div>
 
               <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <ShieldCheck className="w-4 h-4 text-green-600" />
                 <span>Payload secured by HMAC header signature (X-Workflow-Secret). Clinical data is non-blocking.</span>
               </div>
             </div>

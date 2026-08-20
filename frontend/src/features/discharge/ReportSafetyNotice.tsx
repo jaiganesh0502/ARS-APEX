@@ -11,7 +11,7 @@ export const ReportSafetyNotice: React.FC<ReportSafetyNoticeProps> = ({ status }
   const isApproved = status === 'approved';
 
   return (
-    <div className={`flex items-start gap-3 rounded-lg border p-4 text-sm leading-6 ${isApproved ? 'border-emerald-200 bg-emerald-50 text-emerald-950' : 'border-amber-300 bg-amber-50 text-amber-950'}`} role="note">
+    <div className={`flex items-start gap-3 rounded-lg border p-4 text-sm leading-6 ${isApproved ? 'border-green-200 bg-green-50 text-green-950' : 'border-amber-300 bg-amber-50 text-amber-950'}`} role="note">
       {isApproved ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" /> : <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />}
       <div>
         <p className="font-semibold">{isApproved ? 'Physician-approved report' : 'Unapproved AI-assisted draft'}</p>

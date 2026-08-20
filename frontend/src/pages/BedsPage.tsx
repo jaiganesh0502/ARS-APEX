@@ -65,13 +65,13 @@ export const BedsTable: React.FC<{ beds: BedSummary[]; emptyMessage?: string }> 
             <td className="px-4 py-4"><StatusBadge status={bed.status} /></td>
             <td className="px-4 py-4">
               {isAvailable
-                ? <span className="flex flex-col"><span aria-label="No current patient">—</span><span className="text-xs text-emerald-700">Ready for assignment</span></span>
+                ? <span className="flex flex-col"><span aria-label="No current patient">—</span><span className="text-xs text-green-700">Ready for assignment</span></span>
                 : (bed.patient_name || '—')}
             </td>
             <td className="px-4 py-4">{bed.patient_code || '—'}</td>
             <td className="max-w-xs px-4 py-4">{bed.primary_diagnosis || '—'}</td>
             <td className="whitespace-nowrap px-4 py-4 text-slate-500">{formatDateTime(bed.updated_at)}</td>
-            <td className="px-4 py-4"><Link className="font-semibold text-blue-700 hover:text-blue-900 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2" to={`/beds/${bed.id}`}>View Details</Link></td>
+            <td className="px-4 py-4"><Link className="font-semibold text-primary-700 hover:text-primary-900 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2" to={`/beds/${bed.id}`}>View Details</Link></td>
           </tr>;
         })}
         {beds.length === 0 && <tr><td colSpan={8} className="px-4 py-12 text-center text-slate-500">{emptyMessage}</td></tr>}
@@ -126,24 +126,24 @@ export const BedsPage: React.FC = () => {
 
     <section aria-label="Bed filters" className="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_1fr_2fr]">
       <label className="text-sm font-medium text-slate-700">Ward
-        <select className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20" value={ward} onChange={(event) => setWard(event.target.value)}>
+        <select className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20" value={ward} onChange={(event) => setWard(event.target.value)}>
           <option value="">All wards</option>
           {wards.map((wardName) => <option key={wardName} value={wardName}>{wardName}</option>)}
         </select>
       </label>
       <label className="text-sm font-medium text-slate-700">Status
-        <select className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20" value={status} onChange={(event) => setStatus(event.target.value as BedStatus | '')}>
+        <select className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20" value={status} onChange={(event) => setStatus(event.target.value as BedStatus | '')}>
           <option value="">All statuses</option>
           {statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
         </select>
       </label>
       <label className="text-sm font-medium text-slate-700">Search
-        <span className="relative mt-1 block"><Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true" /><input className="block w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Bed number, patient name, or patient ID" /></span>
+        <span className="relative mt-1 block"><Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true" /><input className="block w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-slate-900 placeholder:text-slate-400 focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Bed number, patient name, or patient ID" /></span>
       </label>
     </section>
 
     {error
-      ? <div className="rounded-lg border border-rose-200 bg-rose-50 p-6 text-center" role="alert"><p className="font-medium text-rose-900">{error}</p><button className="mt-4 rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2" onClick={() => setReloadKey((value) => value + 1)}>Retry</button></div>
+      ? <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center" role="alert"><p className="font-medium text-red-900">{error}</p><button className="mt-4 rounded-md bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2" onClick={() => setReloadKey((value) => value + 1)}>Retry</button></div>
       : loading
         ? <div className="flex min-h-56 flex-col items-center justify-center gap-3 text-sm text-slate-500"><Spinner size="lg" /><span>Loading bed information…</span></div>
         : <BedsTable beds={visibleBeds} emptyMessage={beds.length === 0 ? 'No beds are currently available to display.' : undefined} />}

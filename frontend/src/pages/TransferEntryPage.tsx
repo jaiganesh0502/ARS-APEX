@@ -222,8 +222,8 @@ export const TransferEntryPage: React.FC = () => {
 
       {/* Error Alert */}
       {errorMessage && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3 text-sm text-rose-800">
-          <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 text-sm text-red-800">
+          <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold block">Transfer Ineligible</span>
             <span>{errorMessage}</span>
@@ -233,21 +233,21 @@ export const TransferEntryPage: React.FC = () => {
 
       {/* Emergency Notice Banner */}
       {isEmergency && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between gap-4">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-rose-600 text-white rounded-lg">
+            <div className="p-2 bg-red-600 text-white rounded-lg">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-bold text-rose-950 text-sm block">
+              <span className="font-bold text-red-950 text-sm block">
                 Emergency Transfer Priority
               </span>
-              <span className="text-xs text-rose-800">
+              <span className="text-xs text-red-800">
                 Distance is prioritized more heavily (65% weight) for rapid emergency transfer matching.
               </span>
             </div>
           </div>
-          <span className="px-3 py-1 bg-rose-200/80 text-rose-950 font-bold text-xs rounded-full uppercase tracking-wider">
+          <span className="px-3 py-1 bg-red-200/80 text-red-950 font-bold text-xs rounded-full uppercase tracking-wider">
             Critical Transit
           </span>
         </div>
@@ -285,7 +285,7 @@ export const TransferEntryPage: React.FC = () => {
 
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
               <span className="text-slate-500 block">Required Specialty</span>
-              <span className="font-bold text-blue-700 text-sm block mt-0.5">
+              <span className="font-bold text-primary-700 text-sm block mt-0.5">
                 {decision?.required_specialty || 'General Medicine'}
               </span>
               <span className="text-slate-500 text-[11px]">
@@ -298,17 +298,17 @@ export const TransferEntryPage: React.FC = () => {
 
       {/* Selected Facility Status Banner (If already selected) */}
       {isAwaitingAcceptance && (
-        <div className="p-5 bg-emerald-50 border-2 border-emerald-300 rounded-2xl shadow-sm space-y-3">
+        <div className="p-5 bg-green-50 border-2 border-green-300 rounded-2xl shadow-sm space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-600 text-white rounded-xl">
+              <div className="p-2.5 bg-green-600 text-white rounded-xl">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider block">
+                <span className="text-xs font-bold text-green-800 uppercase tracking-wider block">
                   Receiving Hospital Selected
                 </span>
-                <h4 className="text-lg font-extrabold text-emerald-950">
+                <h4 className="text-lg font-extrabold text-green-950">
                   {selectedHospitalName}
                 </h4>
               </div>
@@ -316,13 +316,13 @@ export const TransferEntryPage: React.FC = () => {
 
             <div className="flex flex-col items-end">
               <StatusBadge status="awaiting_acceptance" />
-              <span className="text-[11px] text-emerald-700 font-medium mt-1">
+              <span className="text-[11px] text-green-700 font-medium mt-1">
                 Status: Awaiting Acceptance
               </span>
             </div>
           </div>
 
-          <p className="text-xs text-emerald-800 bg-white/70 p-3 rounded-lg border border-emerald-200">
+          <p className="text-xs text-green-800 bg-white/70 p-3 rounded-lg border border-green-200">
             A transfer package request has been prepared for <strong>{selectedHospitalName}</strong>. Attending physicians and receiving coordinators can track acceptance on the transfer board. Bed capacity will be reserved once accepted.
           </p>
         </div>
@@ -333,7 +333,7 @@ export const TransferEntryPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-blue-600" />
+              <Building2 className="w-5 h-5 text-primary-600" />
               Recommended Partner Facilities
             </h3>
             <p className="text-xs text-slate-500">

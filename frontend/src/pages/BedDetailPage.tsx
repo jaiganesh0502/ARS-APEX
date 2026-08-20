@@ -66,7 +66,7 @@ export const BedActionPanel: React.FC<{ bed: BedDetail; onAction: (action: BedAc
   if (action === 'patient_departed') return <div className="space-y-3"><p className="text-sm leading-6 text-slate-600">Confirm departure only after the patient has physically left the bed.</p><Button onClick={() => onAction(action)}>Confirm Patient Departed</Button></div>;
   if (action === 'cleaning_complete') return <div className="space-y-3"><p className="text-sm leading-6 text-slate-600">Confirm that cleaning is complete before making this bed available.</p><Button onClick={() => onAction(action)}>Mark Cleaning Complete</Button></div>;
   if (bed.status === 'occupied') return <p className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">Bed release cannot start because one or more release prerequisites are not satisfied.</p>;
-  if (bed.status === 'available') return <p className="rounded-md border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-900">Ready for assignment</p>;
+  if (bed.status === 'available') return <p className="rounded-md border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-900">Ready for assignment</p>;
   if (bed.status === 'reserved') return <p className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">This reserved bed has no available workflow action.</p>;
   return null;
 };

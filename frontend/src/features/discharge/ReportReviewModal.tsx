@@ -71,7 +71,7 @@ export const ReportReviewModal: React.FC<ReportReviewModalProps> = ({
         <input ref={acknowledgementRef} type="checkbox" className="mt-1" checked={acknowledged} onChange={(event) => onAcknowledgedChange?.(event.target.checked)} />
         <span>I have reviewed the full report and acknowledge the limited effect of approval.</span>
       </label>
-      {error && <p className="mt-4 text-sm font-medium text-rose-700" role="alert">{error}</p>}
+      {error && <p className="mt-4 text-sm font-medium text-red-700" role="alert">{error}</p>}
       <div className="mt-6 flex justify-end gap-3">
         <Button variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
         <Button onClick={onApprove} disabled={!acknowledged} isLoading={saving}>Approve Report</Button>

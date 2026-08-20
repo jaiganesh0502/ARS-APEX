@@ -38,7 +38,7 @@ export const AmbulanceCancelModal: React.FC<AmbulanceCancelModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-          <div className="p-2.5 bg-rose-50 text-rose-700 rounded-xl">
+          <div className="p-2.5 bg-red-50 text-red-700 rounded-xl">
             <XCircle className="w-6 h-6" />
           </div>
           <div>
@@ -65,7 +65,7 @@ export const AmbulanceCancelModal: React.FC<AmbulanceCancelModalProps> = ({
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1.5">
-              Reason for Cancellation <span className="text-rose-600">*</span>:
+              Reason for Cancellation <span className="text-red-600">*</span>:
             </label>
             <textarea
               rows={3}
@@ -75,10 +75,10 @@ export const AmbulanceCancelModal: React.FC<AmbulanceCancelModalProps> = ({
                 if (error) setError('');
               }}
               placeholder="e.g., Clinical stabilization ordered prior to transport."
-              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-xs text-slate-800"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-500/20 focus:border-red-500 text-xs text-slate-800"
               required
             />
-            {error && <p className="text-rose-600 font-semibold mt-1">{error}</p>}
+            {error && <p className="text-red-600 font-semibold mt-1">{error}</p>}
           </div>
 
           <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-amber-900">
@@ -96,7 +96,7 @@ export const AmbulanceCancelModal: React.FC<AmbulanceCancelModalProps> = ({
               variant="outline"
               type="submit"
               isLoading={isLoading}
-              className="border-rose-300 text-rose-700 hover:bg-rose-50"
+              className="border-red-300 text-red-700 hover:bg-red-50"
               leftIcon={<XCircle className="w-4 h-4" />}
             >
               Confirm Cancellation

@@ -10,7 +10,7 @@ export const ProtectedRoute: React.FC<{ children?: React.ReactNode }> = ({ child
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-3" />
+        <Loader2 className="w-8 h-8 text-primary-500 animate-spin mb-3" />
         <p className="text-sm font-medium text-slate-300">Verifying security credentials...</p>
       </div>
     );

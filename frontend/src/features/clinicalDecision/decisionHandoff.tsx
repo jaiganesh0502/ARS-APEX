@@ -28,11 +28,11 @@ export const DecisionHandoffNotice: React.FC<{
   nextStep: string;
 }> = ({ message, nextStep }) => (
   <div className="space-y-4" role="status">
-    <div className="flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-900">
+    <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4 text-green-900">
       <CheckCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
       <p className="font-semibold">{message}</p>
     </div>
-    <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+    <div className="flex items-start gap-3 rounded-lg border border-primary-200 bg-primary-50 p-4 text-sm text-primary-900">
       <Info className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
       <p>
         The next step is <strong>{nextStep}</strong>. This downstream workflow has not started automatically.

@@ -55,14 +55,14 @@ export const Sidebar: React.FC = () => {
     <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shrink-0">
       {/* Brand & Logo */}
       <div className="h-16 flex items-center px-6 gap-3 border-b border-slate-800 bg-slate-950">
-        <div className="p-2 bg-blue-600 rounded-lg text-white">
+        <div className="p-2 bg-primary-600 rounded-lg text-white">
           <ActivitySquare className="w-5 h-5" />
         </div>
         <div>
           <span className="font-bold text-white text-base tracking-tight leading-none block">
             MedOrchestrate
           </span>
-          <span className="text-[10px] uppercase font-semibold text-blue-400 tracking-wider">
+          <span className="text-[10px] uppercase font-semibold text-primary-400 tracking-wider">
             Discharge & Transfer
           </span>
         </div>
@@ -79,7 +79,7 @@ export const Sidebar: React.FC = () => {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-blue-700 text-white shadow-sm'
+                    ? 'bg-primary-700 text-white shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
                 }`
               }
@@ -94,7 +94,7 @@ export const Sidebar: React.FC = () => {
       {/* Role-Specific System Status Footer */}
       <div className="p-4 border-t border-slate-800 bg-slate-950/50 text-xs text-slate-400">
         <div className="flex items-center gap-2 mb-1">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
           <span className="font-semibold text-slate-300">
             {role === 'medical_superintendent'
               ? 'Superintendent View'

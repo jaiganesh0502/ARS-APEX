@@ -24,7 +24,7 @@ export const HospitalSelectionModal: React.FC<HospitalSelectionModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-          <div className="p-2.5 bg-blue-50 text-blue-700 rounded-xl">
+          <div className="p-2.5 bg-primary-50 text-primary-700 rounded-xl">
             <Building2 className="w-6 h-6" />
           </div>
           <div>
@@ -43,13 +43,13 @@ export const HospitalSelectionModal: React.FC<HospitalSelectionModalProps> = ({
             </div>
             <div className="flex justify-between items-center py-1 border-b border-slate-200/60">
               <span className="text-slate-500 font-medium">Required Specialty:</span>
-              <span className="font-semibold text-blue-700">{match.required_specialty}</span>
+              <span className="font-semibold text-primary-700">{match.required_specialty}</span>
             </div>
             <div className="flex justify-between items-center py-1 border-b border-slate-200/60">
               <span className="text-slate-500 font-medium flex items-center gap-1">
                 <BedDouble className="w-4 h-4 text-slate-400" /> Available Beds:
               </span>
-              <span className="font-bold text-emerald-700">
+              <span className="font-bold text-green-700">
                 {match.available_beds} of {match.total_beds} beds free
               </span>
             </div>

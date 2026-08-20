@@ -47,7 +47,7 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
       <ol className="relative border-l border-slate-200 ml-3 space-y-6">
         {/* Step 1: Matching Started */}
         <li className="ml-5">
-          <div className="absolute -left-2 mt-0.5 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-white">
+          <div className="absolute -left-2 mt-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center text-white">
             <Check className="w-2.5 h-2.5" />
           </div>
           <div>
@@ -62,7 +62,7 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
         <li className="ml-5">
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
-              isAwaitingOrBeyond ? 'bg-emerald-500' : 'bg-slate-300'
+              isAwaitingOrBeyond ? 'bg-green-500' : 'bg-slate-300'
             }`}
           >
             {isAwaitingOrBeyond ? <Check className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
@@ -76,7 +76,7 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
               Receiving Facility Selected
             </span>
             {selectedHospitalName ? (
-              <div className="mt-1 flex items-center gap-1.5 text-blue-700 font-medium bg-blue-50 px-2 py-1 rounded border border-blue-100 w-fit">
+              <div className="mt-1 flex items-center gap-1.5 text-primary-700 font-medium bg-primary-50 px-2 py-1 rounded border border-primary-100 w-fit">
                 <Building2 className="w-3.5 h-3.5" />
                 <span>{selectedHospitalName}</span>
                 <span className="text-slate-500 text-[10px]">
@@ -97,9 +97,9 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
             <div
               className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
                 packetStatus === 'viewed'
-                  ? 'bg-emerald-500'
+                  ? 'bg-green-500'
                   : packetStatus === 'sent'
-                  ? 'bg-blue-600'
+                  ? 'bg-primary-600'
                   : 'bg-slate-300'
               }`}
             >
@@ -135,9 +135,9 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
               isAcceptedOrBeyond
-                ? 'bg-emerald-500'
+                ? 'bg-green-500'
                 : isRejected
-                ? 'bg-rose-600'
+                ? 'bg-red-600'
                 : 'bg-slate-300'
             }`}
           >
@@ -153,9 +153,9 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
             <span
               className={`font-bold block text-xs ${
                 isAcceptedOrBeyond
-                  ? 'text-emerald-950'
+                  ? 'text-green-950'
                   : isRejected
-                  ? 'text-rose-950'
+                  ? 'text-red-950'
                   : 'text-slate-400'
               }`}
             >
@@ -173,7 +173,7 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
                 : 'Pending acceptance & bed reservation'}
             </span>
             {acceptanceNotes && (
-              <p className="text-[11px] text-emerald-800 bg-emerald-50 p-1.5 rounded border border-emerald-200 mt-1">
+              <p className="text-[11px] text-green-800 bg-green-50 p-1.5 rounded border border-green-200 mt-1">
                 Note: {acceptanceNotes}
               </p>
             )}
@@ -187,9 +187,9 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
               status === 'in_transit'
                 ? 'bg-purple-600 animate-pulse'
                 : status === 'ambulance_requested'
-                ? 'bg-blue-600'
+                ? 'bg-primary-600'
                 : isCompleted
-                ? 'bg-emerald-500'
+                ? 'bg-green-500'
                 : 'bg-slate-300'
             }`}
           >
@@ -215,7 +215,7 @@ export const TransferTimeline: React.FC<TransferTimelineProps> = ({
         <li className={`ml-5 ${isCompleted ? 'opacity-100' : 'opacity-30'}`}>
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
-              isCompleted ? 'bg-emerald-500' : 'bg-slate-300'
+              isCompleted ? 'bg-green-500' : 'bg-slate-300'
             }`}
           >
             <CheckCircle2 className="w-2.5 h-2.5" />

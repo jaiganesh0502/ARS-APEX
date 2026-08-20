@@ -116,7 +116,7 @@ export const ReceivingTransferDetailPage: React.FC = () => {
           Back to Incoming Transfers
         </Button>
         <Card title="Transfer Unavailable">
-          <p className="text-sm text-rose-600">{error || 'Transfer request not found.'}</p>
+          <p className="text-sm text-red-600">{error || 'Transfer request not found.'}</p>
         </Card>
       </div>
     );
@@ -161,21 +161,21 @@ export const ReceivingTransferDetailPage: React.FC = () => {
 
       {/* Emergency Alert Banner */}
       {transfer.emergency && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-rose-600 text-white rounded-lg">
+            <div className="p-2 bg-red-600 text-white rounded-lg">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-bold text-rose-950 text-sm block">
+              <span className="font-bold text-red-950 text-sm block">
                 Emergency Priority Transfer Request
               </span>
-              <span className="text-xs text-rose-800">
+              <span className="text-xs text-red-800">
                 Patient requires expedited admission for {transfer.required_specialty}. Please review and respond promptly.
               </span>
             </div>
           </div>
-          <span className="px-3 py-1 bg-rose-200/80 text-rose-950 font-bold text-xs rounded-full uppercase">
+          <span className="px-3 py-1 bg-red-200/80 text-red-950 font-bold text-xs rounded-full uppercase">
             Emergency
           </span>
         </div>
@@ -183,22 +183,22 @@ export const ReceivingTransferDetailPage: React.FC = () => {
 
       {/* Decision Status Banners */}
       {isAccepted && (
-        <div className="p-5 bg-emerald-50 border-2 border-emerald-300 rounded-2xl shadow-sm space-y-2">
+        <div className="p-5 bg-green-50 border-2 border-green-300 rounded-2xl shadow-sm space-y-2">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-600 text-white rounded-lg">
+            <div className="p-2 bg-green-600 text-white rounded-lg">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-base font-extrabold text-emerald-950">
+              <h4 className="text-base font-extrabold text-green-950">
                 Transfer Accepted & Bed Capacity Reserved
               </h4>
-              <span className="text-xs text-emerald-800">
+              <span className="text-xs text-green-800">
                 1 bed slot has been reserved in <strong>{transfer.required_specialty}</strong>. Awaiting ambulance dispatch coordination.
               </span>
             </div>
           </div>
           {transfer.acceptance_notes && (
-            <p className="text-xs text-emerald-900 bg-white/70 p-2.5 rounded-lg border border-emerald-200 mt-2">
+            <p className="text-xs text-green-900 bg-white/70 p-2.5 rounded-lg border border-green-200 mt-2">
               <strong>Physician Notes:</strong> {transfer.acceptance_notes}
             </p>
           )}
@@ -206,22 +206,22 @@ export const ReceivingTransferDetailPage: React.FC = () => {
       )}
 
       {isRejected && (
-        <div className="p-5 bg-rose-50 border-2 border-rose-300 rounded-2xl shadow-sm space-y-2">
+        <div className="p-5 bg-red-50 border-2 border-red-300 rounded-2xl shadow-sm space-y-2">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-rose-600 text-white rounded-lg">
+            <div className="p-2 bg-red-600 text-white rounded-lg">
               <XCircle className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-base font-extrabold text-rose-950">
+              <h4 className="text-base font-extrabold text-red-950">
                 Transfer Request Rejected
               </h4>
-              <span className="text-xs text-rose-800">
+              <span className="text-xs text-red-800">
                 The sending facility has been notified. No bed capacity was decremented.
               </span>
             </div>
           </div>
           {transfer.rejection_reason && (
-            <p className="text-xs text-rose-900 bg-white/70 p-2.5 rounded-lg border border-rose-200 mt-2">
+            <p className="text-xs text-red-900 bg-white/70 p-2.5 rounded-lg border border-red-200 mt-2">
               <strong>Rejection Justification:</strong> {transfer.rejection_reason}
             </p>
           )}
@@ -244,7 +244,7 @@ export const ReceivingTransferDetailPage: React.FC = () => {
 
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <span className="text-slate-500 block">Required Specialty</span>
-                <span className="font-bold text-blue-700 text-sm block mt-0.5">
+                <span className="font-bold text-primary-700 text-sm block mt-0.5">
                   {transfer.required_specialty}
                 </span>
                 <span className="text-slate-500 text-[11px]">
@@ -264,21 +264,21 @@ export const ReceivingTransferDetailPage: React.FC = () => {
             </div>
 
             {/* Clinical Justification Box */}
-            <div className="mt-4 p-4 bg-blue-50/60 rounded-xl border border-blue-100 space-y-2 text-xs">
+            <div className="mt-4 p-4 bg-primary-50/60 rounded-xl border border-primary-100 space-y-2 text-xs">
               <div>
                 <span className="text-slate-500 font-semibold block text-[11px]">Primary Diagnosis:</span>
                 <p className="font-bold text-slate-900 text-sm">{transfer.primary_diagnosis}</p>
               </div>
-              <div className="pt-2 border-t border-blue-200/50">
+              <div className="pt-2 border-t border-primary-200/50">
                 <span className="text-slate-500 font-semibold block text-[11px]">Transfer Reason:</span>
-                <p className="text-blue-950 mt-0.5">
+                <p className="text-primary-950 mt-0.5">
                   {transfer.clinical_reason || 'Specialized tertiary care required.'}
                 </p>
               </div>
               {transfer.clinical_notes && (
-                <div className="pt-2 border-t border-blue-200/50">
+                <div className="pt-2 border-t border-primary-200/50">
                   <span className="text-slate-500 font-semibold block text-[11px]">Clinical Notes:</span>
-                  <p className="text-blue-900 italic mt-0.5">{transfer.clinical_notes}</p>
+                  <p className="text-primary-900 italic mt-0.5">{transfer.clinical_notes}</p>
                 </div>
               )}
             </div>
@@ -332,7 +332,7 @@ export const ReceivingTransferDetailPage: React.FC = () => {
                         <td className="px-3 py-2">{v.temperature.toFixed(1)} °C</td>
                         <td className="px-3 py-2 font-bold text-slate-900">{v.heart_rate} bpm</td>
                         <td className="px-3 py-2">{v.blood_pressure}</td>
-                        <td className="px-3 py-2 font-bold text-emerald-700">{v.oxygen_saturation}%</td>
+                        <td className="px-3 py-2 font-bold text-green-700">{v.oxygen_saturation}%</td>
                         <td className="px-3 py-2 text-slate-500">{new Date(v.recorded_at).toLocaleTimeString()}</td>
                       </tr>
                     ))}
@@ -362,8 +362,8 @@ export const ReceivingTransferDetailPage: React.FC = () => {
                     <span
                       className={`text-lg font-black block ${
                         (transfer.receiving_hospital_available_beds ?? 0) > 0
-                          ? 'text-emerald-700'
-                          : 'text-rose-600'
+                          ? 'text-green-700'
+                          : 'text-red-600'
                       }`}
                     >
                       {transfer.receiving_hospital_available_beds ?? 'N/A'} beds free
@@ -372,8 +372,8 @@ export const ReceivingTransferDetailPage: React.FC = () => {
                 </div>
 
                 {(transfer.receiving_hospital_available_beds ?? 0) <= 0 && (
-                  <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-[11px] flex items-start gap-2">
-                    <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-[11px] flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                     <span>No bed capacity currently available. Acceptance cannot proceed.</span>
                   </div>
                 )}
@@ -393,7 +393,7 @@ export const ReceivingTransferDetailPage: React.FC = () => {
                   <Button
                     variant="outline"
                     size="md"
-                    className="w-full border-rose-300 text-rose-700 hover:bg-rose-50"
+                    className="w-full border-red-300 text-red-700 hover:bg-red-50"
                     leftIcon={<XCircle className="w-4 h-4" />}
                     onClick={() => setIsRejectModalOpen(true)}
                   >

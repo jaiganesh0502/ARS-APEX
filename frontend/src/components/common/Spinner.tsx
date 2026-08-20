@@ -13,7 +13,7 @@ export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className = '' })
   };
 
   return (
-    <div className={`inline-block animate-spin rounded-full border-2 border-solid border-blue-600 border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite] ${sizeMap[size]} ${className}`} role="status">
+    <div className={`inline-block animate-spin rounded-full border-2 border-solid border-primary-600 border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite] ${sizeMap[size]} ${className}`} role="status">
       <span className="sr-only">Loading...</span>
     </div>
   );

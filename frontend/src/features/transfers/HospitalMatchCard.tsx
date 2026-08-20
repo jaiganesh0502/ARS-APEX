@@ -21,16 +21,16 @@ export const HospitalMatchCard: React.FC<HospitalMatchCardProps> = ({
     <div
       className={`relative rounded-xl border transition-all p-5 bg-white shadow-sm flex flex-col justify-between ${
         isSelected
-          ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/30'
+          ? 'border-green-500 ring-2 ring-green-500/20 bg-green-50/30'
           : match.is_recommended
-          ? 'border-blue-300 shadow-md ring-1 ring-blue-500/10'
+          ? 'border-primary-300 shadow-md ring-1 ring-primary-500/10'
           : 'border-slate-200 hover:border-slate-300 hover:shadow'
       }`}
     >
       {/* Recommended Pill */}
       {match.is_recommended && !isSelected && (
         <div className="absolute -top-3 left-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-sm tracking-wide">
+          <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-primary-600 text-white shadow-sm tracking-wide">
             <Sparkles className="w-3 h-3" /> RECOMMENDED
           </span>
         </div>
@@ -38,7 +38,7 @@ export const HospitalMatchCard: React.FC<HospitalMatchCardProps> = ({
 
       {isSelected && (
         <div className="absolute -top-3 left-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-sm tracking-wide">
+          <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-green-600 text-white shadow-sm tracking-wide">
             <CheckCircle2 className="w-3 h-3" /> SELECTED FACILITY
           </span>
         </div>
@@ -70,7 +70,7 @@ export const HospitalMatchCard: React.FC<HospitalMatchCardProps> = ({
         <div className="grid grid-cols-3 gap-2 my-3 p-2.5 bg-slate-50 rounded-lg border border-slate-100 text-xs">
           <div>
             <span className="text-slate-500 block text-[10px] uppercase font-medium">Specialty</span>
-            <span className="font-semibold text-blue-700 truncate block mt-0.5">
+            <span className="font-semibold text-primary-700 truncate block mt-0.5">
               {match.required_specialty}
             </span>
           </div>
@@ -81,7 +81,7 @@ export const HospitalMatchCard: React.FC<HospitalMatchCardProps> = ({
             </span>
             <span
               className={`font-semibold block mt-0.5 ${
-                match.available_beds > 0 ? 'text-emerald-700' : 'text-rose-600'
+                match.available_beds > 0 ? 'text-green-700' : 'text-red-600'
               }`}
             >
               {match.available_beds} {match.available_beds === 1 ? 'bed' : 'beds'} free
@@ -106,7 +106,7 @@ export const HospitalMatchCard: React.FC<HospitalMatchCardProps> = ({
           <ul className="space-y-1 text-xs text-slate-600">
             {match.match_reasons.map((reason, idx) => (
               <li key={idx} className="flex items-start gap-1.5">
-                <span className="text-emerald-500 font-bold shrink-0">•</span>
+                <span className="text-green-500 font-bold shrink-0">•</span>
                 <span>{reason}</span>
               </li>
             ))}
@@ -117,7 +117,7 @@ export const HospitalMatchCard: React.FC<HospitalMatchCardProps> = ({
       {/* Action Footer */}
       <div className="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between">
         {match.emergency && (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-700">
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-red-700">
             <ShieldAlert className="w-3.5 h-3.5" /> Fast-track priority
           </span>
         )}

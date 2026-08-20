@@ -23,7 +23,7 @@ interface StatusBadgeProps {
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
-  const getBadgeVariant = (s: string): 'slate' | 'blue' | 'green' | 'amber' | 'rose' | 'purple' => {
+  const getBadgeVariant = (s: string): 'slate' | 'primary' | 'green' | 'amber' | 'critical' | 'purple' => {
     switch (s) {
       // Positive / Complete states
       case 'approved':
@@ -39,7 +39,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
       case 'in_transit':
       case 'en_route':
       case 'patient_onboard':
-        return 'blue';
+        return 'primary';
 
       // Pending / In-review states
       case 'under_review':
@@ -61,7 +61,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
       // Critical / Rejected / Cancelled
       case 'rejected':
       case 'cancelled':
-        return 'rose';
+        return 'critical';
 
       default:
         return 'slate';

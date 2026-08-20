@@ -39,7 +39,7 @@ export const AmbulanceTimeline: React.FC<AmbulanceTimelineProps> = ({ dispatch }
       <ol className="relative border-l border-slate-200 ml-3 space-y-6">
         {/* Step 1: Dispatch Requested */}
         <li className="ml-5">
-          <div className="absolute -left-2 mt-0.5 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-white">
+          <div className="absolute -left-2 mt-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center text-white">
             <Check className="w-2.5 h-2.5" />
           </div>
           <div>
@@ -54,7 +54,7 @@ export const AmbulanceTimeline: React.FC<AmbulanceTimelineProps> = ({ dispatch }
         <li className={`ml-5 ${isStep2Done ? 'opacity-100' : 'opacity-50'}`}>
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
-              isStep2Done ? 'bg-emerald-500' : 'bg-slate-300'
+              isStep2Done ? 'bg-green-500' : 'bg-slate-300'
             }`}
           >
             {isStep2Done ? <Check className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
@@ -73,7 +73,7 @@ export const AmbulanceTimeline: React.FC<AmbulanceTimelineProps> = ({ dispatch }
         <li className={`ml-5 ${isStep3Done ? 'opacity-100' : 'opacity-50'}`}>
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
-              isStep3Done ? 'bg-emerald-500' : 'bg-slate-300'
+              isStep3Done ? 'bg-green-500' : 'bg-slate-300'
             }`}
           >
             {isStep3Done ? <Building2 className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
@@ -94,7 +94,7 @@ export const AmbulanceTimeline: React.FC<AmbulanceTimelineProps> = ({ dispatch }
         <li className={`ml-5 ${isStep4Done ? 'opacity-100' : 'opacity-50'}`}>
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
-              isStep4Done ? 'bg-emerald-500' : 'bg-slate-300'
+              isStep4Done ? 'bg-green-500' : 'bg-slate-300'
             }`}
           >
             {isStep4Done ? <UserCheck className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
@@ -113,7 +113,7 @@ export const AmbulanceTimeline: React.FC<AmbulanceTimelineProps> = ({ dispatch }
         <li className={`ml-5 ${isStep5Done ? 'opacity-100' : 'opacity-50'}`}>
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
-              isStep5Done ? 'bg-blue-600 animate-pulse' : 'bg-slate-300'
+              isStep5Done ? 'bg-primary-600 animate-pulse' : 'bg-slate-300'
             }`}
           >
             {isStep5Done ? <Navigation className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
@@ -132,7 +132,7 @@ export const AmbulanceTimeline: React.FC<AmbulanceTimelineProps> = ({ dispatch }
         <li className={`ml-5 ${isStep6Done ? 'opacity-100' : 'opacity-50'}`}>
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
-              isStep6Done ? 'bg-emerald-500' : 'bg-slate-300'
+              isStep6Done ? 'bg-green-500' : 'bg-slate-300'
             }`}
           >
             {isStep6Done ? <Building2 className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
@@ -154,9 +154,9 @@ export const AmbulanceTimeline: React.FC<AmbulanceTimelineProps> = ({ dispatch }
           <div
             className={`absolute -left-2 mt-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-white ${
               isStep7Done
-                ? 'bg-emerald-500'
+                ? 'bg-green-500'
                 : isCancelled
-                ? 'bg-rose-500'
+                ? 'bg-red-500'
                 : 'bg-slate-300'
             }`}
           >
@@ -171,7 +171,7 @@ export const AmbulanceTimeline: React.FC<AmbulanceTimelineProps> = ({ dispatch }
           <div>
             <span
               className={`font-bold block text-xs ${
-                isStep7Done ? 'text-emerald-950' : isCancelled ? 'text-rose-950' : 'text-slate-800'
+                isStep7Done ? 'text-green-950' : isCancelled ? 'text-red-950' : 'text-slate-800'
               }`}
             >
               {isStep7Done ? 'Transfer Completed' : isCancelled ? 'Dispatch Cancelled' : 'Handover & Completion'}

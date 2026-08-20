@@ -24,7 +24,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       <div className="mt-3 flex items-baseline justify-between">
         <span className="text-2xl font-bold text-slate-900">{value}</span>
         {change && (
-          <span className={`text-xs font-medium ${isPositive ? 'text-emerald-600' : 'text-slate-500'}`}>
+          <span className={`text-xs font-medium ${isPositive ? 'text-green-600' : 'text-slate-500'}`}>
             {change}
           </span>
         )}

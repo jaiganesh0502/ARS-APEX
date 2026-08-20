@@ -59,14 +59,14 @@ export const PatientOperationalStatus: React.FC<{
 
   const displayedAdmissionStatus = bed.admission_status ?? admissionStatus;
   return <section className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700" aria-label="Bed release status">
-    {displayedAdmissionStatus === 'discharged' && <p className="font-semibold text-emerald-800">Admission Status: Discharged</p>}
+    {displayedAdmissionStatus === 'discharged' && <p className="font-semibold text-green-800">Admission Status: Discharged</p>}
     {bed.status === 'occupied' && bed.release_eligible && <>
-      <p className="font-semibold text-emerald-800">Discharge Report Approved</p>
+      <p className="font-semibold text-green-800">Discharge Report Approved</p>
       <p className="font-medium text-slate-900">Bed Release Pending</p>
     </>}
     {bed.status === 'vacating' && <p className="font-semibold text-amber-800">Bed Status: Vacating</p>}
     {bed.status === 'cleaning' && <p className="font-semibold text-purple-800">Bed Status: Cleaning</p>}
-    {bed.status === 'available' && <p className="font-semibold text-emerald-800">Bed Status: Available</p>}
+    {bed.status === 'available' && <p className="font-semibold text-green-800">Bed Status: Available</p>}
     {bed.status === 'reserved' && <p className="font-semibold text-purple-800">Bed Status: Reserved</p>}
     <p>Approval alone does not discharge the patient or release the bed.</p>
   </section>;

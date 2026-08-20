@@ -79,7 +79,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex items-center justify-center p-3.5 bg-gradient-to-tr from-blue-700 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/20 mb-4 ring-1 ring-white/10">
+        <div className="inline-flex items-center justify-center p-3.5 bg-gradient-to-tr from-primary-700 to-indigo-600 rounded-2xl shadow-lg shadow-primary-500/20 mb-4 ring-1 ring-white/10">
           <ActivitySquare className="w-9 h-9 text-white" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -109,7 +109,7 @@ export const LoginPage: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="staff@demo.local"
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 required
               />
             </div>
@@ -124,7 +124,7 @@ export const LoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 transition-all"
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent pr-10 transition-all"
                   required
                 />
                 <button
@@ -142,7 +142,7 @@ export const LoginPage: React.FC = () => {
               type="submit"
               variant="primary"
               disabled={isSubmitting}
-              className="w-full py-2.5 flex items-center justify-center gap-2 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg shadow-sm transition-all"
+              className="w-full py-2.5 flex items-center justify-center gap-2 mt-2 bg-primary-600 hover:bg-primary-500 text-white font-medium rounded-lg shadow-sm transition-all"
             >
               {isSubmitting ? (
                 <>
@@ -168,10 +168,10 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setDemoPreset('doctor@demo.local', 'DoctorDemo123!')}
-                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-950/60 hover:bg-blue-950/30 hover:border-blue-700/50 text-left transition-all group"
+                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-950/60 hover:bg-primary-950/30 hover:border-primary-700/50 text-left transition-all group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-blue-600/20 text-blue-400 rounded-md group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <div className="p-1.5 bg-primary-600/20 text-primary-400 rounded-md group-hover:bg-primary-600 group-hover:text-white transition-colors">
                     <Stethoscope className="w-4 h-4" />
                   </div>
                   <div>
@@ -179,7 +179,7 @@ export const LoginPage: React.FC = () => {
                     <div className="text-[11px] text-slate-400">doctor@demo.local</div>
                   </div>
                 </div>
-                <span className="text-[10px] font-medium bg-blue-900/60 text-blue-300 px-2 py-0.5 rounded border border-blue-700/50">
+                <span className="text-[10px] font-medium bg-primary-900/60 text-primary-300 px-2 py-0.5 rounded border border-primary-700/50">
                   Clinical Sign-Off
                 </span>
               </button>
@@ -208,10 +208,10 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setDemoPreset('patient@demo.local', 'PatientDemo123!')}
-                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-950/60 hover:bg-emerald-950/30 hover:border-emerald-700/50 text-left transition-all group"
+                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-950/60 hover:bg-green-950/30 hover:border-green-700/50 text-left transition-all group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-emerald-600/20 text-emerald-400 rounded-md group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <div className="p-1.5 bg-green-600/20 text-green-400 rounded-md group-hover:bg-green-600 group-hover:text-white transition-colors">
                     <UserIcon className="w-4 h-4" />
                   </div>
                   <div>
@@ -219,7 +219,7 @@ export const LoginPage: React.FC = () => {
                     <div className="text-[11px] text-slate-400">patient@demo.local</div>
                   </div>
                 </div>
-                <span className="text-[10px] font-medium bg-emerald-900/60 text-emerald-300 px-2 py-0.5 rounded border border-emerald-700/50">
+                <span className="text-[10px] font-medium bg-green-900/60 text-green-300 px-2 py-0.5 rounded border border-green-700/50">
                   Care Portal & PDF
                 </span>
               </button>
@@ -227,7 +227,7 @@ export const LoginPage: React.FC = () => {
           </div>
 
           <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
             <span>JWT Bearer RBAC Active with bcrypt encryption</span>
           </div>
         </div>
