@@ -141,8 +141,9 @@ class ClinicalDocumentService:
         meds_extracted = []
         if admission and admission.medications:
             for m in admission.medications:
+                med_name = getattr(m, "medication_name", getattr(m, "name", "Prescribed Medication"))
                 meds_extracted.append({
-                    "name": m.name,
+                    "name": med_name,
                     "dose": m.dosage or "As prescribed",
                     "route": m.route or "Oral",
                     "frequency": m.frequency or "Daily",
