@@ -1,4 +1,4 @@
-export type UserRole = 'doctor' | 'ward_admin' | 'receiving_doctor' | 'receiving_admin';
+export type UserRole = 'doctor' | 'medical_superintendent' | 'receptionist' | 'patient' | 'ward_admin' | 'receiving_doctor' | 'receiving_admin';
 
 export interface User {
   id: number;
@@ -621,4 +621,88 @@ export interface NotificationListResponse {
   total: number;
   unread_count: number;
 }
+
+export type DocumentStatus =
+  | 'uploaded'
+  | 'ocr_processing'
+  | 'ocr_completed'
+  | 'ocr_failed'
+  | 'extraction_processing'
+  | 'extraction_completed';
+
+export interface ClinicalDocument {
+  id: number;
+  admission_id: number;
+  patient_id: number;
+  document_type: string;
+  file_name: string;
+  file_size_bytes?: number;
+  ocr_status: DocumentStatus;
+  ocr_confidence?: number | null;
+  ocr_raw_text?: string | null;
+  structured_data?: Record<string, any> | null;
+  error_message?: string | null;
+  created_at?: string;
+}
+
+export type PaymentStatus =
+  | 'not_generated'
+  | 'pending'
+  | 'processing'
+  | 'paid_online'
+  | 'paid_manual'
+  | 'failed'
+  | 'refunded'
+  | 'deferred';
+
+export interface InvoiceLineItem {
+  id: number;
+  category: string;
+  description: string;
+  quantity: number;
+  unit_price: number;
+  amount: number;
+  source_reference?: string;
+}
+
+export interface PaymentTransaction {
+  id: number;
+  amount: number;
+  payment_method: string;
+  transaction_reference?: string;
+  confirmed_at?: string;
+  notes?: string;
+}
+
+export interface Invoice {
+  id: number;
+  invoice_number: string;
+  admission_id: number;
+  patient_id: number;
+  patient_name?: string;
+  patient_code?: string;
+  subtotal: number;
+  discount_amount: number;
+  tax_amount: number;
+  total_amount: number;
+  amount_paid: number;
+  balance_amount: number;
+  payment_status: PaymentStatus;
+  qr_code_uri?: string | null;
+  notes?: string | null;
+  created_at?: string;
+  line_items: InvoiceLineItem[];
+  payments: PaymentTransaction[];
+}
+
+export interface ChargeMasterItem {
+  id: number;
+  code: string;
+  category: string;
+  name: string;
+  unit_price: number;
+  description?: string;
+  is_active: boolean;
+}
+
 

@@ -239,7 +239,7 @@ class DischargeService(BaseService):
         if transition_count != 1:
             self.db.rollback()
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Discharge report is no longer ready for approval")
-        # 1. Parallel Administrative Branch: Create Pending Billing Clearance
+        # 1. Parallel Administrative Branch: Create Pending Billing Clearance & Deterministic Invoice
         from app.models.billing_clearance import BillingClearance, BillingStatus
         existing_billing = (
             self.db.query(BillingClearance)
@@ -259,6 +259,11 @@ class DischargeService(BaseService):
                 notes="Awaiting finance department billing verification.",
             )
             self.db.add(billing)
+            self.db.flush()
+
+        from app.services.billing_service import BillingService
+        billing_svc = BillingService(self.db)
+        billing_svc.generate_or_get_invoice(report.admission_id, auto_commit=False)
 
         # 2. Emit report_approved workflow event
         event = WorkflowEvent(

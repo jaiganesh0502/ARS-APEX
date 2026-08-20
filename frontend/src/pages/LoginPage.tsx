@@ -201,7 +201,27 @@ export const LoginPage: React.FC = () => {
                   </div>
                 </div>
                 <span className="text-[10px] font-medium bg-purple-900/60 text-purple-300 px-2 py-0.5 rounded border border-purple-700/50">
-                  Operations & Billing
+                  Bed Release & Operations
+                </span>
+              </button>
+
+              {/* Receptionist Preset */}
+              <button
+                type="button"
+                onClick={() => setDemoPreset('receptionist@demo.local', 'ReceptionDemo123!')}
+                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-950/60 hover:bg-amber-950/30 hover:border-amber-700/50 text-left transition-all group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-amber-600/20 text-amber-400 rounded-md group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                    <ActivitySquare className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-slate-200">Hospital Receptionist (Priya)</div>
+                    <div className="text-[11px] text-slate-400">receptionist@demo.local</div>
+                  </div>
+                </div>
+                <span className="text-[10px] font-medium bg-amber-900/60 text-amber-300 px-2 py-0.5 rounded border border-amber-700/50">
+                  Registration & Invoices
                 </span>
               </button>
 
@@ -221,7 +241,7 @@ export const LoginPage: React.FC = () => {
                   </div>
                 </div>
                 <span className="text-[10px] font-medium bg-green-900/60 text-green-300 px-2 py-0.5 rounded border border-green-700/50">
-                  Care Portal & PDF
+                  Care Portal & Bill Pay
                 </span>
               </button>
             </div>

@@ -146,12 +146,23 @@ require_superintendent = require_roles(
     UserRole.RECEIVING_ADMIN,
 )
 
+require_receptionist = require_roles(
+    UserRole.RECEPTIONIST,
+)
+
+require_billing_staff = require_roles(
+    UserRole.RECEPTIONIST,
+    UserRole.MEDICAL_SUPERINTENDENT,
+    UserRole.WARD_ADMIN,
+)
+
 require_staff = require_roles(
     UserRole.DOCTOR,
     UserRole.RECEIVING_DOCTOR,
     UserRole.MEDICAL_SUPERINTENDENT,
     UserRole.WARD_ADMIN,
     UserRole.RECEIVING_ADMIN,
+    UserRole.RECEPTIONIST,
 )
 
 require_patient = require_roles(

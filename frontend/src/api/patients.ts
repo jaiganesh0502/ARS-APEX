@@ -29,3 +29,25 @@ export const getPatientById = async (patientId: number): Promise<PatientDetail> 
   const response = await apiClient.get<PatientDetail>(`/patients/${patientId}`);
   return response.data;
 };
+
+export const createPatient = async (payload: {
+  first_name: string;
+  last_name: string;
+  patient_code: string;
+  date_of_birth: string;
+  gender: string;
+  blood_group?: string;
+  phone?: string;
+  emergency_contact?: string;
+}): Promise<PatientDetail> => {
+  const response = await apiClient.post<PatientDetail>('/patients', payload);
+  return response.data;
+};
+
+export const patientsApi = {
+  getPatients,
+  getPatientById,
+  createPatient,
+};
+
+

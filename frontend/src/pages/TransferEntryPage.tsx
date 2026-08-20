@@ -26,6 +26,7 @@ import {
   PatientDetail,
   Transfer,
 } from '../types';
+import { ClinicalDocumentUploader } from '../components/clinical/ClinicalDocumentUploader';
 
 export const TransferEntryPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -294,6 +295,11 @@ export const TransferEntryPage: React.FC = () => {
             </div>
           </div>
         </Card>
+      )}
+
+      {/* Source Clinical Documents & OCR Pipeline */}
+      {patient?.admission && (
+        <ClinicalDocumentUploader admissionId={patient.admission.id} />
       )}
 
       {/* Selected Facility Status Banner (If already selected) */}

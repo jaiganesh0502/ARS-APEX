@@ -23,10 +23,12 @@ import { ReceivingTransferDetailPage } from './pages/ReceivingTransferDetailPage
 import { OperationsPage } from './pages/OperationsPage';
 import { PatientPortalPage } from './pages/PatientPortalPage';
 import { PatientPortalDashboardPage } from './pages/PatientPortalDashboardPage';
+import { ReceptionBillingPage } from './pages/ReceptionBillingPage';
 
 const STAFF_ROLES = [
   'doctor',
   'medical_superintendent',
+  'receptionist',
   'ward_admin',
   'receiving_doctor',
   'receiving_admin',
@@ -35,6 +37,12 @@ const STAFF_ROLES = [
 const CLINICAL_ROLES = [
   'doctor',
   'receiving_doctor',
+];
+
+const RECEPTION_ROLES = [
+  'receptionist',
+  'medical_superintendent',
+  'ward_admin',
 ];
 
 const SUPERINTENDENT_ROLES = [
@@ -85,6 +93,16 @@ export const App: React.FC = () => {
             {/* Shared Patient Directory and Details */}
             <Route path="/patients" element={<PatientsPage />} />
             <Route path="/patients/:patientId" element={<PatientDetailPage />} />
+
+            {/* Receptionist & Billing Management */}
+            <Route
+              path="/billing/reception"
+              element={
+                <RoleRoute allowedRoles={RECEPTION_ROLES}>
+                  <ReceptionBillingPage />
+                </RoleRoute>
+              }
+            />
 
             {/* Doctor Only: Clinical Decision & Discharge Review */}
             <Route

@@ -4,7 +4,7 @@ export interface UserProfile {
   id: number;
   name: string;
   email: string;
-  role: 'doctor' | 'medical_superintendent' | 'patient' | 'ward_admin' | 'receiving_doctor' | 'receiving_admin';
+  role: 'doctor' | 'medical_superintendent' | 'receptionist' | 'patient' | 'ward_admin' | 'receiving_doctor' | 'receiving_admin';
   is_active: boolean;
   patient_id?: number | null;
 }
@@ -32,6 +32,19 @@ export interface PatientPortalProfileResponse {
     primary_diagnosis?: string | null;
     admission_date?: string | null;
     attending_doctor?: string | null;
+    discharge_ready?: boolean;
+  } | null;
+  invoice?: {
+    id: number;
+    invoice_number: string;
+    subtotal: number;
+    discount_amount: number;
+    tax_amount: number;
+    total_amount: number;
+    amount_paid: number;
+    balance_amount: number;
+    payment_status: string;
+    qr_code_uri?: string | null;
   } | null;
   discharge_package?: {
     id?: number | null;

@@ -103,6 +103,22 @@ def _seed_demo_users(db: Session, primary_patient: Optional[Patient] = None) -> 
         if target_patient_id:
             patient_user.patient_id = target_patient_id
 
+    # 4. Receptionist Demo User
+    rec_email = "receptionist@demo.local"
+    receptionist = db.query(User).filter(User.email == rec_email).first()
+    if not receptionist:
+        receptionist = User(
+            name="Priya Sharma (Reception)",
+            email=rec_email,
+            role=UserRole.RECEPTIONIST,
+            password_hash=hash_password("ReceptionDemo123!"),
+            is_active=True,
+        )
+        db.add(receptionist)
+        db.flush()
+    else:
+        receptionist.password_hash = hash_password("ReceptionDemo123!")
+
     # Legacy Asha Rao user for test backward-compatibility
     asha_email = "asha.rao@synthetic-hospital.test"
     asha = db.query(User).filter(User.email == asha_email).first()
@@ -376,6 +392,10 @@ def seed_database(db: Optional[Session] = None) -> None:
                 if not first_patient:
                     first_patient = p
         
+        # Seed ChargeMaster catalog
+        from app.services.charge_master_service import ChargeMasterService
+        ChargeMasterService(session).seed_defaults_if_empty()
+
         # Link patient demo user to the primary demo patient
         if first_patient:
             _seed_demo_users(session, primary_patient=first_patient)

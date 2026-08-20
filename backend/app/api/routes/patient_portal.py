@@ -39,6 +39,11 @@ def get_patient_portal_profile(
 
     has_pdf = bool(package and package.pdf_path and os.path.exists(package.pdf_path))
 
+    from app.models.invoice import Invoice
+    invoice = None
+    if latest_admission:
+        invoice = db.query(Invoice).filter(Invoice.admission_id == latest_admission.id).first()
+
     return {
         "patient": {
             "id": patient.id,
@@ -56,7 +61,20 @@ def get_patient_portal_profile(
             "primary_diagnosis": latest_admission.primary_diagnosis if latest_admission else None,
             "admission_date": latest_admission.admission_date.isoformat() if latest_admission and latest_admission.admission_date else None,
             "attending_doctor": latest_admission.attending_doctor.name if latest_admission and latest_admission.attending_doctor else None,
+            "discharge_ready": latest_admission.discharge_ready if latest_admission else False,
         } if latest_admission else None,
+        "invoice": {
+            "id": invoice.id,
+            "invoice_number": invoice.invoice_number,
+            "subtotal": float(invoice.subtotal or 0.0),
+            "discount_amount": float(invoice.discount_amount or 0.0),
+            "tax_amount": float(invoice.tax_amount or 0.0),
+            "total_amount": float(invoice.total_amount or 0.0),
+            "amount_paid": float(invoice.amount_paid or 0.0),
+            "balance_amount": float(invoice.balance_amount or 0.0),
+            "payment_status": invoice.payment_status.value if hasattr(invoice.payment_status, "value") else str(invoice.payment_status),
+            "qr_code_uri": invoice.qr_code_uri,
+        } if invoice else None,
         "discharge_package": {
             "id": package.id if package else None,
             "status": package.status.value if package else None,

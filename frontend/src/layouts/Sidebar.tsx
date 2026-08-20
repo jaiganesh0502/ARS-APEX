@@ -24,6 +24,14 @@ export const Sidebar: React.FC = () => {
       ];
     }
 
+    if (role === 'receptionist') {
+      return [
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Patients & Registration', href: '/patients', icon: Users },
+        { name: 'Billing & Invoices', href: '/billing/reception', icon: ActivitySquare },
+      ];
+    }
+
     if (role === 'medical_superintendent' || role === 'ward_admin' || role === 'receiving_admin') {
       return [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },

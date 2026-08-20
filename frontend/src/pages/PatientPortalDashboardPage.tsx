@@ -13,8 +13,11 @@ import {
   UserCheck,
   Stethoscope,
   ShieldCheck,
+  CreditCard,
+  QrCode,
 } from 'lucide-react';
 import { authApi, PatientPortalProfileResponse } from '../api/auth';
+import { billingApi } from '../api/billing';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
@@ -202,10 +205,15 @@ export const PatientPortalDashboardPage: React.FC = () => {
               Discharge Status
             </div>
             <div className="text-base font-bold text-white flex items-center gap-2">
-              {discharge_package?.has_pdf ? (
+              {data.admission?.discharge_ready ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span className="text-emerald-400">Discharge Cleared & Ready</span>
+                </>
+              ) : discharge_package?.has_pdf ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-green-400" />
-                  <span className="text-green-400">Package Ready & Verified</span>
+                  <span className="text-green-400">Package Ready</span>
                 </>
               ) : (
                 <>
@@ -216,6 +224,107 @@ export const PatientPortalDashboardPage: React.FC = () => {
             </div>
           </Card>
         </div>
+
+        {/* Hospital Invoice & UPI Payment Section */}
+        {data.invoice && (
+          <Card className="bg-slate-900 border-slate-800 p-6 rounded-xl shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center gap-2.5">
+                  <CreditCard className="w-5 h-5 text-emerald-400" />
+                  <span>Hospital Invoice & Dues Settlement</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Invoice #: <span className="font-mono text-slate-200">{data.invoice.invoice_number}</span>
+                </p>
+              </div>
+              <span
+                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
+                  data.invoice.payment_status === 'paid_online' || data.invoice.payment_status === 'paid_manual'
+                    ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                    : data.invoice.payment_status === 'deferred'
+                    ? 'bg-blue-950 text-blue-300 border border-blue-800'
+                    : 'bg-amber-950 text-amber-300 border border-amber-800'
+                }`}
+              >
+                {data.invoice.payment_status.replace('_', ' ')}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Financial Breakdown */}
+              <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 space-y-2 text-xs">
+                <div className="flex justify-between text-slate-400">
+                  <span>Room & Treatment Charges</span>
+                  <span className="font-mono font-medium text-slate-200">
+                    ₹{data.invoice.subtotal.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-slate-400">
+                  <span>Healthcare Surcharge / GST (5%)</span>
+                  <span className="font-mono font-medium text-slate-200">
+                    ₹{data.invoice.tax_amount.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
+                  <span>Total Hospital Bill</span>
+                  <span className="font-mono">₹{data.invoice.total_amount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-emerald-400 font-semibold pt-1">
+                  <span>Amount Paid</span>
+                  <span className="font-mono">₹{data.invoice.amount_paid.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-amber-400 font-bold text-sm pt-2 border-t border-slate-800">
+                  <span>Outstanding Balance</span>
+                  <span className="font-mono">₹{data.invoice.balance_amount.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* UPI QR & Instant Payment */}
+              <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 flex flex-col items-center justify-center text-center space-y-3">
+                {data.invoice.balance_amount > 0 && data.invoice.payment_status !== 'deferred' ? (
+                  <>
+                    <div className="p-3 bg-white rounded-xl shadow-inner inline-block">
+                      <QrCode className="w-24 h-24 text-slate-950" />
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      Scan with any UPI App (GPay, PhonePe, Paytm)
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (!data?.invoice) return;
+                        try {
+                          await billingApi.simulateOnlinePayment({
+                            invoice_number: data.invoice.invoice_number,
+                            amount: data.invoice.balance_amount,
+                          });
+                          alert('Payment simulated successfully! Invoice marked paid.');
+                          fetchProfile();
+                        } catch (e: any) {
+                          alert('Payment simulation failed');
+                        }
+                      }}
+                      className="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow transition-colors flex items-center justify-center gap-2"
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      Simulate Instant UPI Payment (₹{data.invoice.balance_amount.toFixed(2)})
+                    </button>
+                  </>
+                ) : (
+                  <div className="py-4 space-y-2">
+                    <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
+                    <div className="text-sm font-bold text-white">All Hospital Dues Cleared</div>
+                    <p className="text-xs text-slate-400">
+                      {data.invoice.payment_status === 'deferred'
+                        ? 'Payment deferred for critical emergency transfer.'
+                        : 'No pending payments. Administrative clearance recorded.'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Plain-Language Care Summary Section */}
         {summary ? (

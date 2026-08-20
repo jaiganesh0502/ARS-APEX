@@ -52,6 +52,7 @@ export const DashboardSafetyNotice: React.FC = () => <div className="p-4 bg-slat
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isReceptionist = user?.role === 'receptionist';
   const isSuperintendent =
     user?.role === 'medical_superintendent' ||
     user?.role === 'ward_admin' ||
@@ -84,18 +85,41 @@ export const DashboardPage: React.FC = () => {
     <div className="space-y-6">
       <PageHeader
         title={
-          isSuperintendent
+          isReceptionist
+            ? 'Inpatient Reception & Registration Desk'
+            : isSuperintendent
             ? 'Hospital Operations & Orchestration Command'
             : 'Clinical Operations & Discharge Orchestration'
         }
         description={
-          isSuperintendent
+          isReceptionist
+            ? 'Reception command center for new patient registration, itemized invoices, and counter payments.'
+            : isSuperintendent
             ? 'Superintendent command center for bed turnovers, fleet coordination, and hospital capacity.'
             : 'Physician portal for clinical decisions, discharge reviews, and specialized transfer requests.'
         }
         action={
           <div className="flex items-center gap-3">
-            {isSuperintendent ? (
+            {isReceptionist ? (
+              <>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  leftIcon={<Users className="w-4 h-4" />}
+                  onClick={() => navigate('/billing/reception')}
+                >
+                  Billing & Invoices
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Users className="w-4 h-4" />}
+                  onClick={() => navigate('/patients')}
+                >
+                  Patient Directory
+                </Button>
+              </>
+            ) : isSuperintendent ? (
               <>
                 <Button
                   variant="outline"

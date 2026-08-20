@@ -17,6 +17,10 @@ from app.models.clinical_decision import ClinicalDecision, ClinicalDecisionType,
 from app.models.billing_clearance import BillingClearance, BillingStatus
 from app.models.discharge_package import DischargePackage, DischargePackageStatus
 from app.models.notification import Notification, NotificationChannel, NotificationType, NotificationStatus
+from app.models.clinical_document import ClinicalDocument, DocumentStatus, ClinicalDocumentType
+from app.models.charge_master import ChargeMasterItem, ChargeCategory
+from app.models.invoice import Invoice, InvoiceLineItem, PaymentStatus, PaymentMethod
+from app.models.payment_transaction import PaymentTransaction
 
 __all__ = [
     "User",
@@ -54,4 +58,14 @@ __all__ = [
     "NotificationChannel",
     "NotificationType",
     "NotificationStatus",
+    "ClinicalDocument",
+    "DocumentStatus",
+    "ClinicalDocumentType",
+    "ChargeMasterItem",
+    "ChargeCategory",
+    "Invoice",
+    "InvoiceLineItem",
+    "PaymentStatus",
+    "PaymentMethod",
+    "PaymentTransaction",
 ]

@@ -17,6 +17,7 @@ import { availableReportActions, effectiveReportContent } from '../features/disc
 import { billingApi } from '../api/billing';
 import { dischargePackagesApi } from '../api/dischargePackages';
 import { BedSummary, BillingClearance, DischargePackage, DischargeReport, PatientDetail } from '../types';
+import { ClinicalDocumentUploader } from '../components/clinical/ClinicalDocumentUploader';
 
 export const BillingClearanceCard: React.FC<{
   admissionId: number;
@@ -574,6 +575,12 @@ const DischargeRoute: React.FC<{ patientId: number }> = ({ patientId: numericPat
     <Card title="Patient and admission" subtitle="Clinical context for this report workflow.">
       <dl className="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-3"><Info label="Patient" value={`${demographics.first_name} ${demographics.last_name}`} /><Info label="Patient code" value={patient.patient_code} /><Info label="Primary diagnosis" value={admission.primary_diagnosis} /><Info label="Attending doctor" value={admission.attending_doctor} /><Info label="Admission date" value={formatDateTime(admission.admission_date)} /><Info label="Ward / bed" value={bed ? `${bed.ward} / ${bed.bed_number}` : 'Unassigned'} /><div><dt className="text-slate-500">Admission status</dt><dd className="mt-1"><StatusBadge status={admission.status} /></dd></div></dl>
     </Card>
+
+    {/* Clinical Source Documents Upload & Auto-OCR Pipeline */}
+    <ClinicalDocumentUploader
+      admissionId={admission.id}
+      onDocumentProcessed={() => setReloadKey((v) => v + 1)}
+    />
 
     {!report && <Card title="Generate AI draft" subtitle="Generation is started only when you choose it.">
       <ReportSafetyNotice status="generated" />
