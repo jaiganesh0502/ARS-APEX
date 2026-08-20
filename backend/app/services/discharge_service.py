@@ -218,8 +218,11 @@ class DischargeService(BaseService):
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Discharge report is not ready for approval")
         if not isinstance(report.effective_content, str) or not report.effective_content.strip():
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Discharge report content cannot be empty before approval")
-        if admission.status != AdmissionStatus.DISCHARGING:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Admission must be discharging before report approval")
+        if admission.status not in (AdmissionStatus.ADMITTED, AdmissionStatus.DISCHARGING):
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Admission must be active before report approval")
+
+        if admission.status == AdmissionStatus.ADMITTED:
+            admission.status = AdmissionStatus.DISCHARGING
 
         now = datetime.now(timezone.utc)
         transition_count = self.db.execute(
