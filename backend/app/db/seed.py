@@ -31,6 +31,9 @@ from app.services.bed_event_policy import is_valid_bed_transition_event
 from app.core.security import hash_password
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 def _find_dataset_path() -> Path:
     candidates = [
         Path(__file__).resolve().parents[3] / "data" / "synthetic" / "patients.json",
