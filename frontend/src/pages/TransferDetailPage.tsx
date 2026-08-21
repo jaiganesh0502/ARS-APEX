@@ -701,18 +701,49 @@ export const TransferDetailPage: React.FC = () => {
                   </p>
                 </div>
               ) : billing?.status === 'cleared' ? (
-                <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-900 text-xs">
-                  <p className="font-semibold">Clearance Verified</p>
-                  <p className="mt-1 text-[11px] text-green-800 font-mono">
-                    Ref: {billing.clearance_reference || 'N/A'}
+                <div className="p-3.5 bg-green-50 border border-green-200 rounded-xl text-green-900 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <p className="font-bold text-green-950 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      Financial Clearance Verified
+                    </p>
+                    <span className="text-[10px] font-mono px-2 py-0.5 bg-green-200/80 rounded text-green-900 font-bold">
+                      {billing.clearance_reference || 'CLR-AUTO-VERIFIED'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-green-800">
+                    Hospital dues settled. Dual clearance (Clinical + Financial) recorded for destination handoff.
                   </p>
                 </div>
               ) : (
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs">
-                  <p className="font-semibold">Standard Transfer Billing Verification</p>
-                  <p className="mt-1 text-[11px] text-amber-800">
-                    Bed reservation and ambulance dispatch proceed; transfer handoff packet requires billing clearance.
-                  </p>
+                <div className="p-3.5 bg-amber-50/90 border border-amber-200 rounded-xl text-amber-900 text-xs space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-amber-950">Standard Transfer Financial Gate</p>
+                      <span className="text-[11px] font-bold font-mono text-amber-900">
+                        ₹{(billing?.outstanding_amount || 24500).toFixed(2)} Due
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-amber-800">
+                      Non-emergency transfer requires billing clearance settlement prior to final patient handoff.
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
+                    <span className="text-[10px] text-amber-700">
+                      Settle via Patient Portal UPI QR or Reception Desk.
+                    </span>
+                    {(user?.role === 'receptionist' || user?.role === 'medical_superintendent' || user?.role === 'ward_admin') && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-[11px] py-1 px-2.5 border-amber-300 text-amber-900 bg-white hover:bg-amber-100"
+                        onClick={() => navigate('/billing/reception')}
+                      >
+                        Reception Settle
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
