@@ -123,6 +123,10 @@ def reset_all():
             if p_adm:
                 p_adm.status = AdmissionStatus.ADMITTED
 
+        # Restore Hospital Capacities to defaults
+        from app.db.seed import _seed_hospitals
+        _seed_hospitals(db)
+
         db.commit()
         logger.info("Complete clinical database reset successfully committed!")
 
