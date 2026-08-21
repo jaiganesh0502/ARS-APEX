@@ -450,6 +450,8 @@ class BillingService:
         When clinical_report == APPROVED AND payment_status IN (PAID_ONLINE, PAID_MANUAL, DEFERRED)
         -> Sets admission.discharge_ready = True and emits 'discharge_ready'.
         """
+        from app.models.user import User, UserRole
+
         admission = self.db.get(Admission, admission_id)
         if not admission:
             return False
@@ -499,7 +501,6 @@ class BillingService:
             if not transfer:
                 from app.models.discharge_package import DischargePackage
                 from app.services.discharge_package_service import DischargePackageService
-                from app.models.user import User, UserRole
                 existing_pkg = self.db.query(DischargePackage).filter(DischargePackage.admission_id == admission.id).first()
                 if not existing_pkg:
                     system_user = self.db.query(User).filter(User.role == UserRole.MEDICAL_SUPERINTENDENT).first()
