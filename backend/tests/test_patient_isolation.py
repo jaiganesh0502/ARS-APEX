@@ -78,22 +78,29 @@ def isolation_env(db_session):
     db_session.add(report_a)
     db_session.flush()
 
-    billing_a = BillingClearance(
-        patient_id=patient_a.id,
-        admission_id=adm_a.id,
-        discharge_report_id=report_a.id,
-        status=BillingStatus.CLEARED,
-        total_amount=5000.0,
-        amount_paid=5000.0,
-        outstanding_amount=0.0,
-        clearance_reference="TXN-ISO-A-100",
-    )
-    db_session.add(billing_a)
-    db_session.commit()
-
-    # Approve and finalize for Patient A
+    # Approve report first
     discharge_svc = DischargeService(db_session)
     discharge_svc.approve_report(report_a.id, doctor)
+
+    # Clear billing clearance for Patient A
+    billing_a = (
+        db_session.query(BillingClearance)
+        .filter(BillingClearance.admission_id == adm_a.id)
+        .first()
+    )
+    if not billing_a:
+        billing_a = BillingClearance(
+            patient_id=patient_a.id,
+            admission_id=adm_a.id,
+            discharge_report_id=report_a.id,
+            total_amount=5000.0,
+        )
+        db_session.add(billing_a)
+    billing_a.status = BillingStatus.CLEARED
+    billing_a.amount_paid = 5000.0
+    billing_a.outstanding_amount = 0.0
+    billing_a.clearance_reference = "TXN-ISO-A-100"
+    db_session.commit()
 
     pkg_svc = DischargePackageService(db_session)
     pkg_a = pkg_svc.finalize_discharge_package(adm_a.id, authorizing_user=doctor)
