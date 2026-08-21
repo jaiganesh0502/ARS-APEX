@@ -111,8 +111,12 @@ jobs:
           gradle-version: '8.4'
 
       - name: Generate Wrapper & Build Android APK
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: |
           cd android
+          echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
           gradle wrapper --gradle-version 8.4
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace --no-daemon
