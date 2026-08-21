@@ -58,7 +58,7 @@ jobs:
           PYTHONPATH: .
         run: |
           cd backend
-          pytest tests/test_clinical_document_pipeline.py tests/test_billing_and_charge_master.py tests/test_payments_and_webhooks.py tests/test_rbac_four_roles.py tests/test_health.py -v
+          pytest tests/test_clinical_document_pipeline.py tests/test_billing_and_charge_master.py tests/test_payments_and_webhooks.py tests/test_rbac_four_roles.py tests/test_health.py tests/test_patient_isolation.py tests/test_receiving_transfers.py tests/test_full_system_e2e.py tests/test_feature7_e2e.py -v
 
   frontend-build:
     name: Frontend Build & Typecheck
