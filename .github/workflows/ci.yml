@@ -16,8 +16,8 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_DB: discharge_orchestration
-          POSTGRES_USER: alta_user
-          POSTGRES_PASSWORD: alta_password
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
@@ -34,7 +34,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
       - name: Install Dependencies
         run: |
@@ -44,7 +43,8 @@ jobs:
 
       - name: Run Database Migrations
         env:
-          DATABASE_URL: postgresql://alta_user:alta_password@localhost:5432/discharge_orchestration
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/discharge_orchestration
+          SECRET_KEY: ci_secret_key_12345678901234567890
           JWT_SECRET: ci_secret_key_12345678901234567890
         run: |
           cd backend
@@ -52,8 +52,10 @@ jobs:
 
       - name: Run Backend Tests
         env:
-          DATABASE_URL: postgresql://alta_user:alta_password@localhost:5432/discharge_orchestration
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/discharge_orchestration
+          SECRET_KEY: ci_secret_key_12345678901234567890
           JWT_SECRET: ci_secret_key_12345678901234567890
+          PYTHONPATH: .
         run: |
           cd backend
           pytest tests/test_clinical_document_pipeline.py tests/test_billing_and_charge_master.py tests/test_payments_and_webhooks.py tests/test_rbac_four_roles.py tests/test_health.py -v
@@ -69,13 +71,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
 
       - name: Install Frontend Dependencies
         run: |
           cd frontend
-          npm ci
+          npm install
 
       - name: Build Frontend Application
         run: |
