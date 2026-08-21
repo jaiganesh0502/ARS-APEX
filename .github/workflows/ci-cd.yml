@@ -1,4 +1,4 @@
-name: Alta CI/CD & App Build
+name: Alta CI/CD Pipeline
 
 on:
   push:
@@ -128,3 +128,36 @@ jobs:
           name: alta-care-suite-apk
           path: release/alta-care-suite-v1.0.0.apk
           retention-days: 30
+
+  deploy-ec2:
+    name: Deploy to EC2
+    needs: [backend-test, frontend-build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to AWS EC2 via SSH
+        env:
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        if: env.SSH_KEY != ''
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST || 'altaa.duckdns.org' }}
+          username: ${{ secrets.EC2_USER || 'ubuntu' }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/alta
+            git pull origin main
+            sudo docker compose restart backend
+            cd /home/ubuntu/alta/frontend
+            npm install
+            npm run build
+            sudo chmod -R o+rX /home/ubuntu/alta/frontend/dist
+            sudo systemctl reload nginx
+
+      - name: Verify Live Deployment Health
+        env:
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        if: env.SSH_KEY != ''
+        run: |
+          echo "Verifying backend health on staging..."
+          curl --fail --retry 5 --retry-delay 3 https://${{ secrets.EC2_HOST || 'altaa.duckdns.org' }}/api/health
