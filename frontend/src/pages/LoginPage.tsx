@@ -268,9 +268,19 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
-            <span>JWT Bearer RBAC Active with bcrypt encryption</span>
+          <div className="mt-6 flex flex-col items-center justify-center gap-3">
+            <button
+              onClick={() => navigate('/download')}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-xs font-semibold text-primary-300 hover:text-white transition-all shadow-sm group"
+            >
+              <span>📱 Download Alta Mobile App (Android APK & PWA)</span>
+              <span className="text-slate-400 group-hover:translate-x-0.5 transition-transform">→</span>
+            </button>
+
+            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+              <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
+              <span>JWT Bearer RBAC Active with bcrypt encryption</span>
+            </div>
           </div>
         </div>
       </div>

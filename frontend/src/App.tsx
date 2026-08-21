@@ -24,6 +24,7 @@ import { OperationsPage } from './pages/OperationsPage';
 import { PatientPortalPage } from './pages/PatientPortalPage';
 import { PatientPortalDashboardPage } from './pages/PatientPortalDashboardPage';
 import { ReceptionBillingPage } from './pages/ReceptionBillingPage';
+import { DownloadAppPage } from './pages/DownloadAppPage';
 
 const STAFF_ROLES = [
   'doctor',
@@ -58,6 +59,10 @@ export const App: React.FC = () => {
         <Routes>
           {/* Public login route */}
           <Route path="/login" element={<LoginPage />} />
+
+          {/* Public App Download & Mobile Suite Page */}
+          <Route path="/download" element={<DownloadAppPage />} />
+          <Route path="/app-download" element={<DownloadAppPage />} />
 
           {/* 403 Forbidden Page */}
           <Route path="/forbidden" element={<ForbiddenPage />} />
