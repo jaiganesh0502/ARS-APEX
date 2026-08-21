@@ -481,22 +481,37 @@ class BillingService:
                 if bed and bed.status == BedStatus.OCCUPIED:
                     bed.status = BedStatus.VACATING
 
-            # Auto-compile DischargePackage and PDF if not already created
-            from app.models.discharge_package import DischargePackage
-            from app.services.discharge_package_service import DischargePackageService
-            from app.models.user import User, UserRole
-            existing_pkg = self.db.query(DischargePackage).filter(DischargePackage.admission_id == admission.id).first()
-            if not existing_pkg:
-                system_user = self.db.query(User).filter(User.role == UserRole.MEDICAL_SUPERINTENDENT).first()
-                try:
-                    pkg_svc = DischargePackageService(self.db)
-                    pkg_svc.finalize_discharge_package(
-                        admission_id=admission.id,
-                        authorizing_user=system_user,
-                        notes="Automated discharge authorization on dual clearance confirmation.",
-                    )
-                except Exception as e:
-                    logger.warning("Auto discharge package creation encountered: %s", e)
+            # For Transfer Cases: If accepted and ambulance not yet dispatched, trigger ambulance dispatch!
+            if transfer and transfer.status in (TransferStatus.ACCEPTED, TransferStatus.HOSPITAL_SELECTED, TransferStatus.AWAITING_ACCEPTANCE):
+                from app.models.ambulance_dispatch import AmbulanceDispatch
+                from app.services.ambulance_dispatch_service import AmbulanceDispatchService
+                existing_amb = self.db.query(AmbulanceDispatch).filter(AmbulanceDispatch.transfer_id == transfer.id).first()
+                if not existing_amb:
+                    try:
+                        system_user = self.db.query(User).filter(User.role == UserRole.MEDICAL_SUPERINTENDENT).first()
+                        amb_svc = AmbulanceDispatchService(self.db)
+                        amb_svc.dispatch_ambulance(transfer.id, requesting_user=system_user)
+                        logger.info("Auto-dispatched ambulance for transfer %s after payment clearance", transfer.id)
+                    except Exception as e:
+                        logger.warning("Ambulance auto-dispatch on payment clearance encountered: %s", e)
+
+            # Auto-compile DischargePackage and PDF if not already created (for regular discharges)
+            if not transfer:
+                from app.models.discharge_package import DischargePackage
+                from app.services.discharge_package_service import DischargePackageService
+                from app.models.user import User, UserRole
+                existing_pkg = self.db.query(DischargePackage).filter(DischargePackage.admission_id == admission.id).first()
+                if not existing_pkg:
+                    system_user = self.db.query(User).filter(User.role == UserRole.MEDICAL_SUPERINTENDENT).first()
+                    try:
+                        pkg_svc = DischargePackageService(self.db)
+                        pkg_svc.finalize_discharge_package(
+                            admission_id=admission.id,
+                            authorizing_user=system_user,
+                            notes="Automated discharge authorization on dual clearance confirmation.",
+                        )
+                    except Exception as e:
+                        logger.warning("Auto discharge package creation encountered: %s", e)
 
             self.db.commit()
 

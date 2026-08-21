@@ -342,13 +342,22 @@ class ReceivingTransferService:
         self.db.commit()
         self.db.refresh(transfer)
 
-        # Auto-dispatch ALS Ambulance immediately upon transfer acceptance
-        try:
-            from app.services.ambulance_dispatch_service import AmbulanceDispatchService
-            amb_svc = AmbulanceDispatchService(self.db)
-            amb_svc.dispatch_ambulance(transfer.id, requesting_user=decided_by_user)
-        except Exception as e:
-            logger.warning("Auto ambulance dispatch on transfer acceptance encountered: %s", e)
+        # For EMERGENCY transfers: Auto-dispatch ALS Ambulance immediately upon acceptance
+        # For NON-EMERGENCY transfers: Generate invoice with UPI QR, wait for payment settlement before dispatching ambulance
+        if transfer.emergency:
+            try:
+                from app.services.ambulance_dispatch_service import AmbulanceDispatchService
+                amb_svc = AmbulanceDispatchService(self.db)
+                amb_svc.dispatch_ambulance(transfer.id, requesting_user=decided_by_user)
+            except Exception as e:
+                logger.warning("Auto emergency ambulance dispatch on transfer acceptance encountered: %s", e)
+        else:
+            try:
+                from app.services.billing_service import BillingService
+                bill_svc = BillingService(self.db)
+                bill_svc.generate_or_get_invoice(transfer.admission_id, auto_commit=True)
+            except Exception as e:
+                logger.warning("Invoice auto-generation for non-emergency transfer encountered: %s", e)
 
         logger.info(
             "Transfer %s accepted by hospital %s. Remaining beds for %s: %s",

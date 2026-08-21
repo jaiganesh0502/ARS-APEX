@@ -169,6 +169,14 @@ class BillingClearanceService:
         )
 
         logger.info(f"Cleared billing clearance #{clearance.id} (Ref: {clearance_reference})")
+
+        # Evaluate dual clearance and auto-dispatch ambulance / bed turnover
+        try:
+            from app.services.billing_service import BillingService
+            BillingService(self.db).evaluate_discharge_readiness(clearance.admission_id)
+        except Exception as e:
+            logger.warning("Discharge readiness evaluation on clear_billing encountered: %s", e)
+
         return clearance
 
     def defer_billing_for_emergency(
