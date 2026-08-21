@@ -13,7 +13,7 @@ import {
   Sparkles,
   Apple,
   Copy,
-  ExternalLink,
+  Layers,
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
@@ -22,7 +22,7 @@ export const DownloadAppPage: React.FC = () => {
   const navigate = useNavigate();
   const [copiedSha, setCopiedSha] = useState(false);
 
-  const sha256 = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+  const sha256 = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08';
 
   const handleCopySha = () => {
     navigator.clipboard.writeText(sha256);
@@ -30,10 +30,19 @@ export const DownloadAppPage: React.FC = () => {
     setTimeout(() => setCopiedSha(false), 2500);
   };
 
-  const handleDownloadApk = () => {
+  const handleDownloadReactNativeApk = () => {
+    const link = document.createElement('a');
+    link.href = '/alta-react-native-app.apk';
+    link.download = 'Alta-React-Native-Care-v1.0.0.apk';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const handleDownloadLiteApk = () => {
     const link = document.createElement('a');
     link.href = '/alta-care-suite.apk';
-    link.download = 'Alta-Care-Suite-v1.0.0.apk';
+    link.download = 'Alta-Care-Lite-v1.0.0.apk';
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -71,17 +80,17 @@ export const DownloadAppPage: React.FC = () => {
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-600/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="text-center space-y-4 max-w-3xl mx-auto relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-950/80 border border-primary-800 text-xs font-semibold text-primary-300 shadow-inner">
-            <Sparkles className="w-3.5 h-3.5 text-primary-400" />
-            <span>Official Alta Mobile Suite v1.0.0 Released</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800 text-xs font-semibold text-cyan-300 shadow-inner">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Official React Native Standalone APK (v1.0.0) Available</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-            Hospital Operations & Care in Your Pocket
+            Alta React Native Mobile Client
           </h1>
 
           <p className="text-slate-400 text-base sm:text-lg leading-relaxed">
-            Real-time clinical round sign-offs, automated dual clearance, live inter-hospital ambulance fleet tracking, and 1-click patient recovery portals.
+            Full native React Native build powered by the Hermes engine. Connects live to Alta Cloud (<code className="text-primary-400 font-mono">https://altaa.duckdns.org</code>) for physician rounds, receiving transfer triage, live ambulance GPS, and instant UPI bill payments.
           </p>
 
           {/* Quick Action Buttons */}
@@ -89,23 +98,21 @@ export const DownloadAppPage: React.FC = () => {
             <Button
               variant="primary"
               size="lg"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-950/40 flex items-center gap-2 px-6 py-3 rounded-xl text-sm"
+              className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold shadow-lg shadow-cyan-950/40 flex items-center gap-2 px-6 py-3 rounded-xl text-sm"
               leftIcon={<Download className="w-5 h-5" />}
-              onClick={handleDownloadApk}
+              onClick={handleDownloadReactNativeApk}
             >
-              Download Android APK (v1.0.0)
+              Download React Native APK (v1.0.0)
             </Button>
 
             <Button
               variant="secondary"
               size="lg"
               className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-6 py-3 rounded-xl text-sm"
-              leftIcon={<Apple className="w-5 h-5 text-slate-400" />}
-              onClick={() => {
-                alert('To install on iOS: Open Safari, tap the Share icon, and select "Add to Home Screen".');
-              }}
+              leftIcon={<Smartphone className="w-5 h-5 text-emerald-400" />}
+              onClick={handleDownloadLiteApk}
             >
-              Install iOS / Web App
+              Download Lite APK (789 KB)
             </Button>
           </div>
         </div>
@@ -113,35 +120,39 @@ export const DownloadAppPage: React.FC = () => {
 
       {/* Main Download Cards Grid */}
       <section className="px-6 pb-20 max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Card 1: Android APK */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between hover:border-emerald-500/50 transition-all group">
+        {/* Card 1: React Native APK */}
+        <div className="bg-slate-900/90 border border-cyan-900/60 rounded-2xl p-6 shadow-xl flex flex-col justify-between hover:border-cyan-500/80 transition-all group">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="p-3 bg-emerald-950/80 border border-emerald-800 text-emerald-400 rounded-xl">
-                <Smartphone className="w-7 h-7" />
+              <div className="p-3 bg-cyan-950/80 border border-cyan-800 text-cyan-400 rounded-xl">
+                <Layers className="w-7 h-7" />
               </div>
-              <Badge variant="green" size="sm">
-                STANDALONE APK
+              <Badge variant="primary" size="sm">
+                REACT NATIVE
               </Badge>
             </div>
 
             <div>
-              <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
-                Android Package (APK)
+              <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
+                React Native Native APK
               </h3>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Native Android build with full offline care snapshot caching and background push notifications.
+                Native Android build with compiled Hermes JavaScript engine, offline state caching, and live API connectivity.
               </p>
             </div>
 
             <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs space-y-2 font-mono text-slate-300">
               <div className="flex justify-between">
-                <span className="text-slate-500">Version:</span>
-                <span>v1.0.0-release</span>
+                <span className="text-slate-500">Framework:</span>
+                <span className="text-cyan-400">React Native 0.74</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">File Size:</span>
-                <span>18.4 MB</span>
+                <span className="text-slate-500">Engine:</span>
+                <span>Hermes Bytecode</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Server Target:</span>
+                <span className="text-emerald-400">altaa.duckdns.org</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Android:</span>
@@ -154,14 +165,14 @@ export const DownloadAppPage: React.FC = () => {
             <Button
               variant="primary"
               size="md"
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+              className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold"
               leftIcon={<Download className="w-4 h-4" />}
-              onClick={handleDownloadApk}
+              onClick={handleDownloadReactNativeApk}
             >
-              Direct APK Download
+              Download React Native APK
             </Button>
             <p className="text-[10px] text-center text-slate-500">
-              Verified safe by Alta Security Subsystem
+              Standalone installable APK (No Expo Go required)
             </p>
           </div>
         </div>
@@ -239,10 +250,9 @@ export const DownloadAppPage: React.FC = () => {
               variant="outline"
               size="md"
               className="w-full border-blue-700 text-blue-300 hover:bg-blue-950/60 font-semibold"
-              rightIcon={<ExternalLink className="w-4 h-4" />}
-              onClick={() => navigate('/login')}
+              onClick={handleDownloadLiteApk}
             >
-              Open Web Portal
+              Download Lite Edition APK
             </Button>
           </div>
         </div>
