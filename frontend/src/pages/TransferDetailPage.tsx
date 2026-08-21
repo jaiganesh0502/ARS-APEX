@@ -321,8 +321,8 @@ export const TransferDetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* Acceptance Success Banner */}
-      {isAccepted && (
+      {/* Acceptance Success Banner (if ambulance not yet dispatched) */}
+      {isAccepted && !ambulance && (
         <div className="p-5 bg-green-50 border-2 border-green-300 rounded-2xl shadow-sm space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
@@ -367,7 +367,7 @@ export const TransferDetailPage: React.FC = () => {
       )}
 
       {/* Ambulance Dispatch Active Tracking Banner */}
-      {ambulance && transfer.status !== 'accepted' && transfer.status !== 'rejected' && (
+      {ambulance && transfer.status !== 'rejected' && (
         <div className="p-5 bg-primary-50 border-2 border-primary-300 rounded-2xl shadow-sm space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
