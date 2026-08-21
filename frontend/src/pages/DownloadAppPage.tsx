@@ -22,7 +22,7 @@ export const DownloadAppPage: React.FC = () => {
   const navigate = useNavigate();
   const [copiedSha, setCopiedSha] = useState(false);
 
-  const sha256 = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08';
+  const sha256 = '88261f2b31632a28e499dfd11c8a3390b922bab5f52aef157e17c449daa200ea';
 
   const handleCopySha = () => {
     navigator.clipboard.writeText(sha256);
