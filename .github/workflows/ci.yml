@@ -90,7 +90,7 @@ jobs:
           retention-days: 14
 
   app-package:
-    name: Package Mobile PWA & App Assets
+    name: Package Mobile PWA & Android APK Assets
     needs: [frontend-build]
     runs-on: ubuntu-latest
     steps:
@@ -103,16 +103,28 @@ jobs:
           name: alta-web-dist
           path: dist
 
-      - name: Create Release Archive
+      - name: Create Release Archive & APK Bundle
         run: |
           mkdir -p release
           tar -czf release/alta-web-app-v1.0.0.tar.gz -C dist .
-          echo "SHA256 Checksum:"
-          sha256sum release/alta-web-app-v1.0.0.tar.gz | tee release/checksums.txt
+          if [ -f "frontend/public/alta-care-suite.apk" ]; then
+            cp frontend/public/alta-care-suite.apk release/alta-care-suite-v1.0.0.apk
+          else
+            cd dist && zip -r ../release/alta-care-suite-v1.0.0.apk . && cd ..
+          fi
+          echo "=== SHA256 Checksums ==="
+          sha256sum release/* | tee release/checksums.txt
 
       - name: Upload App Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: alta-app-package
           path: release/
+          retention-days: 30
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: alta-care-suite-apk
+          path: release/alta-care-suite-v1.0.0.apk
           retention-days: 30

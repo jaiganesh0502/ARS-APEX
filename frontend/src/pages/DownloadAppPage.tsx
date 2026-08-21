@@ -31,19 +31,12 @@ export const DownloadAppPage: React.FC = () => {
   };
 
   const handleDownloadApk = () => {
-    // Generate simulated APK download binary stream
-    const dummyApkContent = new Blob(
-      ['Alta Hospital Care & Transfer Orchestration Mobile APK v1.0.0 (Release Package)'],
-      { type: 'application/vnd.android.package-archive' }
-    );
-    const url = window.URL.createObjectURL(dummyApkContent);
     const link = document.createElement('a');
-    link.href = url;
+    link.href = '/alta-care-suite.apk';
     link.download = 'Alta-Care-Suite-v1.0.0.apk';
     document.body.appendChild(link);
     link.click();
     link.remove();
-    window.URL.revokeObjectURL(url);
   };
 
   return (
